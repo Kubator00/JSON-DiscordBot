@@ -1,0 +1,40 @@
+{
+  "name": "wiewiorka",
+  "version": "1.0.0",
+  "description": "Discord Bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kubator00/DiscordBot-Wiewiorka.git"
+  },
+  "author": "Kubator",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kubator00/DiscordBot-Wiewiorka/issues"
+  },
+  "engines": {
+    "node": "16.x"
+  },
+  "homepage": "https://github.com/Kubator00/DiscordBot-Wiewiorka#readme",
+  "dependencies": {
+    "@discordjs/opus": "^0.5.3",
+    "@discordjs/voice": "^0.6.0",
+    "avconv": "^3.1.0",
+    "discord-together": "^1.1.62",
+    "discord.js": "^13.1.0",
+    "discordnpm": "^1.0.1",
+    "fetch": "^1.1.0",
+    "ffmpeg": "^0.0.4",
+    "ffmpeg-static": "^4.4.0",
+    "install": "^0.13.0",
+    "libsodium-wrappers": "^0.7.9",
+    "pg": "^8.7.1",
+    "yt-search": "^2.10.1",
+    "ytdl-core": "^4.9.1",
+    "ytpl": "^2.2.3",
+    "ytsr": "^3.5.3"
+  }
+}
