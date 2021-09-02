@@ -117,7 +117,12 @@ async function play_music(msg) {
     try {
         player.play(resource);
         connection.subscribe(player);
+        try{
         msg.followUp(`Teraz gramy: ${songQueue.songs[0].title}`);
+        }
+        catch{
+            console.log("Blad wyslania wiadomosci - Bot Music.")
+        }
 
         player.on('error', error => {
             play_music(msg)
