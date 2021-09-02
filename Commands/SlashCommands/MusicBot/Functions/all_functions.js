@@ -107,7 +107,11 @@ async function play_music(msg) {
     }
 
 
-    const stream = ytdl(songQueue.songs[0].url, { filter: 'audioonly', highWaterMark: 33554432 });
+    const stream = ytdl(songQueue.songs[0].url, { filter: 'audioonly', highWaterMark: 33554432 })
+        .on('error', error => {
+            console.log(error);
+            play_music(msg);
+        });
     const resource = createAudioResource(stream, { seek: 0, volume: 1 });
     const player = createAudioPlayer();
 
@@ -117,16 +121,17 @@ async function play_music(msg) {
     try {
         player.play(resource);
         connection.subscribe(player);
-        try{
-        msg.followUp(`Teraz gramy: ${songQueue.songs[0].title}`);
+        try {
+            msg.followUp(`Teraz gramy: ${songQueue.songs[0].title}`);
         }
-        catch{
+        catch {
             console.log("Blad wyslania wiadomosci - Bot Music.")
         }
 
         player.on('error', error => {
-            play_music(msg)
             console.log(error);
+            play_music(msg);
+
         })
         player.on(AudioPlayerStatus.Idle, () => songQueue.songs.shift());
         player.on(AudioPlayerStatus.Idle, () => play_music(msg));
