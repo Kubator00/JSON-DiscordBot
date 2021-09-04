@@ -6,7 +6,7 @@ const apiLolKey = lolKey.apiLolKey;
 
 module.exports = {
     name: 'live',
-    description: "WYŚWIETLA GRĘ NA ŻYWO Z LEAGUE OF LEGENDS",
+    description: "Wyświetla mecz na żywo z gry Legaue of Legends",
     options: [
         {
             name: "nazwa",

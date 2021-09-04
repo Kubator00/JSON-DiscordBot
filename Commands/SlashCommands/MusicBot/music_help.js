@@ -2,7 +2,7 @@ const { MessageEmbed } = require('discord.js');
 
 module.exports = {
     name: 'muzykapomoc',
-    description: "Wyświetla wszystkie komendy związane z odtwarzaniem muzyki",
+    description: "Wyświetla dostępne komendy do interakcji z botem muzycznym",
 
     async execute(msg) {
 

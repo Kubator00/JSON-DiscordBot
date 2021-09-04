@@ -6,7 +6,7 @@ const apiLolKey = lolKey.apiLolKey;
 
 module.exports = {
     name: 'konto',
-    description: "WYŚWIETLA STATYSTYKI KONTA Z LEAGUE OF LEGENDS",
+    description: "Wyświetla statystyki konta z gry League of Legends",
     options: [
         {
             name: "nazwa",

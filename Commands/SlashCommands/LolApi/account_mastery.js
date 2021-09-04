@@ -6,7 +6,7 @@ const apiLolKey = lolKey.apiLolKey;
 
 module.exports = {
     name: 'mastery',
-    description: "WYŚWIETLA STATYSTYKI KONTA I MASTERY BOHATERÓW Z LEAGUE OF LEGENDS",
+    description: "Wyświetla statystyki konta i maestire bohaterów z gry Legaue of Legends",
     options: [
         {
             name: "nazwa",
