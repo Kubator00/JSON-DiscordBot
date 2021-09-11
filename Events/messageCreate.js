@@ -23,47 +23,47 @@ module.exports = {
 
         normalizeMsg = removeDiacritics(normalizeMsg);
 
-        // let command = client.messageCommands.get(normalizeMsg) ||
-        //     client.messageCommands.find(cmd => cmd.aliases && cmd.aliases.includes(normalizeMsg));
-
         let command;
-
+        let name;
         (client.messageCommands.filter(cmd => {
             if (normalizeMsg.includes(cmd.name)) {
                 command = client.messageCommands.get(cmd.name);
+                name = command.name;
             }
             else {
                 if (cmd.aliases) {
                     cmd.aliases.filter(cmdAliases => {
                         if (normalizeMsg.includes(cmdAliases)) {
                             command = client.messageCommands.get(cmd.name);
+                            name = cmdAliases;
                         }
                     })
                 }
             }
         }));
 
-
-
-        // if (!command) {
-        //     (client.messageCommands.filter(cmd => {
-        //         {
-        //             console.log(cmd);
-        //             if (cmd.aliases) {
-        //                 cmd.aliases.filter(cmdAliases => {
-        //                     console.log(cmdAliases);
-        //                     if (normalizeMsg.includes(cmdAliases))
-        //                         command = client.messageCommands.get(cmd.name);
-        //                 })
-        //             }
-        //         }
-        //     }
-        //     ));
-        // }
-
         if (!command)
             return;
 
+        if (msg.content.length != name.length) {
+            let index = msg.content.indexOf(name)
+
+            //sprawdzamy czy następny znak to litera jeśli tak to anulujemy
+            if (isLetter(msg.content.charAt(index + name.length))) 
+                return;
+
+            //sprawdzamy czy poprzedni znak to spacja jeśli nie to anulujemy
+            if (index > 0) {
+                if (msg.content.charAt(index - 1) != ' ')
+                    return;
+            }
+
+        }
+
         command.execute(msg);
     }
+}
+
+function isLetter(str) {
+    return str.length === 1 && str.match(/[a-z]/i);
 }
