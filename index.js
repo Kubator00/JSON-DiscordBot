@@ -26,7 +26,7 @@ const joinMembers = require('./joinMembers.js');
 // const advertisement = require('./advertisement.js');
 const channelNames = require('./channelNames');
 const channelIDs = require('./channelIDs');
-const errorNotifications = require('./ErrorNotifications');
+const errorNotifications = require('./errorNotifications');
 const checkPremissions = require('./checkPremissions.js');
 const saveOnlineVoiceTime = require("./voiceStats/saveOnlineVoiceTime");
 
