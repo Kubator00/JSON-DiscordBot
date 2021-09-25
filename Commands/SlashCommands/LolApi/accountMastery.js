@@ -1,8 +1,10 @@
-const lol_functions = require('./Functions/lol_other_functions.js');
+const lolFunctions = require('./Functions/lolCommonFunctions.js');
 const { MessageEmbed } = require('discord.js');
 const fetch = require('node-fetch');
-const lolKey = require('./Functions/key_lol.js');
-const apiLolKey = lolKey.apiLolKey;
+const lolToken = require('./Functions/lolToken.js');
+const apiLolToken = lolToken.apiLolToken;
+const errorNotifications=  require('../../../errorNotifications');
+const channelNames = require('../../../channelNames');
 
 module.exports = {
     name: 'mastery',
@@ -16,9 +18,14 @@ module.exports = {
         },
     ],
     async execute(msg) {
+        if (msg.channel.name != channelNames.lolChannel) {
+            msg.followUp(`Komenda może być tylko użyta na kanale ${channelNames.lolChannel}`);
+            return;
+        }
+
         let summoner = msg.options.getString('nazwa');
         summonerPlayerName = encodeURI(summoner);
-        const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName + "?api_key=" + apiLolKey;
+        const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName + "?api_key=" + apiLolToken;
         const responseSummoner = await fetch(urlSummoner);
         if (responseSummoner.status == 429) {
             msg.followUp("Wykorzystano dostępną ilość zapytań, spróbuj ponownie za chwilę");
@@ -31,10 +38,10 @@ module.exports = {
         const jsonSummoner = await responseSummoner.json();
         const summonerIdPlayer = jsonSummoner.id;
 
-        const ranks = await lol_functions.read_player_rank_and_stats(summonerIdPlayer);
-        if (ranks == -1) {
+        const ranks = await lolFunctions.read_player_rank_and_stats(summonerIdPlayer);
+        if (!ranks) {
             msg.followUp("Błąd połączenia");
-            lol_functions.lol_error("Pobieranie read_player_rank_and_stats");
+            errorNotifications("Lol Api AccountMastery, Błąd pobierania playerRankAndStats");
             return;
         }
 
@@ -50,11 +57,11 @@ module.exports = {
 
 
 
-        const urlChampionMastery = "https://eun1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summonerIdPlayer + "?api_key=" + apiLolKey;
+        const urlChampionMastery = "https://eun1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summonerIdPlayer + "?api_key=" + apiLolToken;
         const responseChampionMastery = await fetch(urlChampionMastery);
         if (responseChampionMastery.status != 200) {
             msg.followUp("Błąd połączenia");
-            lol_functions.lol_error("Pobieranie champion_mastery");
+            errorNotifications("Lol Api AccountMastery, Błąd pobierania championMastery");
             return;
         }
         const jsonChampionMastery = await responseChampionMastery.json();
@@ -76,14 +83,14 @@ module.exports = {
         }
 
 
-        championsData = await lol_functions.read_champion_id(championsData);
+        championsData = await lolFunctions.read_champion_id(championsData);
 
 
         let embed = new MessageEmbed()
             .setColor('#ffa500')
             .setAuthor("Informacje o koncie\n"
                 + "●════════════════════════════════════════●",
-                'http://ddragon.leagueoflegends.com/cdn/' + await lol_functions.dataDragonVersion + '/img/profileicon/' + player.profileIconId + '.png')
+                'http://ddragon.leagueoflegends.com/cdn/' + await lolFunctions.dataDragonVersion + '/img/profileicon/' + player.profileIconId + '.png')
 
             .setTitle(player.summonerName)
             .setDescription('Poziom: ' + player.summonerLevel)
@@ -109,8 +116,12 @@ module.exports = {
 
             )
 
-
-        msg.followUp({ embeds: [embed] });
+        try {
+            msg.followUp({ embeds: [embed] });
+        }
+        catch {
+            errorNotifications("Lol Api AccountMastery, Błąd wysłania wiadomości embed");
+        }
 
     }
 }

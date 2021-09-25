@@ -75,6 +75,9 @@ async function add_to_queue(msg, music, addPlaylist) {
 
         connection = joinVoiceChannel(voiceChannel);
         queue.get(msg.guild.id).connection = connection;
+
+        msg.followUp(`Teraz gramy: ${music.title}`);
+
         play_music(msg);
         setTimeout(() => auto_leave(msg), 5000);
     }
@@ -121,13 +124,6 @@ async function play_music(msg) {
     try {
         player.play(resource);
         connection.subscribe(player);
-        try {
-            msg.followUp(`Teraz gramy: ${songQueue.songs[0].title}`);
-        }
-        catch {
-            console.log("Blad wyslania wiadomosci - Bot Music.")
-        }
-
         player.on('error', error => {
             console.log(error);
             play_music(msg);
@@ -219,6 +215,21 @@ async function find_playlist(msg, url) {
         return;
     }
 }
+
+module.exports.display_now_playing = display_now_playing;
+function display_now_playing(msg) {
+    if (!queue.get(msg.guild.id)) {
+        msg.followUp("Brak następnych piosenek");
+        return;
+    }
+    const songQueue = queue.get(msg.guild.id).songs;
+    if (songQueue.length == 0) {
+        msg.followUp("Brak następnych piosenek");
+        return;
+    }
+    return msg.followUp(`Teraz gramy: ${songQueue[0].title} \n`);
+}
+
 module.exports.display_queue = display_queue;
 function display_queue(msg) {
     if (!queue.get(msg.guild.id)) {

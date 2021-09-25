@@ -1,4 +1,4 @@
-const displayVoiceStats = require("../../../displayVoiceStats.js");
+const displayVoiceStats = require("../../../voiceStats/displayVoiceStats.js");
 
 module.exports = {
     name: 'statystyki',

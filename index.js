@@ -13,70 +13,53 @@ const client = new Client({
 });
 
 
-
-const key = require('./key.js');
-client.login(key.login);
+const discordToken = require('./discordToken.js');
+client.login(discordToken.login);
 module.exports.client = client;
 
 const date = require('./date.js');
 const database = require('./database.js');
 const gif = require('./gif_function.js');
-const statistics = require('./statistics.js');
-const auto = require('./auto_messages.js');
-const members = require('./members.js');
-const advertisement = require('./advertisement.js');
+const channelNameStatisticsFunctions = require('./channelNameStatisticsFunctions.js');
+const autoMessages = require('./auto_messages.js');
+const joinMembers = require('./joinMembers.js');
+// const advertisement = require('./advertisement.js');
+const channelNames = require('./channelNames');
+const channelIDs = require('./channelIDs');
+const errorNotifications = require('./ErrorNotifications');
+const checkPremissions = require('./checkPremissions.js');
+const saveOnlineVoiceTime = require("./voiceStats/saveOnlineVoiceTime");
 
-
-
-var serverId;
-const channelMembersId = '847534378267312148';
-const channelDateId = '847444746993270795';
-const channelOnlineMembersId = '847534364626780290';
-
-
+let serverId;
 
 client.once('ready', () => {
   console.log(`Zalogowano jako ${client.user.tag}!`);
   console.log('Bot jest online!');
-  const channel = client.channels.cache.find(channel => channel.name === 'panel')
-  serverId = channel.guild.id;
+  const channel = client.channels.cache.find(channel => channel.name === channelNames.panelChannel)
+  serverId = client.guilds.cache.map(guild => guild.id);
+  serverId = String(serverId[0]);
 
-  statistics.new_date(client, serverId, channelDateId);
-  statistics.count(client, serverId, channelMembersId);
-  statistics.count_online_members(client, serverId, channelOnlineMembersId);
-
-  channel.send("Bot został włączony\n" + date.hour() + ":" + date.minute() + "\n" + date.day_message());
+  if (checkPremissions(channel, channelNames.panelChannel))
+    channel.send("Bot został włączony\n" + date.hour() + ":" + date.minute() + "\n" + date.day_message());
 
   //status bota
   (async () => {
     let result = (await database.rand_message("BOT_STATUS"));
     console.log("Status: " + result);
-    client.user.setActivity(result, { type: 'LISTENING' })
+    try {
+      client.user.setActivity(result, { type: 'LISTENING' })
+    }
+    catch {
+      errorNotifications("Błąd ustawienia statusu bota");
+    }
 
   })();
 
+  channelNameStatisticsFunctions.count_members(client, serverId, channelIDs.channelMembersId);
+  channelNameStatisticsFunctions.new_date(client, serverId, channelIDs.channelDateId);
+  channelNameStatisticsFunctions.count_online_members(client, serverId, channelIDs.channelOnlineMembersId);
 
 });
-
-
-
-
-//lista kanalow
-var channelList = [];
-channelList[0] = "💬ogólne";
-channelList[1] = "🕧godzina";
-channelList[2] = "🔲gif-y";
-channelList[3] = "⚔liga-legend";
-channelList[4] = "🎲losowanie";
-channelList[5] = "🎮wspólne_granie";
-channelList[6] = "👓gejroom";
-channelList[7] = "📐czat";
-channelList[8] = "🐿wiewiórka";
-channelList[9] = "panel";
-channelList[10] = "ogłoszenia";
-channelList[11] = "📈statystyki";
-
-
 
 
 client.slashCommands = new Collection();
@@ -86,30 +69,30 @@ client.messageCommands = new Collection();
 });
 
 
+// client.on('messageCreate', msg => {
 
-client.on('messageCreate', msg => {
+//   //wysylanie ogloszen
+//   advertisement.advert(client, msg, channelNames, checkPremissions);
 
-  //wysylanie ogloszen
-  advertisement.advert(client, msg, channelList);
+// });
 
-});
+// //automatyczne wiadomosci
+autoMessages(client, date, database, gif, serverId, channelIDs, channelNames, channelNameStatisticsFunctions, checkPremissions);
 
-//automatyczne wiadomosci
-auto.auto_messages(client, date, database, gif, serverId, channelDateId, channelList, statistics);
-
-//zmiana czlownkow serwera
-members.members(client, channelList, date);
+// //zmiana czlownkow serwera
+joinMembers(client, channelNames, date, checkPremissions);
 
 
 
 //statystyka członków serwera
 setInterval(() => {
-  statistics.count(client, serverId, channelMembersId);
-  statistics.new_date(client, serverId, channelDateId);
-}, 900000);
+  channelNameStatisticsFunctions.count_members(client, serverId, channelIDs.channelMembersId);
+  channelNameStatisticsFunctions.new_date(client, serverId, channelIDs.channelDateId);
+}, 10000);
+
 
 setInterval(() => {
-  statistics.count_online_members(client, serverId, channelOnlineMembersId);
+  channelNameStatisticsFunctions.count_online_members(client, serverId, channelIDs.channelOnlineMembersId);
 }, 360000);
 
 
@@ -123,11 +106,5 @@ setInterval(() => { //co godzine zmienia status bota
 
 
 
-
-
-const voiceState = require("./voiceStateUpdate.js");
-voiceState(client);
-
-
-
+saveOnlineVoiceTime(client);
 

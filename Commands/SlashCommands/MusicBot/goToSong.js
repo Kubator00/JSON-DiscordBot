@@ -1,5 +1,6 @@
-const music_functions = require("./Functions/all_functions.js")
-const queue = music_functions.queue;
+const musicFunctions = require("./Functions/musicCommonFunctions.js")
+const queue = musicFunctions.queue;
+const channelNames=require('../../../channelNames');
 
 module.exports = {
     name: 'przejdz',
@@ -14,6 +15,11 @@ module.exports = {
     description: "Gram piosenkę o numerze podanym w argumencie",
 
     async execute(msg) {
+        if (msg.channel.name != channelNames.musicChannel) {
+            msg.followUp(`Komenda może być tylko użyta na kanale ${channelNames.musicChannel}`);
+            return;
+        }
+
         if (!queue.get(msg.guild.id))
             return msg.followUp("Brak piosenki");
         const voiceChannel = msg.member.voice.channel;
@@ -25,15 +31,17 @@ module.exports = {
 
         if (!serverQueue || serverQueue.length <= 1) {
             msg.followUp("Nie ma piosenek w kolejce");
+            return;
         }
 
         if (musicNubmer > serverQueue.songs.length || musicNubmer <= 0) {
             msg.followUp("Podano błędny numer piosenki");
+            return;
         }
-
+        
         queue.get(msg.guild.id).songs.splice(0, musicNubmer);
-
-        return music_functions.play_music(msg);
+        musicFunctions.display_now_playing(msg);
+        return musicFunctions.play_music(msg);
     },
 
 }

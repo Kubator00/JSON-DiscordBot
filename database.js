@@ -19,11 +19,6 @@ async function rand_message(table_name) {
 
 }
 
-
-
-
-
-
 async function read_database(tableName) {
 
   const database = {
@@ -37,16 +32,12 @@ async function read_database(tableName) {
     }
   };
 
-
-
   let result = [];
   return new Promise(function (resolve, reject) {
     const clientConn = new pg.Client(database);
     clientConn.connect(err => {
       if (err) return console.log(`BLAD POLACZENIA Z BAZA ${err}`);
     });
-
-
 
     clientConn.query(`SELECT * from public."${tableName}";`, (err, res) => {
       if (err) {
@@ -58,17 +49,8 @@ async function read_database(tableName) {
           result.push(row);
         }
         clientConn.end();
-        console.log("POLACZENIE ZAKONCZONE 1")
         resolve(result);
       }
-      // try {
-      //   clientConn.end();
-      //   console.log("POLACZENIE ZAKONCZONE 2")
-      // }
-      // catch {
-      //   console.log("POLACZENIE JUZ WCZESNIEJ ZAKONCZONE 2")
-      // }
-
     });
 
   })

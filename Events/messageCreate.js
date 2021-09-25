@@ -1,12 +1,14 @@
+const checkPremissions = require("../checkPremissions");
 
 module.exports = {
     name: "messageCreate",
 
     async execute(client, msg) {
-        if (!msg.channel.permissionsFor(msg.client.user).has('SEND_MESSAGES')
-            || !msg.channel.permissionsFor(msg.client.user).has('ADD_REACTIONS')) {
-            return console.log("Nie mam uprawnień wysylania wiadomosci lub dodawania reakcji");
-        }
+
+        if (!checkPremissions)
+            return;
+
+
         if (msg.author.bot)
             return;
 
@@ -49,7 +51,7 @@ module.exports = {
             let index = msg.content.indexOf(name)
 
             //sprawdzamy czy następny znak to litera jeśli tak to anulujemy
-            if (isLetter(msg.content.charAt(index + name.length))) 
+            if (isLetter(msg.content.charAt(index + name.length)))
                 return;
 
             //sprawdzamy czy poprzedni znak to spacja jeśli nie to anulujemy

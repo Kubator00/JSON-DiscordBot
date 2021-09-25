@@ -1,8 +1,10 @@
-const lol_functions = require('./Functions/lol_other_functions.js');
 const { MessageEmbed } = require('discord.js');
 const fetch = require('node-fetch');
-const lolKey = require('./Functions/key_lol.js');
-const apiLolKey = lolKey.apiLolKey;
+const lol_functions = require('./Functions/lolCommonFunctions.js');
+const lolToken = require('./Functions/lolToken.js');
+const apiLolToken = lolToken.apiLolToken;
+const errorNotifications=  require('../../../errorNotifications');
+const channelNames = require('../../../channelNames');
 
 module.exports = {
     name: 'historia',
@@ -22,6 +24,11 @@ module.exports = {
         },
     ],
     async execute(msg) {
+        if (msg.channel.name != channelNames.lolChannel) {
+            msg.followUp(`Komenda może być tylko użyta na kanale ${channelNames.lolChannel}`);
+            return;
+        }
+
         let summoner = msg.options.getString('nazwa');
         let matchNumber = msg.options.getNumber('nr_meczu') - 1;
         let summonerPlayerName = encodeURI(summoner);
@@ -31,7 +38,7 @@ module.exports = {
             return;
         }
 
-        const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName + "?api_key=" + apiLolKey;
+        const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName + "?api_key=" + apiLolToken;
         const responseSummoner = await fetch(urlSummoner);
         if (responseSummoner.status == 429) {
             msg.followUp("Wykorzystano dostępną ilość zapytań, spróbuj ponownie za chwilę");
@@ -45,11 +52,11 @@ module.exports = {
         const puuIdPlayer = jsonSummoner["puuid"];
         msg.followUp("```fix\nWyszukiwana gry:  " + (matchNumber + 1) + "\nGracz: " + summoner.toUpperCase() + "\nProszę czekać... ```");
 
-        const urlMatchList = "https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/" + puuIdPlayer + "/ids?start=0&count=20&api_key=" + apiLolKey;
+        const urlMatchList = "https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/" + puuIdPlayer + "/ids?start=0&count=20&api_key=" + apiLolToken;
         const responseMatchList = await fetch(urlMatchList);
         if (responseMatchList.status != 200) {
-            msg.channel.send("Błąd połączenia")
-                .catch(error => console.log("Błąd komenda !h"));
+            msg.channel.send("Błąd połączenia");
+            errorNotifications("Lol Api History, Błąd pobierania MatchList");
             return;
         }
 
@@ -57,23 +64,21 @@ module.exports = {
         const matchId = jsonMatchList[matchNumber];
 
 
-        const urlMatchData = "https://europe.api.riotgames.com/lol/match/v5/matches/" + matchId + "?api_key=" + apiLolKey;
+        const urlMatchData = "https://europe.api.riotgames.com/lol/match/v5/matches/" + matchId + "?api_key=" + apiLolToken;
         const responseMatchData = await fetch(urlMatchData);
         if (responseMatchData.status != 200) {
-            msg.channel.send("Błąd połączenia")
-                .catch(error => console.log("Błąd komenda !h"));
+            msg.channel.send("Błąd połączenia");
+            errorNotifications("Lol Api History, Błąd pobierania MatchData");
             return;
         }
         const jsonMatchData = await responseMatchData.json();
 
         if (jsonMatchData.info.gameMode != "CLASSIC" && jsonMatchData.info.gameMode != "ARAM") {
-            msg.channel.send("Przykro mi ale ten tryb gry nie jest obsługiwany")
-                .catch(error => console.log("Błąd komenda !h"));
+            msg.channel.send("Przykro mi ale ten tryb gry nie jest obsługiwany");
             return;
         }
         if ((jsonMatchData.info.gameDuration) / 60 < 300) { //sprawdzanie czy nie było remake
-            msg.channel.send("Gra była za krótka")
-                .catch(error => console.log("Błąd komenda !h"));
+            msg.channel.send("Gra była za krótka");
             return;
         }
         let matchData =
@@ -82,11 +87,10 @@ module.exports = {
             gameMode: await lol_functions.read_game_mode(jsonMatchData.info.queueId),
         }
 
-        if (matchData.gameMode == -1)  //sprawdzannie czy funkcja game_mode poprawnie pobrała dane
+        if (!matchData.gameMode)  //sprawdzannie czy funkcja game_mode poprawnie pobrała dane
         {
-            msg.channel.send("Błąd połączenia")
-                .catch(error => console.log("Błąd komenda !h"));
-            lol_functions.lol_error("Pobieranie game_mode");
+            msg.channel.send("Błąd połączenia");
+            errorNotifications("Lol Api History, Błąd pobierania gameMode");
             return;
         }
 
@@ -115,19 +119,17 @@ module.exports = {
                 visionWardsBoughtInGame: jsonMatchData.info.participants[playerNumber].visionWardsBoughtInGame,
             }
             //sprawdzannie czy funkcja champion_mastery poprawnie pobrała dane
-            if (playerData.championMastery == -1) {
-                msg.channel.send("Błąd połączenia")
-                    .catch(error => console.log("Błąd komenda !h"));
-                lol_functions.lol_error("Pobieranie champion_maestry");
+            if (!playerData.championMastery) {
+                msg.channel.send("Błąd połączenia");
+                errorNotifications("Lol Api History, Błąd pobierania championMastery");
                 return;
             }
             // ragi przypisuje w ten sposób aby było mniej zapytań
             let playerRanks = await lol_functions.read_player_rank(jsonMatchData.info.participants[playerNumber].summonerId);
             //sprawdzanie czy funkcja player_rank poprawnie pobrała dane
-            if (playerRanks == -1) {
-                msg.channel.send("Błąd połączenia")
-                    .catch(error => console.log("Błąd komenda !h"));
-                lol_functions.lol_error("Pobieranie player_rank");
+            if (!playerRanks) {
+                msg.channel.send("Błąd połączenia");
+                errorNotifications("Lol Api History, Błąd pobierania playerRanks");
                 return;
             }
             playerData.soloqRank = playerRanks[0];
@@ -374,7 +376,7 @@ module.exports = {
             msg.channel.send({ embeds: [embed] });
         }
         catch {
-            console.log("Blad wyslania embedu z live gra Lola");
+            errorNotifications("Lol Api History, Błąd wysłania wiadomości embed");
         }
 
     }

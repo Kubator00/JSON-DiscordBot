@@ -1,4 +1,5 @@
 const { MessageEmbed } = require('discord.js');
+const channelNames = require('../../../channelNames');
 
 
 module.exports = {
@@ -6,6 +7,11 @@ module.exports = {
     description: "Wyświetla dostępne komendy do interakcji z grą League of Legends",
 
     async execute(msg) {
+        if (msg.channel.name != channelNames.lolChannel) {
+            msg.followUp(`Komenda może być tylko użyta na kanale ${channelNames.lolChannel}`);
+            return;
+        }
+        
         let embed = new MessageEmbed()
         .setColor('#ffa500')
         .setAuthor("League of Legends\n"

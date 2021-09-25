@@ -1,10 +1,8 @@
 const index = require('../../../../index.js');
-
 const fetch = require('node-fetch');
-const lolKey = require('./key_lol.js');
-const apiLolKey = lolKey.apiLolKey;
+const lolToken = require('./lolToken.js');
+const apiLolToken = lolToken.apiLolToken;
 
-module.exports.lol_error = lol_error;
 module.exports.read_champion_mastery = read_champion_mastery;
 module.exports.read_champion_id = read_champion_id;
 module.exports.read_spells_id = read_spells_id;
@@ -19,10 +17,7 @@ module.exports.your_team = your_team;
 
 let dataDragonVersion = data_dragon_version();
 module.exports.dataDragonVersion = dataDragonVersion;
-function lol_error(description = null) {
-    channel = index.client.channels.cache.find(channel => channel.name === "panel");
-    channel.send("Błąd LolAPI\n"+ description);
-}
+
 
 async function data_dragon_version() {
     let url = "https://ddragon.leagueoflegends.com/api/versions.json";
@@ -39,12 +34,12 @@ async function data_dragon_version() {
 
 
 async function read_champion_mastery(summonerId, championId) {
-    let url = "https://eun1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summonerId + "/by-champion/" + championId + "?api_key=" + apiLolKey;
+    let url = "https://eun1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summonerId + "/by-champion/" + championId + "?api_key=" + apiLolToken;
     response = await fetch(url);
     if (response.status == 404) //prawodopodobnie pierwsza gra bohaterem i nie ma w bazie
         return 0;               //dlatego 0 pkt
     if (response.status != 200) //inny błąd połączenia
-        return -1;
+        return false;
 
     json = await response.json()
 
@@ -59,7 +54,7 @@ async function read_champion_id(playersData) {
     let response, json;
     response = await fetch(url);
     if (response.status != 200) 
-        return -1;
+        return false;
     
     json = await response.json()
 
@@ -103,11 +98,11 @@ function embed_display_name(playerData) {
 
 async function read_account_level(summonerName) {
     summonerName = encodeURI(summonerName);
-    let url = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName + "?api_key=" + apiLolKey;
+    let url = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName + "?api_key=" + apiLolToken;
     let response, json;
     response = await fetch(url);
     if (response.status != 200)
-        return -1;
+        return false;
     json = await response.json()
     return json.summonerLevel;
 }
@@ -119,7 +114,7 @@ async function read_game_mode(queueID) {
 
     response = await fetch(url);
     if (response.status != 200)
-        return -1;
+        return false;
 
     json = await response.json()
 
@@ -147,10 +142,10 @@ function your_team(playerIndex, teamNumber) { //teamNumber przyjmuje wartości 0
 
 
 async function read_player_rank(playerId) {
-    let url = "https://eun1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + playerId + "/?api_key=" + apiLolKey;
+    let url = "https://eun1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + playerId + "/?api_key=" + apiLolToken;
     let response = await fetch(url);
     if (response.status != 200)
-        return -1;
+        return false;
     let json = await response.json();
     if (json[0] == undefined)
         return ["Brak rangi", "Brak rangi"];
@@ -181,10 +176,10 @@ async function read_player_rank(playerId) {
 
 
 async function read_player_rank_and_stats(playerId) {
-    let url = "https://eun1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + playerId + "/?api_key=" + apiLolKey;
+    let url = "https://eun1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + playerId + "/?api_key=" + apiLolToken;
     let response = await fetch(url);
     if (response.status != 200)
-        return -1;
+        return false;
     let json = await response.json();
     if (json[0] == undefined)
         return ["Brak rangi\n", "Brak rangi\n"];

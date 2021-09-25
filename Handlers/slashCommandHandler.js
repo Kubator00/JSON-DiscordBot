@@ -1,9 +1,6 @@
-
 const { readdirSync } = require('fs');
 
 module.exports = (client) => {
-
-
     let commandsArry = [];
     const commandFolder = readdirSync('./Commands/SlashCommands')
     for (const folder of commandFolder) {
@@ -14,8 +11,13 @@ module.exports = (client) => {
             commandsArry.push(command)
         };
     };
+
+
+
     client.on("ready", () => {
-        client.guilds.cache.get("440616514090172449").commands.set(commandsArry);
+        let serverId = client.guilds.cache.map(guild => guild.id);
+        serverId=String(serverId[0]);    
+        client.guilds.cache.get(serverId).commands.set(commandsArry);
     });
 
 };

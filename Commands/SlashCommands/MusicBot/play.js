@@ -1,5 +1,5 @@
-const music_functions = require("./Functions/all_functions.js")
-
+const musicFunctions = require("./Functions/musicCommonFunctions.js")
+const channelNames=require('../../../channelNames');
 
 module.exports = {
     name: 'graj',
@@ -12,12 +12,17 @@ module.exports = {
             required: true
         },
     ],
-    async execute(interaction) {
-        const url = interaction.options.getString('nazwa');
+    async execute(msg) {
+        if (msg.channel.name != channelNames.musicChannel) {
+            msg.followUp(`Komenda może być tylko użyta na kanale ${channelNames.musicChannel}`);
+            return;
+        }
 
-        let song = await music_functions.find_music(interaction, url);
+        const url = msg.options.getString('nazwa');
+
+        let song = await musicFunctions.find_music(msg, url);
         if (song) {
-            await music_functions.add_to_queue(interaction, song, false);
+            await musicFunctions.add_to_queue(msg, song, false);
         }
 
     },

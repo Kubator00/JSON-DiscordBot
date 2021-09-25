@@ -1,11 +1,15 @@
 const { MessageEmbed } = require('discord.js');
+const channelNames=require('../../../channelNames');
 
 module.exports = {
     name: 'muzykapomoc',
     description: "Wyświetla dostępne komendy do interakcji z botem muzycznym",
 
     async execute(msg) {
-
+        if (msg.channel.name != channelNames.musicChannel) {
+            msg.followUp(`Komenda może być tylko użyta na kanale ${channelNames.musicChannel}`);
+            return;
+        }
 
         let embed = new MessageEmbed()
             .setColor('#ffa500')

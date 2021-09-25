@@ -1,5 +1,7 @@
-const music_functions = require("./Functions/all_functions.js")
-const queue = music_functions.queue;
+const musicFunctions = require("./Functions/musicCommonFunctions.js")
+const queue = musicFunctions.queue;
+const channelNames=require('../../../channelNames');
+
 module.exports = {
     name: 'usun',
     options: [
@@ -12,6 +14,11 @@ module.exports = {
     ],
     description: "Usuwamy piosenkę podaną w argumencie z kolejki",
     async execute(msg) {
+        if (msg.channel.name != channelNames.musicChannel) {
+            msg.followUp(`Komenda może być tylko użyta na kanale ${channelNames.musicChannel}`);
+            return;
+        }
+        
         const voiceChannel = msg.member.voice.channel;
         if (!voiceChannel) return await msg.reply("Musisz być na kanale głosowym aby usunąć piosenkę!")
             .catch(error => error_message("Błąd wysłania wiadomości"));

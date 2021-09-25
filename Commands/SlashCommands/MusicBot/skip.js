@@ -1,11 +1,16 @@
-const music_functions = require("./Functions/all_functions.js")
-const queue = music_functions.queue;
+const musicFunctions = require("./Functions/musicCommonFunctions.js")
+const queue = musicFunctions.queue;
+const channelNames=require('../../../channelNames');
 
 module.exports = {
     name: 'pomin',
     description: "Pomiń aktualnie odtwarzaną piosenkę",
 
     async execute(msg) {
+        if (msg.channel.name != channelNames.musicChannel) {
+            msg.followUp(`Komenda może być tylko użyta na kanale ${channelNames.musicChannel}`);
+            return;
+        }
         if (!queue.get(msg.guild.id))
             return msg.followUp("Brak piosenki");
         try {
@@ -14,7 +19,8 @@ module.exports = {
             queue.get(msg.guild.id).player.stop();
             queue.get(msg.guild.id).songs.shift();
             if (queue.get(msg.guild.id).songs.length > 0) {
-                return await music_functions.play_music(msg);
+                musicFunctions.display_now_playing(msg);
+                return await musicFunctions.play_music(msg);
             }
             else {
                 msg.followUp("Brak następnych piosenek w kolejce");

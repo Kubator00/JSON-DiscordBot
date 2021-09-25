@@ -1,4 +1,4 @@
-
+const checkPremissions = require("../checkPremissions");
 
 module.exports = {
     name: "interactionCreate",
@@ -8,10 +8,9 @@ module.exports = {
         if (!interaction.isCommand())
             return;
 
-        if (!interaction.channel.permissionsFor(interaction.client.user).has('SEND_MESSAGES')
-            || !interaction.channel.permissionsFor(interaction.client.user).has('ADD_REACTIONS')) {
-            return console.log("Nie mam uprawnień wysylania wiadomosci lub dodawania reakcji lub używania komend aplikacji");
-        }
+        if (!checkPremissions)
+            return;
+        
 
         await interaction.deferReply({ ephemeral: false }).catch(() => { });
 

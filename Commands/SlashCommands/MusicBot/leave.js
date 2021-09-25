@@ -1,5 +1,6 @@
-const music_functions = require("./Functions/all_functions.js")
-const queue = music_functions.queue;
+const musicFunctions = require("./Functions/musicCommonFunctions.js")
+const queue = musicFunctions.queue;
+const channelNames=require('../../../channelNames');
 
 
 module.exports = {
@@ -7,6 +8,11 @@ module.exports = {
     description: "Bot muzyczny opuszca kanał, kończy granie muzyki",
 
     async execute(msg) {
+        if (msg.channel.name != channelNames.musicChannel) {
+            msg.followUp(`Komenda może być tylko użyta na kanale ${channelNames.musicChannel}`);
+            return;
+        }
+        
         try {
             const conn = queue.get(msg.guild.id).connection;
             const voiceChannel = msg.member.voice.channel;

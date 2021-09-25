@@ -1,12 +1,18 @@
-const music_functions = require("./Functions/all_functions.js")
-const queue = music_functions.queue;
+const musicFunctions = require("./Functions/musicCommonFunctions.js")
+const queue = musicFunctions.queue;
+const channelNames=require('../../../channelNames');
 
 module.exports = {
     name: 'kolejka',
     description: "Zobacz listę następnie odtwarzanych piosenek",
 
-    async execute(interaction) {
-        music_functions.display_queue(interaction);
+    async execute(msg) {
+        if (msg.channel.name != channelNames.musicChannel) {
+            msg.followUp(`Komenda może być tylko użyta na kanale ${channelNames.musicChannel}`);
+            return;
+        }
+
+        musicFunctions.display_queue(msg);
     },
 
 }
