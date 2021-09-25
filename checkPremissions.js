@@ -12,7 +12,7 @@ module.exports = (channel, channelName) => {
         return false;
     }
 
-    if (!channel.permissionsFor(channel.guild.me).has(" USE_APPLICATION_COMMANDS")) {
+    if (!channel.permissionsFor(channel.guild.me).has("USE_APPLICATION_COMMANDS")) {
         const description = `Nie mam uprawnień uzywania poleceń aplikacji na kanale ${channel.name} `;
         errorNotifications(description)
         return false;
