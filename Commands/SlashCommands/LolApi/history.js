@@ -77,13 +77,14 @@ module.exports = {
             msg.channel.send("Przykro mi ale ten tryb gry nie jest obsługiwany");
             return;
         }
-        if ((jsonMatchData.info.gameDuration) / 60 < 300) { //sprawdzanie czy nie było remake
+    
+        if ((jsonMatchData.info.gameDuration)< 300) { //sprawdzanie czy nie było remake
             msg.channel.send("Gra była za krótka");
             return;
         }
         let matchData =
         {
-            gameDuration: Math.ceil(jsonMatchData.info.gameDuration / 1000 / 60) + " min",
+            gameDuration: Math.ceil(jsonMatchData.info.gameDuration/ 60) + " min",
             gameMode: await lol_functions.read_game_mode(jsonMatchData.info.queueId),
         }
 
@@ -111,7 +112,7 @@ module.exports = {
                 assists: jsonMatchData.info.participants[playerNumber].assists,
                 deaths: jsonMatchData.info.participants[playerNumber].deaths,
                 totalMinionsKilled: jsonMatchData.info.participants[playerNumber].totalMinionsKilled + jsonMatchData.info.participants[playerNumber].neutralMinionsKilled,
-                totalMinionsKilledPerMinute: Math.round((jsonMatchData.info.participants[playerNumber].totalMinionsKilled + jsonMatchData.info.participants[playerNumber].neutralMinionsKilled) / (jsonMatchData.info.gameDuration / 1000 / 60) * 10) / 10,
+                totalMinionsKilledPerMinute: Math.round((jsonMatchData.info.participants[playerNumber].totalMinionsKilled + jsonMatchData.info.participants[playerNumber].neutralMinionsKilled) / (jsonMatchData.info.gameDuration / 60) * 10) / 10,
                 goldEarned: jsonMatchData.info.participants[playerNumber].goldEarned,
                 largestMultiKill: jsonMatchData.info.participants[playerNumber].largestMultiKill,
                 totalDamageDealtToChampions: jsonMatchData.info.participants[playerNumber].totalDamageDealtToChampions,

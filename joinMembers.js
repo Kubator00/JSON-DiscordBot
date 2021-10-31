@@ -2,11 +2,11 @@ module.exports = (client, channelNames, date, checkPremissions) => {
     client.on("guildMemberAdd", member => {
 
         let channel = client.channels.cache.find(channel => channel.name === channelNames.generalChannel);
-        if (checkPremissions(channel))
+        if (checkPremissions(channel, channelNames.generalChannel))
             channel.send('Witaj ' + member.user.username + ' na naszym serwerze.\nŻyczymy miłego pobytu 😀');
 
         channel = client.channels.cache.find(channel => channel.name === channelNames.panelChannel)
-        if (checkPremissions(channel))
+        if (checkPremissions(channel, channelNames.generalChannel))
             channel.send('Dołączył: ' + member.user.username + '\n' + date.hour() + ":" + date.minute() + "\n" + date.day_message());
 
     });
@@ -14,7 +14,7 @@ module.exports = (client, channelNames, date, checkPremissions) => {
 
     client.on("guildMemberRemove", member => {
         const channel = client.channels.cache.find(channel => channel.name === channelNames.panelChannel)
-        if (checkPremissions(channel))
+        if (checkPremissions(channel, channelNames.panelChannel))
             channel.send('Opuścił: ' + member.user.username + '\n' + date.hour() + ":" + date.minute() + "\n" + date.day_message());
     });
 
