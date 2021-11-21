@@ -2,7 +2,7 @@ const database = require(`../../../database.js`)
 
 module.exports = {
     name: 'siema',
-    aliases: ['witam', 'dzien dobry','elo','hej','czesc'],
+    aliases: ['witam', 'dzień dobry','dzien dobry','elo','hej','cześć','czesc'],
     description: "Odpowiada na konkretne słowa",
 
     async execute(msg) {
