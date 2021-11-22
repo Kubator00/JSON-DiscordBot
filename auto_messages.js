@@ -61,7 +61,7 @@ module.exports = (client, date, database, gif, serverId, channelIDs, channelName
     }
 
 
-    //   //wysyłanie gifow
+    //wysyłanie gifow
     if ((minute == 0 || minute == 20 || minute == 40)) {
       const channel = client.channels.cache.find(channel => channel.name === channelNames.gifsChannel);
       if (checkPremissions(channel, channelNames.gifsChannel)) {
