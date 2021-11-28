@@ -5,15 +5,9 @@ module.exports = {
     description: "Wyświetla ranking osób z najłuższą ilością czasu spędzonego na kanałach głosowych",
 
     async execute(msg) {
-        const roleName = "Zweryfikowany";
-        const roleId = (msg.guild.roles.cache.find(p => p.name === roleName)).id;
-        let hasRoles = 0;
-        for (userRole of msg.member._roles)
-            if (userRole == roleId)
-                hasRoles = 1;
-
-        if (hasRoles == 0 && msg.member.permissions.has('ADMINISTRATOR') != true) {
-            msg.followUp(`Aby użyć tej komendy musisz posiadać rolę "${roleName}".`)
+        //sprawdza czy uzytkownik wywolujacy komende posiada role administratora 
+        if ( msg.member.permissions.has('ADMINISTRATOR') != true) {
+            msg.followUp(`Aby użyć tej komendy musisz posiadać rolę Administratora.`)
             return;
         }
         msg.followUp('.');
