@@ -19,7 +19,7 @@ module.exports.find_music = find_music;
 async function find_music(msg, url) {
     const voiceChannel = msg.member.voice.channel;
     if (!voiceChannel) {
-        await msg.followUp("Musisz być na kanale głosowym aby usunąć piosenkę!");
+        await msg.followUp("Musisz być na kanale głosowym aby dodać piosenkę!");
         return;
     }
 

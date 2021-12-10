@@ -20,8 +20,7 @@ module.exports = {
         }
         
         const voiceChannel = msg.member.voice.channel;
-        if (!voiceChannel) return await msg.reply("Musisz być na kanale głosowym aby usunąć piosenkę!")
-            .catch(error => error_message("Błąd wysłania wiadomości"));
+        if (!voiceChannel) return await msg.followUp("Musisz być na kanale głosowym aby usunąć piosenkę!");
 
         const musicNubmer = msg.options.getNumber('nr_piosenki');
 

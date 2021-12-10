@@ -37,15 +37,6 @@ module.exports = (client, date, database, gif, serverId, channelIDs, channelName
 
     }
 
-    // wysylanie losowej wiadomosci na kanal wiewiorka
-    if ((hour == 11 && minute == 0) || (hour == 22 && minute == 0)) {
-      const channel = client.channels.cache.find(channel => channel.name === channelNames.botChannel);
-      if (checkPremissions(channel, channelNames.botChannel)) {
-        (async () => {
-          channel.send(await database.rand_message("DIFFERENT_MESSAGES"));
-        })();
-      }
-    }
 
     if (minute == 0 || minute == 10 || minute == 20 || minute == 30 || minute == 40 || minute == 50) {
       (async () => {

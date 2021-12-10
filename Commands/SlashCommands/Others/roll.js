@@ -12,11 +12,6 @@ module.exports = {
         },
     ],
     async execute(msg) {
-        if (msg.channel.name != channelNames.rollChannel) {
-            msg.followUp(`Komenda może być tylko użyta na kanale ${channelNames.rollChannel}`);
-            return;
-        }
-
         let number = msg.options.getNumber('zakres');
         if (number < 2 || number > 100000) {
             msg.followUp("Podano błędną wartość 😑");

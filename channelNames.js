@@ -1,20 +1,20 @@
 
-const generalChannel = "💬ogólne";
-const hourChannel = "🕧godzina";
-const gifsChannel = "🔲gif-y";
-const lolChannel = "⚔liga-legend";
-const rollChannel = "🎲losowanie";
-const botChannel = "🐿wiewiórka";
+const generalChannel = "💬┃ogólne";
+const hourChannel = "🕧┃godzina";
+const gifsChannel = "🔲┃gif-y";
+const lolChannel = "📈┃statystyki";
+// const rollChannel = "🎲losowanie";
+const botChannel = "🤖┃boty";
 const panelChannel = "panel";
-const voiceStatisticsChannel = "📈statystyki";
+const voiceStatisticsChannel = "⌚┃czas-na-głosowych";
 const advertismentChannel = "ogłoszenia";
-const musicChannel = "🎵dj-wiewiór"
+const musicChannel = "🎵┃dj-wiewiór"
 module.exports = {
     generalChannel, 
     hourChannel, 
     gifsChannel, 
     lolChannel, 
-    rollChannel, 
+    // rollChannel, 
     botChannel, 
     panelChannel, 
     voiceStatisticsChannel, 
