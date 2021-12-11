@@ -15,7 +15,7 @@ module.exports = {
         await interaction.deferReply({ ephemeral: false }).catch(() => { });
 
         const command = client.slashCommands.get(interaction.commandName);
-        if (!command) return interaction.followUp({ content: "BLAD" }) && client.slashCommands.delete(interaction.commandName);
+        if (!command) return interaction.followUp({ content: "BLAD1" }) && client.slashCommands.delete(interaction.commandName);
         try {
             command.execute(interaction);
         }
