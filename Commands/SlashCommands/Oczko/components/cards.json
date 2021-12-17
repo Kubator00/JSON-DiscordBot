@@ -1,0 +1,57 @@
+{
+    "game": "oczko",
+    "data": [
+        {
+            "name": "dwójka",
+            "value": 2
+        },
+        {
+            "name": "trójka",
+            "value": 3
+        },
+        {
+            "name": "czwórka",
+            "value": 4
+        },
+        {
+            "name": "piątka",
+            "value": 5
+        },
+        {
+            "name": "szóstka",
+            "value": 6
+        },
+        {
+            "name": "siódemka",
+            "value": 7
+        },
+        {
+            "name": "ósemka",
+            "value": 8
+        },
+        {
+            "name": "dziewiątka",
+            "value": 9
+        },
+        {
+            "name": "dziesiątka",
+            "value": 10
+        },
+        {
+            "name": "walet",
+            "value": 2
+        },
+        {
+            "name": "dama",
+            "value": 3
+        },
+        {
+            "name": "król",
+            "value": 4
+        },
+        {
+            "name": "AS",
+            "value": 11
+        }
+    ]
+}

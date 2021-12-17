@@ -26,7 +26,6 @@ module.exports = (client) => {
     client.on("ready", () => {
         serverId = client.guilds.cache.map(guild => guild.id);
         serverId = String(serverId[0]);
-
         // dodaje użytkowników do mapy jeśli bot się zresetuje
         const Guild = client.guilds.cache.get(serverId);
         let onlineUsers = Guild.channels.cache.filter(element => element.type === 'GUILD_VOICE');
@@ -37,6 +36,7 @@ module.exports = (client) => {
                     const member = usersVoiceMap.get(element.user.id);
                     if (!member) {
                         const memberConstructor = {
+                            id_guild: element.guild.id,
                             id: element.user.id,
                             username: element.user.username,
                             timeStamp: Date.now(),
@@ -48,7 +48,7 @@ module.exports = (client) => {
         );
     });
 
-    //co 5 minut zapisujemy wszystkich aktywnych na kanałach głosowych użykowników aby na wypadek awarii nie utracić danych z mapy
+    //co 10 minut zapisujemy wszystkich aktywnych na kanałach głosowych użykowników aby na wypadek awarii nie utracić danych z mapy
     setInterval(() => {
 
         (async () => {
@@ -57,30 +57,42 @@ module.exports = (client) => {
                 await clientConn.connect(err => {
                     if (err) return console.log(err);
                 });
-
+                //wszystkie dane z mapy zapisuje do tablicy poniewaz inaczej nie jestem w stanie wywolac zapisu do bazy danych przez async/await
                 let members = [];
                 usersVoiceMap.forEach(
                     element => {
-                        const timeOnVoiceChannel = parseInt((Date.now() - element.timeStamp) / 1000);
-                        let result = [element.id, element.username, timeOnVoiceChannel];
+                        let result = {
+                            id_guild: element.id_guild,
+                            id: element.id,
+                            username : element.username,
+                            timeOnVoiceChannel: parseInt((Date.now() - element.timeStamp) / 1000)
+                        };
                         element.timeStamp = Date.now();
                         members.push(result);
                     }
                 )
                 for (member of members) {
+                    console.log(members);
                     await clientConn
-                        .query(`INSERT INTO public."VOICE_COUNTER_USERS"(id, username, time_on_voice) VALUES (${member[0]},'${member[1]}',${member[2]}) ON CONFLICT (id) DO UPDATE SET time_on_voice = public."VOICE_COUNTER_USERS".time_on_voice + ${member[2]}`)
+                        .query(`
+                        DO $$
+                        BEGIN
+                            IF EXISTS (SELECT * FROM public."VOICE_COUNTER_USERS" WHERE id_discord = '${member.id}' AND id_guild = '${member.id_guild}') THEN
+                                UPDATE public."VOICE_COUNTER_USERS" SET time_on_voice=time_on_voice+${member.timeOnVoiceChannel} WHERE (id_discord='${member.id}' AND id_guild='${member.id_guild}');
+                            ELSE
+                                INSERT INTO public."VOICE_COUNTER_USERS"(id_guild, id_discord, username, time_on_voice) VALUES ('${member.id_guild}','${member.id}','${member.username}',${member.timeOnVoiceChannel});
+                        END IF;
+                        END $$;`)
                         .catch(err => {
                             console.log(err);
                         })
                 }
-
                 await clientConn.end();
             }
         })();
 
 
-    }, 300000);
+    }, 600000);
 
 
     client.on("voiceStateUpdate", (oldState, newState) => { //wydarzenia jest aktywowane jeśli ktoś dołączył/opuścił/wyciszył się na kanale głosowym
@@ -93,6 +105,7 @@ module.exports = (client) => {
                     const member = usersVoiceMap.get(element.user.id);
                     if (!member) {
                         const memberConstructor = {
+                            id_guild: element.guild.id,
                             id: element.user.id,
                             username: element.user.username,
                             timeStamp: Date.now(),
@@ -116,7 +129,16 @@ module.exports = (client) => {
 
                     const timeOnVoiceChannel = parseInt((Date.now() - element.timeStamp) / 1000);
                     clientConn
-                        .query(`INSERT INTO public."VOICE_COUNTER_USERS"(id, username, time_on_voice) VALUES (${element.id},'${element.username}',${timeOnVoiceChannel}) ON CONFLICT (id) DO UPDATE SET time_on_voice = public."VOICE_COUNTER_USERS".time_on_voice + ${timeOnVoiceChannel}`)
+                        .query(`
+                    DO $$
+                    BEGIN
+                        IF EXISTS (SELECT * FROM public."VOICE_COUNTER_USERS" WHERE id_discord = '${element.id}' AND id_guild = '${element.id_guild}') THEN
+                            UPDATE public."VOICE_COUNTER_USERS" SET time_on_voice=time_on_voice+${timeOnVoiceChannel} WHERE (id_discord='${element.id}' AND id_guild='${element.id_guild}');
+                        ELSE
+                            INSERT INTO public."VOICE_COUNTER_USERS"(id_guild, id_discord, username, time_on_voice) VALUES ('${element.id_guild}','${element.id}','${element.username}',${element.timeOnVoiceChannel});
+                    END IF;
+                    END $$;`
+                        )
                         .catch(err => {
                             console.log(err);
                         })
