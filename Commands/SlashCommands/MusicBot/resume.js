@@ -1,14 +1,16 @@
+const index = require('../../../index.js');
 const musicFunctions = require("./Functions/musicCommonFunctions.js")
 const queue = musicFunctions.queue;
-const channelNames=require('../../../channelNames');
+const channelNames = require('../../../database/readChannelName.js');
 
 module.exports = {
     name: 'wznow',
     description: "Wznawia wcześniej zapauzowaną piosenkę",
 
     async execute(msg) {
-        if (msg.channel.name != channelNames.musicChannel) {
-            msg.followUp(`Komenda może być tylko użyta na kanale ${channelNames.musicChannel}`);
+        const musicBotChannel = await channelNames.fetch_channel(index.client, await channelNames.read_channel('music_bot', msg.guild.id));
+        if (musicBotChannel.id != msg.channel.id) {
+            msg.followUp(`Komenda może być tylko użyta na kanale ${musicBotChannel.name}`);
             return;
         }
         

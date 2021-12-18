@@ -2,7 +2,7 @@ module.exports.tenor_gif = tenor_gif;
 module.exports.rand_gif_category = rand_gif_category;
 
 const fetch = require('node-fetch');
-const database = require("./database.js");
+const database = require("./database/database.js");
 
 
 async function tenor_gif(keywords) {

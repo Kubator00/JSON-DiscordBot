@@ -1,9 +1,11 @@
 const { MessageEmbed } = require('discord.js');
-const database = require('../database.js');
+const database = require('./readVoiceStats.js');
 
 module.exports.send_time_voice = send_time_voice;
 async function send_time_voice(channel) {
-    let result = await database.read_database("VOICE_COUNTER_USERS");
+    let result = await database.read_voice_stats(channel.guild.id);
+    if (result.length < 1)
+        return;
     try {
         let embed = new MessageEmbed()
             .setColor('#ffa500')
@@ -16,20 +18,14 @@ async function send_time_voice(channel) {
         channel.send({ embeds: [embed] });
     }
 
-    catch { console.log("Błąd łączenia się z bazą") };
+    catch(err) { console.log(`Błąd łączenia się z bazą ${err}`) };
 
 }
 
 function embed_display(usersInfo) {
-    usersInfo.sort(function (a, b) { return b['time_on_voice'] - a['time_on_voice']; });
-
     let result = [];
     let number = 1;
-    let length = usersInfo.length;
-    if (length > 15)
-        length = 15;
-
-    for (let i = 0; i < length; i++) {
+    for (let i = 0; i < usersInfo.length; i++) {
         let em = {};
         let hour = parseInt(usersInfo[i]['time_on_voice'] / 3600)
         let minute = parseInt(usersInfo[i]['time_on_voice'] / 60) - hour * 60;
@@ -41,5 +37,4 @@ function embed_display(usersInfo) {
         number += 1;
     }
     return result;
-
 }

@@ -1,4 +1,3 @@
-const channelNames = require('./channelNames');
 const date = require('./date')
 const index = require('./index')
 
@@ -9,7 +8,7 @@ module.exports = (description) => {
 
     console.log(`Wykryto błąd\nData: ${date.day_message()}\nOpis: ${description}`);
 
-    const channel = index.client.channels.cache.find(channel => channel.name === channelNames.panelChannel)
+    const channel = index.client.channels.cache.find(channel => channel.name === 'panel')
     if (!channel)
         return;
 

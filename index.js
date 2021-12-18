@@ -19,29 +19,36 @@ client.login(discordToken.login);
 module.exports.client = client;
 
 const date = require('./date.js');
-const database = require('./database.js');
+const database = require('./database/database.js');
 const gif = require('./gif_function.js');
 const channelNameStatisticsFunctions = require('./channelNameStatisticsFunctions.js');
 const autoMessages = require('./auto_messages.js');
 const joinMembers = require('./joinMembers.js');
 // const advertisement = require('./advertisement.js');
-const channelNames = require('./channelNames');
-const channelIDs = require('./channelIDs');
 const errorNotifications = require('./errorNotifications');
 const checkPremissions = require('./checkPremissions.js');
 const saveOnlineVoiceTime = require("./voiceStats/saveOnlineVoiceTime");
+const channelNames = require('./database/readChannelName.js');
 
-let serverId;
+
 
 client.once('ready', () => {
   console.log(`Zalogowano jako ${client.user.tag}!`);
-  console.log('Bot jest online!');
-  const channel = client.channels.cache.find(channel => channel.name === channelNames.panelChannel)
-  serverId = client.guilds.cache.map(guild => guild.id);
-  serverId = String(serverId[0]);
 
-  if (checkPremissions(channel, channelNames.panelChannel))
-    channel.send("Bot został włączony\n" + date.hour() + ":" + date.minute() + "\n" + date.day_message());
+  //wysyłanie wiadomości na kanał panel
+  console.log("Zalogowany na serwerach:");
+    (async () => {
+      for (guild of client.guilds.cache) {
+        console.log(guild[1].name);
+      }
+    })();
+  (async () => {
+    for (guildId of client.guilds.cache.map(guild => guild.id)) {
+      const channel = await channelNames.fetch_channel(client, await channelNames.read_channel('panel', guildId));
+      if (checkPremissions(channel))
+        channel.send("Bot został włączony\n" + date.hour() + ":" + date.minute() + "\n" + date.day_message());
+    }
+  })();
 
   //status bota
   (async () => {
@@ -56,9 +63,9 @@ client.once('ready', () => {
 
   })();
 
-  channelNameStatisticsFunctions.count_members(client, serverId, channelIDs.channelMembersId);
-  channelNameStatisticsFunctions.new_date(client, serverId, channelIDs.channelDateId);
-  channelNameStatisticsFunctions.count_online_members(client, serverId, channelIDs.channelOnlineMembersId);
+  channelNameStatisticsFunctions.count_members(client, channelNames);
+  channelNameStatisticsFunctions.new_date(client, channelNames);
+  channelNameStatisticsFunctions.count_online_members(client, channelNames);
 
 });
 
@@ -78,23 +85,23 @@ client.messageCommands = new Collection();
 // });
 
 // //automatyczne wiadomosci
-autoMessages(client, date, database, gif, serverId, channelIDs, channelNames, channelNameStatisticsFunctions, checkPremissions);
+autoMessages(client, date, gif, channelNames, channelNameStatisticsFunctions, checkPremissions);
 
 // //zmiana czlownkow serwera
 joinMembers(client, channelNames, date, checkPremissions);
 
 
 
-//statystyka członków serwera
+// statystyka członków serwera
 setInterval(() => {
-  channelNameStatisticsFunctions.count_members(client, serverId, channelIDs.channelMembersId);
-  channelNameStatisticsFunctions.new_date(client, serverId, channelIDs.channelDateId);
-}, 10000);
+  channelNameStatisticsFunctions.count_members(client, channelNames);
+  channelNameStatisticsFunctions.new_date(client, channelNames);
+}, 600000);
 
 
 setInterval(() => {
-  channelNameStatisticsFunctions.count_online_members(client, serverId, channelIDs.channelOnlineMembersId);
-}, 360000);
+  channelNameStatisticsFunctions.count_online_members(client, channelNames);
+}, 400000);
 
 
 

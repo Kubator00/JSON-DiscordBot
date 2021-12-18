@@ -15,9 +15,11 @@ module.exports = (client) => {
 
 
     client.on("ready", () => {
-        let serverId = client.guilds.cache.map(guild => guild.id);
-        serverId=String(serverId[0]);    
-        client.guilds.cache.get(serverId).commands.set(commandsArry);
+        for (guild of client.guilds.cache.map(guild => guild.id))
+            client.guilds.cache.get(guild).commands.set(commandsArry);
+    });
+    client.on("guildCreate", (guild) => {
+        client.guilds.cache.get(guild.id).commands.set(commandsArry);
     });
 
 };

@@ -1,5 +1,3 @@
-const channelNames = require('../../../channelNames');
-
 module.exports = {
     name: 'losowanie',
     description: "Losowanie liczby",

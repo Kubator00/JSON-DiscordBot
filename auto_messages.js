@@ -1,7 +1,7 @@
 const { MessageEmbed } = require('discord.js');
 const displayVoiceStats = require("./voiceStats/displayVoiceStats.js");
 
-module.exports = (client, date, database, gif, serverId, channelIDs, channelNames, channelNameStatisticsFunctions, checkPremissions) => {
+module.exports = (client, date, gif, channelNames, channelNameStatisticsFunctions, checkPremissions) => {
 
   setInterval(() => {
 
@@ -10,43 +10,51 @@ module.exports = (client, date, database, gif, serverId, channelIDs, channelName
 
     if (minute == 0) {
       //wysyłanie godziny na kanał
-      const channel = client.channels.cache.find(channel => channel.name === channelNames.hourChannel);
-      if (checkPremissions(channel, channelNames.hourChannel))
-        channel.send("Jest godzina " + date.hour() + ":00");
+      (async () => {
+        for (guild of client.guilds.cache.map(guild => guild.id)) {
+          console.log(guild);
+          const channel = await channelNames.fetch_channel(client, await channelNames.read_channel('hour', guild));
+          if (checkPremissions(channel))
+            channel.send("Jest godzina " + date.hour() + ":00");
+        }
+      })();
     }
 
-    //statystyki, ustawianie nowej daty
+    // //statystyki, ustawianie nowej daty
     if (hour == 0 && minute == 0) {
-      channelNameStatisticsFunctions.new_date(client, serverId, channelIDs.channelDateId);
+      channelNameStatisticsFunctions.new_date(client, channelNames);
     }
 
-    //wysylanie wiadomosci codziennej
+    // //wysylanie wiadomosci codziennej
     if (hour == 10 && minute == 0) {
-      const channel = client.channels.cache.find(channel => channel.name === channelNames.botChannel);
-      if (checkPremissions(channel, channelNames.botChannel)) {
+      (async () => {
         const embed = new MessageEmbed()
           .setColor('#0099ff')
-          // .setTitle('Codzienna wiadomość')
           .setTitle(`Dzisiaj mamy   📅   ${date.day_of_the_week()}, ${date.full_day_message()}`)
           .setDescription('Miłego dnia 💚')
           .setAuthor('Dzień dobry 🖐')
           .setTimestamp()
-        channel.send({ embeds: [embed] });
-      }
-
-
+        for (guild of client.guilds.cache.map(guild => guild.id)) {
+          const channel = await channelNames.fetch_channel(client, await channelNames.read_channel('bot', guild));
+          if (checkPremissions(channel)) {
+            channel.send({ embeds: [embed] });
+          }
+        }
+      })();
     }
 
 
     if (minute == 0 || minute == 10 || minute == 20 || minute == 30 || minute == 40 || minute == 50) {
       (async () => {
-        const channel = client.channels.cache.find(channel => channel.name === channelNames.voiceStatisticsChannel);
-        if (checkPremissions(channel, channelNames.voiceStatisticsChannel)) {
-          let messages = await channel.messages.fetch();
-          messages.forEach(msg => {
-            msg.delete();
-          })
-          await displayVoiceStats.send_time_voice(channel);
+        for (guild of client.guilds.cache.map(guild => guild.id)) {
+          const channel = await channelNames.fetch_channel(client, await channelNames.read_channel('voice_time_users', guild));
+          if (checkPremissions(channel)) {
+            let messages = await channel.messages.fetch();
+            messages.forEach(msg => {
+              msg.delete();
+            })
+            await displayVoiceStats.send_time_voice(channel, guild);
+          }
         }
       })();
     }
@@ -54,13 +62,14 @@ module.exports = (client, date, database, gif, serverId, channelIDs, channelName
 
     //wysyłanie gifow
     if ((minute == 0 || minute == 20 || minute == 40)) {
-      const channel = client.channels.cache.find(channel => channel.name === channelNames.gifsChannel);
-      if (checkPremissions(channel, channelNames.gifsChannel)) {
-        (async () => {
-          channel.send(await gif.tenor_gif(await gif.rand_gif_category()));
+      (async () => {
+        for (guild of client.guilds.cache.map(guild => guild.id)) {
+          const channel = await channelNames.fetch_channel(client, await channelNames.read_channel('gifs', guild));
+          if (checkPremissions(channel))
+            channel.send(await gif.tenor_gif(await gif.rand_gif_category()));
         }
-        )();
       }
+      )();
     }
 
   }, 59000);

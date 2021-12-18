@@ -1,8 +1,8 @@
 const errorNotifications = require('./errorNotifications')
 
-module.exports = (channel, channelName) => {
+module.exports = (channel) => {
     if (!channel) {
-        errorNotifications(`Na serwerze brakuje kanału ${channelName}`)
+        // errorNotifications(`Na serwerze brakuje kanału`)
         return false;
     }
 

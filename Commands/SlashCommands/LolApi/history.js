@@ -1,10 +1,11 @@
 const { MessageEmbed } = require('discord.js');
+const index = require('../../../index.js');
 const fetch = require('node-fetch');
 const lol_functions = require('./Functions/lolCommonFunctions.js');
 const lolToken = require('./Functions/lolToken.js');
 const apiLolToken = lolToken.apiLolToken;
 const errorNotifications=  require('../../../errorNotifications');
-const channelNames = require('../../../channelNames');
+const channelNames = require('../../../database/readChannelName.js');
 
 module.exports = {
     name: 'historia',
@@ -24,10 +25,9 @@ module.exports = {
         },
     ],
     async execute(msg) {
-        if (msg.channel.name != channelNames.lolChannel) {
-            msg.followUp(`Komenda może być tylko użyta na kanale ${channelNames.lolChannel}`);
-            return;
-        }
+        const channel = await channelNames.fetch_channel(index.client, await channelNames.read_channel('lol_statistics', msg.guild.id));
+        if (channel.id != msg.channel.id) 
+            return msg.followUp(`Komenda może być tylko użyta na kanale ${channel.name}`);
 
         let summoner = msg.options.getString('nazwa');
         let matchNumber = msg.options.getNumber('nr_meczu') - 1;
