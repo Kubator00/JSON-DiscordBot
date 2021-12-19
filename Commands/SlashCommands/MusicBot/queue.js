@@ -1,6 +1,5 @@
 const index = require('../../../index.js');
-const musicFunctions = require("./Functions/musicCommonFunctions.js")
-const queue = musicFunctions.queue;
+const display_queue = require("./components/displayQueue").display_queue;
 const channelNames = require('../../../database/readChannelName.js');
 
 module.exports = {
@@ -14,7 +13,7 @@ module.exports = {
             return;
         }
 
-        musicFunctions.display_queue(msg);
+        display_queue(msg);
     },
 
 }

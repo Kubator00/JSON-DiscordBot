@@ -32,8 +32,8 @@
     "install": "^0.13.0",
     "libsodium-wrappers": "^0.7.9",
     "pg": "^8.7.1",
-    "yt-search": "^2.10.1",
-    "ytdl-core": "^4.9.1",
+    "yt-search": "^2.10.2",
+    "ytdl-core": "^4.9.2",
     "ytpl": "^2.2.3",
     "ytsr": "^3.5.3"
   }

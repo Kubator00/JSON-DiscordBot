@@ -1,5 +1,4 @@
-const musicFunctions = require("./Functions/musicCommonFunctions.js")
-const queue = musicFunctions.queue;
+const queue = require('./components/queueMap.js');
 const channelNames = require('../../../database/readChannelName.js');
 const index = require('../../../index.js');
 

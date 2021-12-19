@@ -1,6 +1,7 @@
 const index = require('../../../index.js');
-const musicFunctions = require("./Functions/musicCommonFunctions.js")
 const channelNames = require('../../../database/readChannelName.js');
+const find_music=require('./components/findYtMusic.js').find_music;
+const add_to_queue=require('./components/addToQueue.js').add_to_queue;
 
 module.exports = {
     name: 'graj',
@@ -21,10 +22,10 @@ module.exports = {
 
         const url = msg.options.getString('nazwa');
 
-        let song = await musicFunctions.find_music(msg, url);
-        if (song) {
-            await musicFunctions.add_to_queue(msg, song, false);
-        }
+        let song = await find_music(msg, url);
+        if (song) 
+            await add_to_queue(msg, song, false);
+        
 
     },
 

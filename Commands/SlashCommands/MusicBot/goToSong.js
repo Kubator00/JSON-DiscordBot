@@ -1,6 +1,7 @@
 const index = require('../../../index.js');
-const musicFunctions = require("./Functions/musicCommonFunctions.js")
-const queue = musicFunctions.queue;
+const play_music = require('./components/playMusic').play_music;
+const display_now_playing = require('./components/msgNowPlaying').display_now_playing;
+const queue = require('./components/queueMap.js');
 const channelNames = require('../../../database/readChannelName.js');
 
 module.exports = {
@@ -42,9 +43,8 @@ module.exports = {
         }
         
         queue.get(msg.guild.id).songs.splice(0, musicNubmer);
-        musicFunctions.display_now_playing(msg);
-        return musicFunctions.play_music(msg);
-    },
-
+        display_now_playing(msg);
+        return play_music(msg);
+    }
 }
 
