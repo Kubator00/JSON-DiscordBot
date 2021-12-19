@@ -36,12 +36,12 @@ client.once('ready', () => {
   console.log(`Zalogowano jako ${client.user.tag}!`);
 
   //wysyłanie wiadomości na kanał panel
+
   console.log("Zalogowany na serwerach:");
-    (async () => {
-      for (guild of client.guilds.cache) {
-        console.log(guild[1].name);
-      }
-    })();
+  for (guild of client.guilds.cache) {
+    console.log(guild[1].name);
+  }
+
   (async () => {
     for (guildId of client.guilds.cache.map(guild => guild.id)) {
       const channel = await channelNames.fetch_channel(client, await channelNames.read_channel('panel', guildId));

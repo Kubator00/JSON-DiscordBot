@@ -30,8 +30,7 @@ async function count_members(client, channelNames) {
 async function count_online_members(client, channelNames) {
   for (guildId of client.guilds.cache.map(guild => guild.id)) {
     const guild = client.guilds.cache.get(guildId)
-    // const online_members = guild.presences.cache.filter(member => member.status == 'online').size
-    const online_members = guild.presences.cache.size;
+    const online_members = guild.presences.cache.filter(member => member.status == 'online').size;
     const channel = await channelNames.fetch_channel(client, await channelNames.read_channel('online_members_number', guildId));
     try {
       if (channel) {
