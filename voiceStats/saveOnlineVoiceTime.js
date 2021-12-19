@@ -24,11 +24,10 @@ module.exports = (client) => {
 
     client.on("ready", () => {
         // dodaje użytkowników do mapy jeśli bot się zresetuje
-        for (guild of client.guilds.cache.map(guild => guild.id)) {
-            const Guild = client.guilds.cache.get(guild);
-            let onlineUsers = Guild.channels.cache.filter(element => element.type === 'GUILD_VOICE');
-            let onlineUsers1 = onlineUsers.filter(element => element.members.size > 0);
-            onlineUsers1.forEach(
+        for (guildId of client.guilds.cache.map(guild => guild.id)) {
+            const guild = client.guilds.cache.get(guildId);
+            let voiceChannels = (guild.channels.cache.filter(element => element.type === 'GUILD_VOICE')).filter(element => element.members.size > 0);
+            voiceChannels.forEach(
                 element1 => element1.members.forEach(
                     element => {
                         const member = usersVoiceMap.get(element.user.id);
@@ -57,6 +56,7 @@ module.exports = (client) => {
                     if (err) return console.log(err);
                 });
                 //wszystkie dane z mapy zapisuje do tablicy poniewaz inaczej nie jestem w stanie wywolac zapisu do bazy danych przez async/await
+
                 let members = [];
                 usersVoiceMap.forEach(
                     element => {
@@ -84,51 +84,49 @@ module.exports = (client) => {
                         .catch(err => {
                             console.log(err);
                         })
+                        .finally(console.log(`Zapis do bazy VOICE_COUNTER_USERS  ${member.username}, czas: ${member.timeOnVoiceChannel}`));
                 }
                 await clientConn.end();
             }
         })();
 
-
-    }, 600000);
+    }, 60000 * 10);
 
 
     client.on("voiceStateUpdate", (oldState, newState) => { //wydarzenia jest aktywowane jeśli ktoś dołączył/opuścił/wyciszył się na kanale głosowym
-        for (guild of client.guilds.cache.map(guild => guild.id)) {
-            const Guild = client.guilds.cache.get(guild);
-            // sprawdzamy czy jakiś użytkownik dołączył do kanału głosowego, jeśli tak to tworzymy dla niego mape
-            if (newState.member.voice.channel != null) {
-                newState.member.voice.channel.members.forEach(
-                    element => {
-                        const member = usersVoiceMap.get(element.user.id);
-                        if (!member) {
-                            const memberConstructor = {
-                                id_guild: element.guild.id,
-                                id: element.user.id,
-                                username: element.user.username,
-                                timeStamp: Date.now(),
-                            }
-                            usersVoiceMap.set(element.user.id, memberConstructor);
-                        }
-                    }
-                )
-            }
 
-
-            //sprawdzamy czy jakiś użytkownik opuścił kanał głosowy, jeśli tak to zapisujemy dane do bazy i usuwamy je z mapy usersVoiceMap
-            usersVoiceMap.forEach(
+        // sprawdzamy czy jakiś użytkownik dołączył do kanału głosowego, jeśli tak to tworzymy dla niego mape
+        if (newState.member.voice.channel != null) {
+            newState.member.voice.channel.members.forEach(
                 element => {
-                    const Member = Guild.members.cache.get(element.id);
-                    if (Member) {
-                        if (!Member.voice.channel) {
-                            const clientConn = new pg.Client(database);
-                            clientConn.connect(err => {
-                                if (err) return console.log(err);
-                            });
+                    const member = usersVoiceMap.get(element.user.id);
+                    if (!member) {
+                        const memberConstructor = {
+                            id_guild: element.guild.id,
+                            id: element.user.id,
+                            username: element.user.username,
+                            timeStamp: Date.now(),
+                        }
+                        usersVoiceMap.set(element.user.id, memberConstructor);
+                    }
+                }
+            )
+        }
+        const guild = client.guilds.cache.get(newState.guild.id);
+        //sprawdzamy czy jakiś użytkownik opuścił kanał głosowy, jeśli tak to zapisujemy dane do bazy i usuwamy je z mapy usersVoiceMap
+        usersVoiceMap.forEach(
+            element => {
+                const member = guild.members.cache.get(element.id);
+                if (member && member.guild.id == element.id_guild) { //jesli member jest nullem to nie dotyczy tego serwera
+                    if (!member.voice.channel) {
+                        const clientConn = new pg.Client(database);
+                        clientConn.connect(err => {
+                            if (err) return console.log(err);
+                        });
 
-                            const timeOnVoiceChannel = parseInt((Date.now() - element.timeStamp) / 1000);
-                            clientConn
-                                .query(`
+                        const timeOnVoiceChannel = parseInt((Date.now() - element.timeStamp) / 1000);
+                        clientConn
+                            .query(`
                     DO $$
                     BEGIN
                         IF EXISTS (SELECT * FROM public."VOICE_COUNTER_USERS" WHERE id_discord = '${element.id}' AND id_guild = '${element.id_guild}') THEN
@@ -137,20 +135,20 @@ module.exports = (client) => {
                             INSERT INTO public."VOICE_COUNTER_USERS"(id_guild, id_discord, username, time_on_voice) VALUES ('${element.id_guild}','${element.id}','${element.username}',${timeOnVoiceChannel});
                     END IF;
                     END $$;`
-                                )
-                                .catch(err => {
-                                    console.log(err);
-                                })
-                                .finally(() => {
-                                    clientConn.end();
-                                });
-                            element.timeStamp = Date.now();
-                            usersVoiceMap.delete(element.id);
-                        }
+                            )
+                            .catch(err => {
+                                console.log(err);
+                            })
+                            .finally(() => {
+                                console.log(`Uzytkownik  ${element.username} opuscil kanal czas: ${timeOnVoiceChannel}, zapis do bazy VOICE_COUNTER_USERS `);
+                                clientConn.end();
+                                element.timeStamp = Date.now();
+                            });
+                        usersVoiceMap.delete(element.id);
                     }
                 }
-            );
-        }
+            }
+        );
     });
 }
 
