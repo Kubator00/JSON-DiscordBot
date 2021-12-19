@@ -6,42 +6,28 @@ exports.advert = (client, msg, channelNames, checkPremissions) => {
 
     msgToLower = msg.content.toLowerCase();
     //wysylanie ogloszen
-    const channel = client.channels.cache.find(channel => channel.name === channelNames.advertismentChannel);
-        if (msg.channel.name == channel.name) {
-            if (checkPremissions(channel)) {
-            //     if (msgToLower.slice(0, 16) == "wspólne_granie: ") {
-            //         const channel1 = client.channels.cache.find(channel => channel.name === channel_list[5]);
-            //         channel1.send(msg.content.slice(16, msgToLower.len))
-            //             .catch();
-            //     }
-            //     else if (msgToLower.slice(0, 6) == 'czat: ') {
-            //         const channel1 = client.channels.cache.find(channel => channel.name === channel_list[7]);
-            //         channel1.send(msg.content.slice(6, msgToLower.len))
-            //             .catch();
-            //     }
-
-            //     else if (msgToLower.slice(0, 9) == 'gejroom: ') {
-            //         const channel1 = client.channels.cache.find(channel => channel.name === channel_list[6]);
-            //         channel1.send(msg.content.slice(9, msgToLower.len))
-            //             .catch();
-            //     }
-
-            //     else if (msgToLower.slice(0, 11) == 'wiewiórka: ') {
-            //         const channel1 = client.channels.cache.find(channel => channel.name === channel_list[8]);
-            //         channel1.send(msg.content.slice(11, msgToLower.len))
-            //             .catch();
-            //     }
-            //     else if (msgToLower.slice(0, 8) == 'ogólne: ') {
-            //         const channel1 = client.channels.cache.find(channel => channel.name === channel_list[0]);
-            //         channel1.send(msg.content.slice(8, msgToLower.len))
-            //             .catch();
-            //     }
-            //     else {
-            //         const channel1 = client.channels.cache.find(channel => channel.name === 'panel');
-            //         channel1.send("Blad w wyslaniu wiadomosci ogloszenia")
-            //             .catch();
-            //     }
+    (async () => {
+        const channel = await channelNames.fetch_channel(client, await channelNames.read_channel('advertisment', msg.guild.id));
+        if (!checkPremissions(channel))
+            return;
+        if (msg.channel.id == channel.id) {
+            if (msgToLower === '/nazwy_kanałów' || msgToLower === '/nazwy_kanalow') {
+                let channelNames = `Kanały na serwerze\n`;
+                msg.guild.channels.cache.forEach(element => {
+                    if (element.type == 'GUILD_TEXT')
+                        channelNames += `${element}\n`;
+                });
+                channel.send(channelNames);
+                return;
+            }
+            const splitMsg = msgToLower.split(":");
+            const channelToSend = msg.guild.channels.cache.find(element => (element.name == splitMsg[0] && element.type == "GUILD_TEXT"));
+            if (!checkPremissions(channelToSend)) {
+                msg.channel.send("Kanał nie istnieje");
+                return;
+            }
+            channelToSend.send(msg.content.slice(channelToSend.name.length + 1, msg.content.length));
         }
-    }
+    })();
 };
 

@@ -24,7 +24,7 @@ const gif = require('./gif_function.js');
 const channelNameStatisticsFunctions = require('./channelNameStatisticsFunctions.js');
 const autoMessages = require('./auto_messages.js');
 const joinMembers = require('./joinMembers.js');
-// const advertisement = require('./advertisement.js');
+const advertisement = require('./advertisement.js');
 const errorNotifications = require('./errorNotifications');
 const checkPremissions = require('./checkPremissions.js');
 const saveOnlineVoiceTime = require("./voiceStats/saveOnlineVoiceTime");
@@ -77,12 +77,12 @@ client.messageCommands = new Collection();
 });
 
 
-// client.on('messageCreate', msg => {
+client.on('messageCreate', msg => {
 
 //   //wysylanie ogloszen
-//   advertisement.advert(client, msg, channelNames, checkPremissions);
+  advertisement.advert(client, msg, channelNames, checkPremissions);
 
-// });
+});
 
 // //automatyczne wiadomosci
 autoMessages(client, date, gif, channelNames, channelNameStatisticsFunctions, checkPremissions);
