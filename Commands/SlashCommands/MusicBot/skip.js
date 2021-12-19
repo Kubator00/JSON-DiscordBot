@@ -21,6 +21,8 @@ module.exports = {
             const voiceChannel = msg.member.voice.channel;
             if (!voiceChannel) return msg.followUp("Musisz być na kanale głosowym aby pominąć muzykę!");
             queue.get(msg.guild.id).player.stop();
+            queue.get(msg.guild.id).stream.destroy();
+            queue.get(msg.guild.id).player.removeAllListeners();
             queue.get(msg.guild.id).songs.shift();
             if (queue.get(msg.guild.id).songs.length > 0) {
                 display_now_playing(msg);

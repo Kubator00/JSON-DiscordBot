@@ -29,8 +29,7 @@ async function add_to_queue(msg, music, addPlaylist) {
             connection: null,
             songs: [],
             player: null,
-            resource: null
-
+            stream: null
         }
         queue.set(msg.guild.id, queueConstructor);
         queueConstructor.songs.push(music);

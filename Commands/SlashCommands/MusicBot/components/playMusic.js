@@ -5,7 +5,6 @@ const {
     createAudioPlayer,
     createAudioResource,
 } = require('@discordjs/voice');
-
 module.exports.play_music = play_music;
 async function play_music(msg) {
     const songQueue = queue.get(msg.guild.id);
@@ -23,33 +22,40 @@ async function play_music(msg) {
             console.log(error);
             play_music(msg);
         });
-    let resource;
+
+    queue.get(msg.guild.id).stream = stream;
+
+
+    const resource = createAudioResource(stream, { seek: 0, volume: 1 });
     let player;
     if (!queue.get(msg.guild.id).player) {
+        console.log(`New AudioPlayer: ${msg.guild.name}`);
         player = createAudioPlayer();
         queue.get(msg.guild.id).player = player;
-        resource = createAudioResource(stream, { seek: 0, volume: 1 });
-        queue.get(msg.guild.id).resource = resource;
     }
-    else {
+    else
         player = queue.get(msg.guild.id).player;
-        resource = createAudioResource(stream, { seek: 0, volume: 1 });
-    }
 
     try {
         player.play(resource);
-        queue.get(msg.guild.id).connection.subscribe(player);
+        const subscription = queue.get(msg.guild.id).connection.subscribe(player);
         player.on('error', error => {
             console.log(error);
+            queue.get(msg.guild.id).player.removeAllListeners();
+            stream.destroy();
             play_music(msg);
-
         })
-        player.on(AudioPlayerStatus.Idle, () => songQueue.songs.shift());
-        player.on(AudioPlayerStatus.Idle, () => play_music(msg));
+
+        player.on(AudioPlayerStatus.Idle, () => {
+            songQueue.songs.shift();
+            queue.get(msg.guild.id).player.removeAllListeners();
+            stream.destroy();
+            play_music(msg)
+        });
 
     }
     catch (err) {
         console.log(`Blad odtwarzacza, ${err}`);
-        // msg.channel.send("Błąd odtwarzacza");
+        msg.channel.send("Błąd odtwarzacza");
     }
 }
