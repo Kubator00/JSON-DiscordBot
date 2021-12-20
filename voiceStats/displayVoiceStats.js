@@ -18,7 +18,7 @@ async function send_time_voice(channel) {
         channel.send({ embeds: [embed] });
     }
 
-    catch(err) { console.log(`Błąd łączenia się z bazą ${err}`) };
+    catch (err) { console.log(`Błąd łączenia się z bazą ${err}`) };
 
 }
 
@@ -29,8 +29,11 @@ function embed_display(usersInfo) {
         let em = {};
         let hour = parseInt(usersInfo[i]['time_on_voice'] / 3600)
         let minute = parseInt(usersInfo[i]['time_on_voice'] / 60) - hour * 60;
+        let n = usersInfo[i]['nickname'];
+        if (!n || n=='null')
+            n = usersInfo[i]['username'];
         em = {
-            name: `${number} ${usersInfo[i]['username']} `,
+            name: `${number} ${n} `,
             value: `${hour} godz. ${minute}min.`,
         }
         result.push(em);
