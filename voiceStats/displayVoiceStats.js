@@ -9,7 +9,7 @@ async function send_time_voice(channel) {
     try {
         let embed = new MessageEmbed()
             .setColor('#ffa500')
-            .setAuthor("Czas spędzony przez użytkowników na kanałach głosowych\n")
+            .setAuthor("Czas spędzony przez użytkowników na kanałach głosowych\nameToDisplay")
             .setFooter('🧔 Autor: Kubator')
             .setTimestamp()
             .addFields(
@@ -29,11 +29,11 @@ function embed_display(usersInfo) {
         let em = {};
         let hour = parseInt(usersInfo[i]['time_on_voice'] / 3600)
         let minute = parseInt(usersInfo[i]['time_on_voice'] / 60) - hour * 60;
-        let n = usersInfo[i]['nickname'];
-        if (!n || n=='null')
-            n = usersInfo[i]['username'];
+        let nameToDisplay = usersInfo[i]['nickname'];
+        if (!nameToDisplay || nameToDisplay=='null' || nameToDisplay=='undefined')
+            nameToDisplay = usersInfo[i]['username'];
         em = {
-            name: `${number} ${n} `,
+            name: `${number} ${nameToDisplay} `,
             value: `${hour} godz. ${minute}min.`,
         }
         result.push(em);
