@@ -8,7 +8,7 @@ module.exports = {
         if (!interaction.isCommand())
             return;
 
-        if (!checkPremissions)
+        if (!checkPremissions(interaction.channel))
             return;
         
 

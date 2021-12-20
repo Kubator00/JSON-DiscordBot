@@ -4,7 +4,7 @@ module.exports = {
     name: "messageCreate",
 
     async execute(client, msg) {
-        if (!checkPremissions)
+        if (!checkPremissions(msg.channel))
             return;
         if (msg.author.bot)
             return;
