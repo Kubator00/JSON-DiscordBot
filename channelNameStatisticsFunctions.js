@@ -8,7 +8,7 @@ module.exports.count_online_members = count_online_members;
 async function count_members(client, channelNames) {
   for (guildId of client.guilds.cache.map(guild => guild.id)) {
     const guild = client.guilds.cache.get(guildId);
-    const channel = await channelNames.fetch_channel(client, await channelNames.read_channel('guild_members_number', guild));
+    const channel = await channelNames.fetch_channel(client, await channelNames.read_channel('guild_members_number', guildId));
     try {
       if (channel) {
         if (channel.permissionsFor(channel.guild.me).has("MANAGE_CHANNELS")) {
