@@ -36,6 +36,7 @@ module.exports = (client) => {
                                 id_guild: element.guild.id,
                                 id: element.user.id,
                                 username: element.user.username,
+                                nickname: element.nickname,
                                 timeStamp: Date.now(),
                             }
                             usersVoiceMap.set(element.user.id, memberConstructor);
