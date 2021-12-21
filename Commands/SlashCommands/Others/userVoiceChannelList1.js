@@ -15,7 +15,7 @@ module.exports = {
         const guildAllMembers = guild.members.cache;
         let channelAllMembers = [];
         guildAllMembers.forEach(member = (member) => {
-            if (channel.permissionsFor(member).has("CONNECT")) {
+            if (channel.permissionsFor(member).has("CONNECT") && channel.permissionsFor(member).has("VIEW_CHANNEL") && !member.permissions.has('ADMINISTRATOR')) {
                 if (member.nickname)
                     channelAllMembers.push({
                         id: member.user.id,
@@ -33,8 +33,10 @@ module.exports = {
 
         channel.members.forEach(
             member = (member) => {
-                const presentMember = channelAllMembers.find(element => element.id == member.user.id);
-                presentMember.present = "✅"
+                if (!member.permissions.has('ADMINISTRATOR')) {
+                    const presentMember = channelAllMembers.find(element => element.id == member.user.id);
+                    presentMember.present = "✅"
+                }
             }
         );
 
@@ -45,13 +47,28 @@ module.exports = {
         let i = 1;
         for (user of channelAllMembers) {
             result += `${i}. ${user.name}  ${user.present}\n`;
+            if (result.length > 1500) {
+                try {
+                    await msg.followUp(result);
+                    result = "";
+                }
+                catch (err) {
+                    errorNotifications(`Wykryto błąd, komenda /lista, ${err}`);
+                    result = "";
+                }
+            }
+
             i += 1;
         }
-        try {
-            await msg.followUp(result);
-        }
-        catch (err) {
-            errorNotifications(`Wykryto błąd, komenda /lista, ${err}`);
+        if (result.length < 1500) {
+            try {
+                await msg.followUp(result);
+                result = "";
+            }
+            catch (err) {
+                errorNotifications(`Wykryto błąd, komenda /lista, ${err}`);
+                result = "";
+            }
         }
     }
 }
@@ -64,4 +81,4 @@ function compare(a, b) {
     if (name2 > name1)
         return 1;
     return 0;
-}   
+}

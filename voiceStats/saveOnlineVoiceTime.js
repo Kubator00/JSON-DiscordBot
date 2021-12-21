@@ -65,6 +65,7 @@ module.exports = (client) => {
                             id_guild: element.id_guild,
                             id: element.id,
                             username: element.username,
+                            nickname: element.nickname,
                             timeOnVoiceChannel: parseInt((Date.now() - element.timeStamp) / 1000)
                         };
                         element.timeStamp = Date.now();
@@ -72,6 +73,7 @@ module.exports = (client) => {
                     }
                 )
                 for (member of members) {
+                    console.log(members);
                     await clientConn
                         .query(`
                         DO $$
