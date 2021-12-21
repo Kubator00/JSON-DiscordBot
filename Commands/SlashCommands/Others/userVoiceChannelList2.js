@@ -1,7 +1,7 @@
 const index = require('../../../index');
 const errorNotifications = require('../../../errorNotifications');
 module.exports = {
-    name: 'lista',
+    name: 'lista2',
     description: "Wyświetla listę znajdujących się na kanale głosowych",
 
     async execute(msg) {
