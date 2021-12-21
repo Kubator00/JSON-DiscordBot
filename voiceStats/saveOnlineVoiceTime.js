@@ -73,7 +73,6 @@ module.exports = (client) => {
                     }
                 )
                 for (member of members) {
-                    console.log(members);
                     await clientConn
                         .query(`
                         DO $$
