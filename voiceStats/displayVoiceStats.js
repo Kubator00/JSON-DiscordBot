@@ -4,6 +4,7 @@ const database = require('./readVoiceStats.js');
 module.exports.send_time_voice = send_time_voice;
 async function send_time_voice(channel) {
     let result = await database.read_voice_stats(channel.guild.id);
+    const guildMembers = channel.guild.members.cache;
     if (result.length < 1)
         return;
     try {
@@ -13,7 +14,7 @@ async function send_time_voice(channel) {
             .setFooter('🧔 Autor: Kubator')
             .setTimestamp()
             .addFields(
-                embed_display(result)
+                embed_display(result, guildMembers)
             )
         channel.send({ embeds: [embed] });
     }
@@ -22,16 +23,19 @@ async function send_time_voice(channel) {
 
 }
 
-function embed_display(usersInfo) {
+function embed_display(usersInfo, guildMembers) {
     let result = [];
     let number = 1;
     for (let i = 0; i < usersInfo.length; i++) {
         let em = {};
         let hour = parseInt(usersInfo[i]['time_on_voice'] / 3600)
         let minute = parseInt(usersInfo[i]['time_on_voice'] / 60) - hour * 60;
-        let nameToDisplay = usersInfo[i]['nickname'];
-        if (!nameToDisplay || nameToDisplay=='null' || nameToDisplay=='undefined')
-            nameToDisplay = usersInfo[i]['username'];
+        let nameToDisplay = guildMembers.get(usersInfo[i]['id_discord']);
+        if (!nameToDisplay) //uzytkownik nie jest juz czlonkiem serwera
+            continue;
+        nameToDisplay = guildMembers.get(usersInfo[i]['id_discord']).nickname;
+        if (nameToDisplay == null)
+            nameToDisplay = guildMembers.get(usersInfo[i]['id_discord']).user.username;
         em = {
             name: `${number} ${nameToDisplay} `,
             value: `${hour} godz. ${minute}min.`,

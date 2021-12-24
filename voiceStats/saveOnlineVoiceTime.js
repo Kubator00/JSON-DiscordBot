@@ -35,8 +35,6 @@ module.exports = (client) => {
                             const memberConstructor = {
                                 id_guild: element.guild.id,
                                 id: element.user.id,
-                                username: element.user.username,
-                                nickname: element.nickname,
                                 timeStamp: Date.now(),
                             }
                             usersVoiceMap.set(element.user.id, memberConstructor);
@@ -64,8 +62,6 @@ module.exports = (client) => {
                         let result = {
                             id_guild: element.id_guild,
                             id: element.id,
-                            username: element.username,
-                            nickname: element.nickname,
                             timeOnVoiceChannel: parseInt((Date.now() - element.timeStamp) / 1000)
                         };
                         element.timeStamp = Date.now();
@@ -78,15 +74,15 @@ module.exports = (client) => {
                         DO $$
                         BEGIN
                             IF EXISTS (SELECT * FROM public."VOICE_COUNTER_USERS" WHERE id_discord = '${member.id}' AND id_guild = '${member.id_guild}') THEN
-                                UPDATE public."VOICE_COUNTER_USERS" SET time_on_voice=time_on_voice+${member.timeOnVoiceChannel},nickname='${member.nickname}' WHERE (id_discord='${member.id}' AND id_guild='${member.id_guild}');
+                                UPDATE public."VOICE_COUNTER_USERS" SET time_on_voice=time_on_voice+${member.timeOnVoiceChannel} WHERE (id_discord='${member.id}' AND id_guild='${member.id_guild}');
                             ELSE
-                                INSERT INTO public."VOICE_COUNTER_USERS"(id_guild, id_discord, username, nickname, time_on_voice) VALUES ('${member.id_guild}','${member.id}','${member.username}','${member.nickname}',${member.timeOnVoiceChannel});
+                                INSERT INTO public."VOICE_COUNTER_USERS"(id_guild, id_discord, time_on_voice) VALUES ('${member.id_guild}','${member.id}',${member.timeOnVoiceChannel});
                         END IF;
                         END $$;`)
                         .catch(err => {
                             console.log(err);
                         })
-                        .finally(console.log(`Zapis do bazy VOICE_COUNTER_USERS  ${member.username}, czas: ${member.timeOnVoiceChannel}`));
+                        .finally(console.log(`Zapis do bazy VOICE_COUNTER_USERS  ${member.id}, czas: ${member.timeOnVoiceChannel}s`));
                 }
                 await clientConn.end();
             }
@@ -106,8 +102,6 @@ module.exports = (client) => {
                         const memberConstructor = {
                             id_guild: element.guild.id,
                             id: element.user.id,
-                            username: element.user.username,
-                            nickname: element.nickname,
                             timeStamp: Date.now(),
                         }
                      
@@ -134,9 +128,9 @@ module.exports = (client) => {
                     DO $$
                     BEGIN
                         IF EXISTS (SELECT * FROM public."VOICE_COUNTER_USERS" WHERE id_discord = '${element.id}' AND id_guild = '${element.id_guild}') THEN
-                            UPDATE public."VOICE_COUNTER_USERS" SET time_on_voice=time_on_voice+${timeOnVoiceChannel}, nickname='${element.nickname}' WHERE (id_discord='${element.id}' AND id_guild='${element.id_guild}');
+                            UPDATE public."VOICE_COUNTER_USERS" SET time_on_voice=time_on_voice+${timeOnVoiceChannel} WHERE (id_discord='${element.id}' AND id_guild='${element.id_guild}');
                         ELSE
-                            INSERT INTO public."VOICE_COUNTER_USERS"(id_guild, id_discord, username, nickname, time_on_voice) VALUES ('${element.id_guild}','${element.id}','${element.username}','${element.nickname}',${timeOnVoiceChannel});
+                            INSERT INTO public."VOICE_COUNTER_USERS"(id_guild, id_discord, time_on_voice) VALUES ('${element.id_guild}','${element.id}',${timeOnVoiceChannel});
                     END IF;
                     END $$;`
                             )
@@ -144,7 +138,7 @@ module.exports = (client) => {
                                 console.log(err);
                             })
                             .finally(() => {
-                                console.log(`Uzytkownik  ${element.username} opuscil kanal czas: ${timeOnVoiceChannel}, zapis do bazy VOICE_COUNTER_USERS `);
+                                console.log(`Uzytkownik  ${element.id} opuscil kanal czas: ${timeOnVoiceChannel}, zapis do bazy VOICE_COUNTER_USERS `);
                                 clientConn.end();
                                 element.timeStamp = Date.now();
                             });

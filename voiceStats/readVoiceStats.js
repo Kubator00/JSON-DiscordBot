@@ -9,7 +9,7 @@ async function read_voice_stats(guildId) {
         clientConn.connect(err => {
             if (err) return errorNotifications(`Blad polaczenia z baza ${err}`);
         });
-        clientConn.query(`SELECT username,nickname, time_on_voice  from public."VOICE_COUNTER_USERS" where id_guild='${guildId}' ORDER BY time_on_voice DESC LIMIT 15;`, (err, res) => {
+        clientConn.query(`SELECT id_discord, time_on_voice  from public."VOICE_COUNTER_USERS" where id_guild='${guildId}' ORDER BY time_on_voice DESC LIMIT 15;`, (err, res) => {
             if (err) {
                 errorNotifications(`Blad polaczenia z baza ${err}`);
                 clientConn.end();

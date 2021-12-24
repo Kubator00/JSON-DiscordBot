@@ -25,7 +25,11 @@ module.exports = {
 
         let hour = parseInt(userInfo['time_on_voice'] / 3600)
         let minute = parseInt(userInfo['time_on_voice'] / 60) - hour * 60;
-
+        console.log(userInfo);
+        const guildMembers = msg.guild.members.cache;
+        let nameToDisplay = guildMembers.get(userInfo['id_discord']).nickname;
+        if (nameToDisplay == null)
+            nameToDisplay = guildMembers.get(userInfo['id_discord']).user.username;
         let embed = new MessageEmbed()
             .setColor('#2ECC71')
             .setAuthor("Czas spędzony przez użytkownika na kanałach głosowych\n")
@@ -33,7 +37,7 @@ module.exports = {
             .setTimestamp()
             .addFields(
                 {
-                    name: userInfo['username'],
+                    name: nameToDisplay,
                     value: `${hour} godz. ${minute}min.`,
                 },
             )
@@ -48,7 +52,7 @@ async function read_database(guildId, userId) {
         const clientConn = new pg.Client(database);
         clientConn.connect(err => {
             if (err) return errorNotifications(`Blad polaczenia z baza ${err}`);
-            clientConn.query(`SELECT username, time_on_voice  from public."VOICE_COUNTER_USERS" where id_guild='${guildId}' AND id_discord='${userId}'`, (err, res) => {
+            clientConn.query(`SELECT id_discord, time_on_voice  from public."VOICE_COUNTER_USERS" where id_guild='${guildId}' AND id_discord='${userId}'`, (err, res) => {
                 if (err) {
                     errorNotifications(`Blad polaczenia z baza ${err}`);
                     clientConn.end();
