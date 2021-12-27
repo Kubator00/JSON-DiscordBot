@@ -1,6 +1,6 @@
 const pg = require('pg');
-const errorNotifications = require('../errorNotifications.js')
-const connect_database = require('../database/databaseConn.js');
+const errorNotifications = require('../ErrorHandlers/errorHandlers.js').errorNotifications;
+const connect_database = require('../Database/databaseConn.js');
 module.exports.read_voice_stats = read_voice_stats;
 async function read_voice_stats(guildId) {
     const database = connect_database();

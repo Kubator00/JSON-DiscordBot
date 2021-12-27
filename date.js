@@ -1,10 +1,4 @@
-module.exports.minute = minute;
-module.exports.hour = hour;
-module.exports.day_message = day_message;
-module.exports.day_of_the_week = day_of_the_week;
-module.exports.day_of_the_week1 = day_of_the_week1;
-module.exports.full_day_message = full_day_message;
-
+module.exports = { minute, hour, day_message, day_of_the_week, day_of_the_week1, full_day_message }
 
 //tylko godzina
 function hour() {

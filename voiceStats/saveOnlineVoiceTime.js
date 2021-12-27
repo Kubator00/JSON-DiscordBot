@@ -1,24 +1,7 @@
 const pg = require('pg');
-
-
+const connect_database = require('../Database/databaseConn.js');
+const database = connect_database();
 let usersVoiceMap = new Map();
-const DATABASE_HOST = process.env.DATABASE_HOST;
-const DATABASE_USER = process.env.DATABASE_USER;
-const DATABASE_PASSWORD = process.env.DATABASE_PASSWORD;
-const DATABASE_NAME = process.env.DATABASE_NAME;
-
-const database = {
-    user: DATABASE_USER,
-    password: DATABASE_PASSWORD,
-    database: DATABASE_NAME,
-    host: DATABASE_HOST,
-    port: 5432,
-    ssl: {
-        rejectUnauthorized: false
-    }
-};
-
-
 
 module.exports = (client) => {
 
@@ -104,7 +87,7 @@ module.exports = (client) => {
                             id: element.user.id,
                             timeStamp: Date.now(),
                         }
-                     
+
                         usersVoiceMap.set(element.user.id, memberConstructor);
                     }
                 }

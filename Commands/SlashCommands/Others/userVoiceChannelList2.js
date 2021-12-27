@@ -1,5 +1,5 @@
 const index = require('../../../index');
-const errorNotifications = require('../../../errorNotifications');
+const errorNotifications = require('../../../ErrorHandlers/errorHandlers').errorNotifications;
 module.exports = {
     name: 'lista2',
     description: "Wyświetla listę znajdujących się na kanale głosowych",

@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 const lolFunctions = require('./Functions/lolCommonFunctions.js');
 const lolToken = require('./Functions/lolToken.js');
 const apiLolToken = lolToken.apiLolToken;
-const errorNotifications=  require('../../../errorNotifications');
+const errorNotifications = require('../../../ErrorHandlers/errorHandlers').errorNotifications;
 const channelNames = require('../../../database/readChannelName.js');
 
 module.exports = {
@@ -24,7 +24,7 @@ module.exports = {
             return msg.followUp(`Komenda może być tylko użyta na kanale ${channel.name}`);
 
         let summoner = msg.options.getString('nazwa');
-        if (summoner == 1) { summoner = "Noobmaster69pl"; }
+        if (summoner == 1) { summoner = "Hi Im Kubator"; }
         summonerPlayerName = encodeURI(summoner);
         msg.followUp("```fix\nWyszukiwana obecnej gry \nGracz: " + summoner.toUpperCase() + "\nProszę czekać... ```");
 

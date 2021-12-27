@@ -1,4 +1,4 @@
-const gif = require(`../../../gif_function.js`)
+const gif = require(`../../../Gifs/gif`)
 
 module.exports = {
     name: 'gif',
@@ -12,15 +12,8 @@ module.exports = {
         },
     ],
     async execute(interaction) {
-        try {
-            const keywords = interaction.options.getString('nazwa');
-            await interaction.followUp(await gif.tenor_gif(keywords, interaction.channel));
-        }
-        catch
-        {
-            await interaction.followUp("Błąd wysłania gif-a");
-        }
-
+        const keywords = interaction.options.getString('nazwa');
+        await interaction.followUp(await gif.tenor_gif(keywords, interaction.channel));
     },
 
 }

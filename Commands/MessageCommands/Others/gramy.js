@@ -1,4 +1,4 @@
-const database = require(`../../../database/database.js`)
+const databaseRandomMsg = require(`../../../database/databaseRandomMsg.js`)
 
 module.exports = {
     name: 'gramy',
@@ -7,7 +7,7 @@ module.exports = {
 
     async execute(msg) {
         msg.react('👍');
-        const result = await database.rand_message("DZIALANIE");
+        const result = await databaseRandomMsg("DZIALANIE");
         msg.channel.send(result);
     },
 };

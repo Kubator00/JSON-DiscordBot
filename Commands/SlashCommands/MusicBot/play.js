@@ -1,5 +1,5 @@
 const index = require('../../../index.js');
-const channelNames = require('../../../database/readChannelName.js');
+const channelNames = require('../../../Database/readChannelName.js');
 const find_music=require('./components/findYtMusic.js').find_music;
 const add_to_queue=require('./components/addToQueue.js').add_to_queue;
 

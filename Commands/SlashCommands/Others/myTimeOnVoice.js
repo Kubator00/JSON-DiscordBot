@@ -1,6 +1,5 @@
-const index = require("../../../index.js");
-const errorNotifications = require("../../../errorNotifications.js");
 const connect_database = require("../../../database/databaseConn.js");
+const errorNotifications = require("../../../ErrorHandlers/errorHandlers").errorNotifications;
 const { MessageEmbed } = require('discord.js');
 const pg = require('pg');
 module.exports = {
@@ -25,7 +24,6 @@ module.exports = {
 
         let hour = parseInt(userInfo['time_on_voice'] / 3600)
         let minute = parseInt(userInfo['time_on_voice'] / 60) - hour * 60;
-        console.log(userInfo);
         const guildMembers = msg.guild.members.cache;
         let nameToDisplay = guildMembers.get(userInfo['id_discord']).nickname;
         if (nameToDisplay == null)

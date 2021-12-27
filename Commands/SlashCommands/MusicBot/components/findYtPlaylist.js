@@ -4,7 +4,7 @@ module.exports.find_playlist = find_playlist;
 async function find_playlist(msg, url) {
     const voiceChannel = msg.member.voice.channel;
     if (!voiceChannel) {
-        await msg.followUp("Musisz być na kanale głosowym aby usunąć piosenkę!");
+        await msg.followUp("Musisz być na kanale głosowym aby dodac piosenkę!");
         return;
     }
     try {

@@ -4,7 +4,7 @@ const { MessageEmbed } = require('discord.js');
 const fetch = require('node-fetch');
 const lolToken = require('./Functions/lolToken.js');
 const apiLolToken = lolToken.apiLolToken;
-const errorNotifications=  require('../../../errorNotifications');
+const errorNotifications = require('../../../ErrorHandlers/errorHandlers').errorNotifications;
 const channelNames = require('../../../database/readChannelName.js');
 
 module.exports = {

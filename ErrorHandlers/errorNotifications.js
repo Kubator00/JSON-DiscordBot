@@ -1,5 +1,5 @@
-const date = require('./date')
-const index = require('./index')
+const date = require('../date.js')
+const index = require('../index.js')
 
 
 module.exports = (description) => {
@@ -7,7 +7,6 @@ module.exports = (description) => {
         description = "Brak";
 
     console.log(`Wykryto błąd\nData: ${date.day_message()}\nOpis: ${description}`);
-
     const channel = index.client.channels.cache.find(channel => channel.name === 'panel')
     if (!channel)
         return;

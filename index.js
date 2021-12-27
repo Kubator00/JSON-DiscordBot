@@ -13,46 +13,33 @@ const client = new Client({
   ]
 });
 
-
 const discordToken = require('./discordToken.js');
 client.login(discordToken.login);
-module.exports.client = client;
 
-const date = require('./date.js');
-const database = require('./database/database.js');
-const gif = require('./gif_function.js');
-const channelNameStatisticsFunctions = require('./channelNameStatisticsFunctions.js');
-const autoMessages = require('./auto_messages.js');
-const joinMembers = require('./joinMembers.js');
+
+const databaseRandomMsg = require('./Database/databaseRandomMsg.js');
+const channelNameStats = require('./channelNameStats.js');
+const autoMessages = require('./autoMessages.js');
+const guildJoinMember = require('./guildJoinMember.js');
 const advertisement = require('./advertisement.js');
-const errorNotifications = require('./errorNotifications');
-const checkPremissions = require('./checkPremissions.js');
-const saveOnlineVoiceTime = require("./voiceStats/saveOnlineVoiceTime");
-const channelNames = require('./database/readChannelName.js');
+const errorNotifications = require('./ErrorHandlers/errorHandlers.js').errorNotifications;
+const saveOnlineVoiceTime = require("./VoiceStats/saveOnlineVoiceTime");
+const channels = require('./Database/readChannelName');
+
+module.exports.client = client;
 
 
 
 client.once('ready', () => {
   console.log(`Zalogowano jako ${client.user.tag}!`);
-
-  //wysyłanie wiadomości na kanał panel
-
   console.log("Zalogowany na serwerach:");
   for (guild of client.guilds.cache) {
     console.log(guild[1].name);
   }
 
-  (async () => {
-    for (guildId of client.guilds.cache.map(guild => guild.id)) {
-      const channel = await channelNames.fetch_channel(client, await channelNames.read_channel('panel', guildId));
-      if (checkPremissions(channel))
-        channel.send("Bot został włączony\n" + date.hour() + ":" + date.minute() + "\n" + date.day_message());
-    }
-  })();
-
   //status bota
   (async () => {
-    let result = (await database.rand_message("BOT_STATUS"));
+    let result = (await databaseRandomMsg("BOT_STATUS"));
     console.log("Status: " + result);
     try {
       client.user.setActivity(result, { type: 'LISTENING' })
@@ -63,9 +50,9 @@ client.once('ready', () => {
 
   })();
 
-  channelNameStatisticsFunctions.count_members(client, channelNames);
-  channelNameStatisticsFunctions.new_date(client, channelNames);
-  channelNameStatisticsFunctions.count_online_members(client, channelNames);
+  channelNameStats.count_members(client);
+  channelNameStats.new_date(client);
+  channelNameStats.count_online_members(client);
 
 });
 
@@ -77,42 +64,32 @@ client.messageCommands = new Collection();
 });
 
 
-client.on('messageCreate', msg => {
 
-//   //wysylanie ogloszen
-  advertisement.advert(client, msg, channelNames, checkPremissions);
+advertisement(client);
+autoMessages(client);
+guildJoinMember(client);
+saveOnlineVoiceTime(client);
 
-});
-
-// //automatyczne wiadomosci
-autoMessages(client, date, gif, channelNames, channelNameStatisticsFunctions, checkPremissions);
-
-// //zmiana czlownkow serwera
-joinMembers(client, channelNames, date, checkPremissions);
-
-
-
-// statystyka członków serwera
 setInterval(() => {
-  channelNameStatisticsFunctions.count_members(client, channelNames);
-  channelNameStatisticsFunctions.new_date(client, channelNames);
+  channelNameStats.count_members(client, channels);
+  channelNameStats.new_date(client, channels);
 }, 600000);
-
-
 setInterval(() => {
-  channelNameStatisticsFunctions.count_online_members(client, channelNames);
+  channelNameStats.count_online_members(client, channels);
 }, 400000);
-
-
 
 setInterval(() => { //co godzine zmienia status bota
   (async () => {
-    let result = (await database.rand_message("BOT_STATUS"));
-    client.user.setActivity(result, { type: 'LISTENING' })
+    try {
+      let result = (await databaseRandomMsg("BOT_STATUS"));
+      client.user.setActivity(result, { type: 'LISTENING' })
+    }
+    catch {
+      errorNotifications("Błąd ustawienia statusu bota");
+    }
   })();
 }, 3600000);
 
 
 
-saveOnlineVoiceTime(client);
 

@@ -17,6 +17,9 @@ module.exports = {
             const conn = queue.get(msg.guild.id).connection;
             const voiceChannel = msg.member.voice.channel;
             if (!voiceChannel) return await msg.followUp("Musisz być na kanale głosowym aby wyłączyć muzykę!");
+            queue.get(msg.guild.id).player.stop();
+            queue.get(msg.guild.id).stream.destroy();
+            queue.get(msg.guild.id).player.removeAllListeners();
             conn.destroy();
             queue.delete(msg.guild.id);
             return msg.followUp("To ja spadam!");

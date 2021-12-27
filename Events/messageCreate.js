@@ -1,4 +1,4 @@
-const checkPremissions = require("../checkPremissions");
+const checkPremissions = require("../ErrorHandlers/errorHandlers").checkPremissions;
 
 module.exports = {
     name: "messageCreate",

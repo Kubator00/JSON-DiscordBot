@@ -1,5 +1,5 @@
 const pg = require('pg');
-const errorNotifications = require('../errorNotifications.js')
+const errorNotifications = require('../ErrorHandlers/errorHandlers.js').errorNotifications;
 const connect_database = require('./databaseConn.js');
 
 

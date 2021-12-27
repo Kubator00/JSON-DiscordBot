@@ -1,9 +1,17 @@
 const { MessageEmbed } = require('discord.js');
-const displayVoiceStats = require("./voiceStats/displayVoiceStats.js");
+const displayVoiceStats = require("./VoiceStats/displayVoiceStats.js");
+const process = require('process')
+const gif = require('./Gifs/gif');
+const channels = require('./Database/readChannelName');
+const date = require('./date');
+const checkPremissions = require('./ErrorHandlers/errorHandlers').checkPremissions;
 
-module.exports = (client, date, gif, channelNames, channelNameStatisticsFunctions, checkPremissions) => {
+module.exports = (client) => {
 
   setInterval(() => {
+    for (const [key, value] of Object.entries(process.memoryUsage())) {
+      console.log(`Memory usage by ${key}, ${value / 1000000}MB `)
+    }
 
     let minute = date.minute();
     let hour = date.hour();
@@ -12,8 +20,7 @@ module.exports = (client, date, gif, channelNames, channelNameStatisticsFunction
       //wysyłanie godziny na kanał
       (async () => {
         for (guild of client.guilds.cache.map(guild => guild.id)) {
-          console.log(guild);
-          const channel = await channelNames.fetch_channel(client, await channelNames.read_channel('hour', guild));
+          const channel = await channels.fetch_channel(client, await channels.read_channel('hour', guild));
           if (checkPremissions(channel))
             channel.send("Jest godzina " + date.hour() + ":00");
         }
@@ -22,7 +29,7 @@ module.exports = (client, date, gif, channelNames, channelNameStatisticsFunction
 
     // //statystyki, ustawianie nowej daty
     if (hour == 0 && minute == 0) {
-      channelNameStatisticsFunctions.new_date(client, channelNames);
+      channelNameStatisticsFunctions.new_date(client, channels);
     }
 
     // //wysylanie wiadomosci codziennej
@@ -35,7 +42,7 @@ module.exports = (client, date, gif, channelNames, channelNameStatisticsFunction
           .setAuthor('Dzień dobry 🖐')
           .setTimestamp()
         for (guild of client.guilds.cache.map(guild => guild.id)) {
-          const channel = await channelNames.fetch_channel(client, await channelNames.read_channel('bot', guild));
+          const channel = await channels.fetch_channel(client, await channels.read_channel('bot', guild));
           if (checkPremissions(channel)) {
             channel.send({ embeds: [embed] });
           }
@@ -47,7 +54,7 @@ module.exports = (client, date, gif, channelNames, channelNameStatisticsFunction
     if (minute == 0 || minute == 10 || minute == 20 || minute == 30 || minute == 40 || minute == 50) {
       (async () => {
         for (guild of client.guilds.cache.map(guild => guild.id)) {
-          const channel = await channelNames.fetch_channel(client, await channelNames.read_channel('voice_time_users', guild));
+          const channel = await channels.fetch_channel(client, await channels.read_channel('voice_time_users', guild));
           if (checkPremissions(channel)) {
             let messages = await channel.messages.fetch();
             messages.forEach(msg => {
@@ -64,7 +71,7 @@ module.exports = (client, date, gif, channelNames, channelNameStatisticsFunction
     if ((minute == 0 || minute == 20 || minute == 40)) {
       (async () => {
         for (guild of client.guilds.cache.map(guild => guild.id)) {
-          const channel = await channelNames.fetch_channel(client, await channelNames.read_channel('gifs', guild));
+          const channel = await channels.fetch_channel(client, await channels.read_channel('gifs', guild));
           if (checkPremissions(channel))
             channel.send(await gif.tenor_gif(await gif.rand_gif_category()));
         }
