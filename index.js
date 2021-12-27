@@ -16,7 +16,7 @@ const client = new Client({
 const discordToken = require('./discordToken.js');
 client.login(discordToken.login);
 
-
+const process = require('process')
 const databaseRandomMsg = require('./Database/databaseRandomMsg.js');
 const channelNameStats = require('./channelNameStats.js');
 const autoMessages = require('./autoMessages.js');
@@ -49,7 +49,6 @@ client.once('ready', () => {
     }
 
   })();
-
   channelNameStats.count_members(client);
   channelNameStats.new_date(client);
   channelNameStats.count_online_members(client);
@@ -76,6 +75,7 @@ setInterval(() => {
 }, 600000);
 setInterval(() => {
   channelNameStats.count_online_members(client, channels);
+  console.log(`Memory usage rss, ${process.memoryUsage().rss/1000000}MB `)
 }, 400000);
 
 setInterval(() => { //co godzine zmienia status bota
