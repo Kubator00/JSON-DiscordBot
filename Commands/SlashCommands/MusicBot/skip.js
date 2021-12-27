@@ -1,5 +1,5 @@
 const queue = require('./components/queueMap');
-const channelNames = require('../../../database/readChannelName.js');
+const channelNames = require('../../../Database/readChannelName.js');
 const index = require('../../../index.js');
 const display_now_playing = require('./components/msgNowPlaying').display_now_playing;
 const play_music = require('./components/playMusic').play_music;

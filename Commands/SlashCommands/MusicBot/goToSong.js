@@ -2,7 +2,7 @@ const index = require('../../../index.js');
 const play_music = require('./components/playMusic').play_music;
 const display_now_playing = require('./components/msgNowPlaying').display_now_playing;
 const queue = require('./components/queueMap.js');
-const channelNames = require('../../../database/readChannelName.js');
+const channelNames = require('../../../Database/readChannelName.js');
 
 module.exports = {
     name: 'przejdz',

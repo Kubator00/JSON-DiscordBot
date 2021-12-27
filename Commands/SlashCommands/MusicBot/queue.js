@@ -1,6 +1,6 @@
 const index = require('../../../index.js');
 const display_queue = require("./components/displayQueue").display_queue;
-const channelNames = require('../../../database/readChannelName.js');
+const channelNames = require('../../../Database/readChannelName.js');
 
 module.exports = {
     name: 'kolejka',

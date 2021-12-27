@@ -1,6 +1,6 @@
 const index = require('../../../index.js');
 const { MessageEmbed } = require('discord.js');
-const channelNames = require('../../../database/readChannelName.js');
+const channelNames = require('../../../Database/readChannelName.js');
 module.exports = {
     name: 'muzykapomoc',
     description: "Wyświetla dostępne komendy do interakcji z botem muzycznym",
