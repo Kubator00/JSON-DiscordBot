@@ -1,3 +1,4 @@
+const channels = require('./Database/readChannelName');
 module.exports = (client) => {
     client.on('messageCreate', msg => {
 
@@ -8,7 +9,7 @@ module.exports = (client) => {
         msgToLower = msg.content.toLowerCase();
         //wysylanie ogloszen
         (async () => {
-            const channel = await channelNames.fetch_channel(client, await channelNames.read_channel('advertisment', msg.guild.id));
+            const channel = await channels.fetch_channel(client, await channels.read_channel('advertisment', msg.guild.id));
             if (!checkPremissions(channel))
                 return;
             if (msg.channel.id == channel.id) {

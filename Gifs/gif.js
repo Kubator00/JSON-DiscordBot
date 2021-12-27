@@ -1,4 +1,4 @@
-const database = require('../Database/databaseRandomMsg');
+const randDatabase = require('../Database/databaseRandomMsg');
 const fetch = require('node-fetch');
 
 module.exports = { tenor_gif, rand_gif_category }
@@ -21,9 +21,8 @@ async function tenor_gif(keywords) {
 
 
 async function rand_gif_category() {
-  let result = (await database.read_database("GIF_CATEGORY"));
-  let rand = Math.floor(Math.random() * result.length);
-  return result[rand]['value'];
+  let result = (await randDatabase("GIF_CATEGORY"));
+  return result;
 }
 
 
