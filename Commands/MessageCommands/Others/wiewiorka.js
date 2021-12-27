@@ -1,4 +1,4 @@
-const databaseRandomMsg = require(`../../../database/databaseRandomMsg.js`)
+const databaseRandomMsg = require(`../../../Database/databaseRandomMsg.js`)
 
 module.exports = {
     name: 'wiewiorka',

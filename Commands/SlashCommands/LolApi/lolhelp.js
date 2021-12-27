@@ -1,6 +1,6 @@
 const { MessageEmbed } = require('discord.js');
 const index = require('../../../index.js');
-const channelNames = require('../../../database/readChannelName.js');
+const channelNames = require('../../../Database/readChannelName.js');
 
 
 module.exports = {

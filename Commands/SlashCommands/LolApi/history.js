@@ -5,7 +5,7 @@ const lol_functions = require('./Functions/lolCommonFunctions.js');
 const lolToken = require('./Functions/lolToken.js');
 const apiLolToken = lolToken.apiLolToken;
 const errorNotifications = require('../../../ErrorHandlers/errorHandlers').errorNotifications;
-const channelNames = require('../../../database/readChannelName.js');
+const channelNames = require('../../../Database/readChannelName.js');
 
 module.exports = {
     name: 'historia',

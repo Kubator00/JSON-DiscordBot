@@ -1,4 +1,4 @@
-const connect_database = require("../../../database/databaseConn.js");
+const connect_database = require("../../../Database/databaseConn.js");
 const errorNotifications = require("../../../ErrorHandlers/errorHandlers").errorNotifications;
 const { MessageEmbed } = require('discord.js');
 const pg = require('pg');
