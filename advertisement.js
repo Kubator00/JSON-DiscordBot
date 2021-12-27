@@ -1,4 +1,5 @@
 const channels = require('./Database/readChannelName');
+const checkPremissions = require('./ErrorHandlers/errorHandlers.js').checkPremissions;
 module.exports = (client) => {
     client.on('messageCreate', msg => {
 
