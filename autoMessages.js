@@ -60,7 +60,7 @@ module.exports = (client) => {
             messages.forEach(msg => {
               msg.delete();
             })
-            await displayVoiceStats.send_time_voice(channel, guild);
+            await displayVoiceStats.send_time_voice(channel);
           }
         }
       })();
