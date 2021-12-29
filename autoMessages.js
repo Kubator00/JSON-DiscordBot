@@ -4,6 +4,7 @@ const gif = require('./Gifs/gif');
 const channels = require('./Database/readChannelName');
 const date = require('./date');
 const checkPremissions = require('./ErrorHandlers/errorHandlers').checkPremissions;
+const channelNameStats = require('./channelNameStats.js');
 
 module.exports = (client) => {
 
@@ -25,7 +26,7 @@ module.exports = (client) => {
 
     // //statystyki, ustawianie nowej daty
     if (hour == 0 && minute == 0) {
-      channelNameStatisticsFunctions.new_date(client, channels);
+      channelNameStats.new_date(client);
     }
 
     if (minute == 0 || minute == 10 || minute == 20 || minute == 30 || minute == 40 || minute == 50) {
