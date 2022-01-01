@@ -42,16 +42,16 @@ module.exports = {
             playerIndex = 0;
             while (playerIndex < players.length) {
                 const rand = getRandomInt(0, quotes.length);
-                const questionMsg = await msg.channel.send("```fix\nGracz:" + players[playerIndex].name + "\nKto mówi: " + quotes[rand].text + "```");
+                const questionMsg = await msg.channel.send("```fix\nGracz:" + players[playerIndex].name + "\nCytat: " + quotes[rand].text + "```");
                 await questionMsg.channel.awaitMessages({ filter, max: 1, time: timeToReaction, errors: ['time'] })
                     .then(collected => {
                         const answer = collected.first();
                         if (answer.content.toLowerCase() == quotes[rand].name.toLowerCase()) {
-                            msg.channel.send("```diff\n+ Poprawna odpowiedź :)```");
+                            msg.channel.send("```diff\n+ Poprawna odpowiedź```");
                             players[playerIndex].correctAnswers += 1;
                         }
                         else {
-                            msg.channel.send("```diff\n- Błędna odpowiedź :(\n Poprawna odpowiedź to: " + quotes[rand].name + "```");
+                            msg.channel.send("```diff\n- Błędna odpowiedź\n Poprawna odpowiedź to: " + quotes[rand].name + "```");
                             players[playerIndex].wrongAnswers += 1;
                         }
                     })
