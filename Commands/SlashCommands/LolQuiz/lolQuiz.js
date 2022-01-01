@@ -10,7 +10,7 @@ const showStatsFromDatabase = require("./components/showStats.js");
 
 
 module.exports = {
-    name: 'quizlol',
+    name: 'quiz_lol',
     description: "Zagraj w gre zgadując cytaty wypowiedziane przez postacie w League of Legends",
     options: [
         {
