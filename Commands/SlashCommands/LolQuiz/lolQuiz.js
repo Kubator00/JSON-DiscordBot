@@ -57,6 +57,7 @@ module.exports = {
                     })
                     .catch(err => { //czas na reakcje się skończył
                         console.log(err);
+                        players[playerIndex].wrongAnswers += 1;
                         msg.channel.send("```diff\n- Gracz " + players[playerIndex].name + " nie odpowiedział na pytanie\nPoprawna odpowiedź to: " + quotes[rand].name+"```");
                     });
                 playerIndex += 1;
