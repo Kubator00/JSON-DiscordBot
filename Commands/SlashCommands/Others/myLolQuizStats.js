@@ -6,7 +6,7 @@ module.exports = {
     description: "Wyświetla twoje statystyki",
     async execute(msg) {
         let userInfo = await read_database(msg.guild.id, msg.user.id);
-        if (userInfo.length < 1)
+        if (!userInfo)
             return msg.followUp(`Brak danych o użytkowniku😥`);
 
         const guildMembers = msg.guild.members.cache;
