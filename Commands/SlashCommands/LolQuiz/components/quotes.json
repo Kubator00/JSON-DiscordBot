@@ -1,0 +1,13 @@
+{
+    "game": "lolQuiz",
+    "data": [
+        {
+            "name": "Ashe",
+            "text": "Strzały zaprowadzą pokój"
+        },
+        {
+            "name": "Tryndamer",
+            "text": "To będzie rzeź"
+        }
+    ]
+}

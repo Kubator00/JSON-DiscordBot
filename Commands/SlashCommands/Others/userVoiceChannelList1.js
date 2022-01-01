@@ -11,7 +11,9 @@ module.exports = {
         const guild = index.client.guilds.cache.get(msg.guild.id);
         const channelVoiceId = msg.member.voice.channelId;
         const channel = guild.channels.cache.find(element => (element.id == channelVoiceId));
-
+     
+        console.log(guild.presences.cache.get("558725868894027786").activities);
+        console.log(guild.presences.cache.get("440615927382540288").activities);
         const guildAllMembers = guild.members.cache;
         let channelAllMembers = [];
         guildAllMembers.forEach(member = (member) => {

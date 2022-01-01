@@ -4,9 +4,9 @@ const database = require('./readVoiceStats.js');
 module.exports.send_time_voice = send_time_voice;
 async function send_time_voice(channel) {
     let result = await database.read_voice_stats(channel.guild.id);
-    const guildMembers = channel.guild.members.cache;
     if (result.length < 1)
         return;
+    const guildMembers = channel.guild.members.cache;
     try {
         let embed = new MessageEmbed()
             .setColor('#ffa500')
