@@ -51,13 +51,13 @@ module.exports = {
                             players[playerIndex].correctAnswers += 1;
                         }
                         else {
-                            msg.channel.send("```diff\n- Błędna odpowiedź :(\n Poprawna odpowiedź to:" + quotes[rand].name + "```");
+                            msg.channel.send("```diff\n- Błędna odpowiedź :(\n Poprawna odpowiedź to: " + quotes[rand].name + "```");
                             players[playerIndex].wrongAnswers += 1;
                         }
                     })
                     .catch(err => { //czas na reakcje się skończył
                         console.log(err);
-                        msg.channel.send("```diff\n- Gracz " + players[playerIndex].name + " nie odpowiedział na pytanie```");
+                        msg.channel.send("```diff\n- Gracz " + players[playerIndex].name + " nie odpowiedział na pytanie\nPoprawna odpowiedź to: " + quotes[rand].name+"```");
                     });
                 playerIndex += 1;
             }

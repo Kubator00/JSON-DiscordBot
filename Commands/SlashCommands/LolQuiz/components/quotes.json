@@ -1,13 +1,218 @@
 {
     "game": "lolQuiz",
-    "data": [
-        {
-            "name": "Ashe",
-            "text": "Strzały zaprowadzą pokój"
-        },
-        {
-            "name": "Tryndamer",
-            "text": "To będzie rzeź"
-        }
-    ]
+  "data": [
+    {
+      "name": "Aatrox",
+      "text": "Wsłuchaj się w ciszę zagłady"
+    },
+    {
+      "name": "Ahri",
+      "text": "Taki z ciebie chytry lis?"
+    },
+    {
+      "name": "Akali",
+      "text": "Bój się zabójczyni bez mistrza"
+    },
+    {
+      "name": "Akshan",
+      "text": "Naprawiam świat, po jednym draniu na raz!"
+    },
+    {
+      "name": "Alistar",
+      "text": "Nic mnie nie powstrzyma"
+    },
+    {
+      "name": "Amumu",
+      "text": "Bałem  się że mnie nie wybierzesz"
+    },
+    {
+      "name": "Anivia",
+      "text": "Na mych skrzydłach"
+    },
+    {
+      "name": "Annie",
+      "text": "Pobawimy się? Będzie fajnie"
+    },
+    {
+      "name": "Ashe",
+      "text": "Strzały zaprowadza pokój"
+    },
+    {
+      "name": "Aurelion Sol",
+      "text": "To oczywiste"
+    },
+    {
+      "name": "Azir",
+      "text": "Shurima! Twój cesarz powrócił"
+    },
+    {
+      "name": "Blitzcrank",
+      "text": "Zwarty i gotowy do służby"
+    },
+    {
+      "name": "Brand",
+      "text": "Gotowy podpalić świat? Hehe"
+    },
+    {
+      "name": "Braum",
+      "text": "Serce to najmocniejszy mięsień"
+    },
+    {
+      "name": "Caitlyn",
+      "text": "Gotowa do akcji"
+    },
+    {
+      "name": "Camille",
+      "text": "To precyzja odróżnia rzeźnika od chirurga"
+    },
+    {
+      "name": "Cassiopeia",
+      "text": "Na mnie nie ma lekarstwa"
+    },
+    {
+      "name": "Chogath",
+      "text": "Chcesz, żeby świat spotkał koniec? Tak"
+    },
+    {
+      "name": "Corki",
+      "text": "Daję radę i załatwiłem sobie świetny pojazd!"
+    },
+    {
+      "name": "Darius",
+      "text": "Tylko ja poprowadzę nas do zwycięstwa"
+    },
+    {
+      "name": "Diana",
+      "text": "Oto księżyc w nowiu"
+    },
+    {
+      "name": "Dr Mundo",
+      "text": "Doktor już tu...być"
+    },
+    {
+      "name": "Ekko",
+      "text": "Nie chodzi o to ile masz czasu, ale jak go wykorzystasz."
+    },
+    {
+      "name": "Elise",
+      "text": "Tylko pajęczyca jest bezpieczna na swojej sieci."
+    },
+    {
+      "name": "Evelynn",
+      "text": "Wiesz, że mnie pragniesz"
+    },
+    {
+      "name": "Ezreal",
+      "text": "Zlecenie przyjęte. Zaraz... Gdzie my idziemy?"
+    },
+    {
+      "name": "Fiddlesticks",
+      "text": "Strach..."
+    },
+    {
+      "name": "Fiora",
+      "text": "Marzę o godnym przeciwniku"
+    },
+    {
+      "name": "Fizz",
+      "text": "Dam im popalić"
+    },
+    {
+      "name": "Galio",
+      "text": "Pora na mocne uderzenie"
+    },
+    {
+      "name": "Gangplank",
+      "text": "Nie zabił mnie ogień i nie zabiło mnie morze. Ty też nie zdołasz"
+    },
+    {
+      "name": "Garen",
+      "text": "Moje serce i miecz są wierne Demacii"
+    },
+    {
+      "name": "Gragas",
+      "text": "Jeśli stawiasz, zgoda"
+    },
+    {
+      "name": "Graves",
+      "text": "Bez przebaczenia"
+    },
+    {
+      "name": "Gwen",
+      "text": "Głowa wysoko, broda w górę, nożyce - gotowe!"
+    },
+    {
+      "name": "Hecarim",
+      "text": "Poznaj potęgę Shadow Isles"
+    },
+    {
+      "name": "Heimerdinger",
+      "text": "Bez wątpienia, przedni wybór"
+    },
+    {
+      "name": "Illaoi",
+      "text": "Nie lubię kazań. Połamane kości uczą więcej"
+    },
+    {
+      "name": "Irelia",
+      "text": "Walcz o Pierwotną Krainę!"
+    },
+    {
+      "name": "Ivern",
+      "text": "Mój ulubiony kolor to wiosna"
+    },
+    {
+      "name": "Janna",
+      "text": "Potęga wiatru jest do Twej dyspozycji"
+    },
+    {
+      "name": "Jarvan 4",
+      "text": "Zakończmy to. Oto moja wola"
+    },
+    {
+      "name": "Jax",
+      "text": "Do dzieła"
+    },
+    {
+      "name": "Jayce",
+      "text": "Walczę o lepsze jutro"
+    },
+    {
+      "name": "Jhin",
+      "text": "W rzece krwi rozkwitam niczym kwiat o poranku"
+    },
+    {
+      "name": "Jinx",
+      "text": "Już nie mogę się doczekać!"
+    },
+    {
+      "name": "Kaisa",
+      "text": "Jesteś łowcą...czy ofiarą?"
+    },
+    {
+      "name": "Kalista",
+      "text": "Śmierć wszystkim zdrajcom!"
+    },
+    {
+      "name": "Karma",
+      "text": "Zawsze ufaj swojemu duchowi"
+    },
+    {
+      "name": "Karthus",
+      "text": "Ból, ekstaza, spokój... Każda śmierć jest piękna na swój sposób"
+    },
+    {
+      "name": "Kassadin",
+      "text": "Równowaga mocy musi być zachowana"
+    },
+    {
+      "name": "Katarina",
+      "text": "Przemoc rozwiązuje wszystkie problemy"
+    },
+
+    {
+      "name": "Tryndamer",
+      "text": "To będzie rzeź"
+    }
+  ]
 }
