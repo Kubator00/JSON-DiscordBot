@@ -10,8 +10,8 @@ module.exports = (channel) => {
         try {
             let embed = new MessageEmbed()
                 .setColor('#2ECC71')
-                .setAuthor("Ranking osób w quizie wiedzy o League of Legends\n")
-                .setDescription("Aby zagrać wpisz /quiz_lol")
+                .setTitle("Statystki osób z quizu wiedzy o League of Legends")
+                .setDescription("Jeśli nie ma cie na liście wpisz /quiz_lol_moje_statystyki\nAby zagrać wpisz /quiz_lol")
                 .setTimestamp()
                 .addFields(
                     embed_display(result, guildMembers)

@@ -1,10 +1,29 @@
 module.exports.resultMsg = resultMsg;
+const { MessageEmbed } = require('discord.js');
+const Player = require('./player');
 
-async function resultMsg(msg, players, numberOfRounds) {
-    let result = "```ini\n[Końcowy rezultat]\n";
-    for (player of players)
-        result += `${player.name} -> P/B odp:${player.correctAnswers}/${player.wrongAnswers}\n`
+async function resultMsg(msg, players) {
+    let embed = new MessageEmbed()
+        .setColor('#ffa500')
+        .setTitle("Końcowy rezultat rozgrywki")
+        .setTimestamp()
+        .addFields(
+            embed_display(players)
+        )
+    msg.channel.send({ embeds: [embed] });
 
-    result += "```";
-    await msg.channel.send(result);
+}
+
+
+function embed_display(players) {
+    let result = [];
+    for (player of players) {
+        let em = {};
+        em = {
+            name: `${player.name} `,
+            value: `Poprawne / Błędne odpowiedzi: ${player.correctAnswers} / ${player.wrongAnswers}`,
+        }
+        result.push(em);
+    }
+    return result;
 }

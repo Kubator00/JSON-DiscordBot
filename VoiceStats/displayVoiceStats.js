@@ -10,7 +10,8 @@ async function send_time_voice(channel) {
     try {
         let embed = new MessageEmbed()
             .setColor('#ffa500')
-            .setAuthor("Czas spędzony przez użytkowników na kanałach głosowych\n")
+            .setTitle("Czas spędzony przez użytkowników na kanałach głosowych\n")
+            .setDescription("Jeśli nie ma cie na liście możesz wpisać komendę /mojczas")
             .setFooter('🧔 Autor: Kubator')
             .setTimestamp()
             .addFields(

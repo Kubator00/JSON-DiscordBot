@@ -8,7 +8,7 @@ async function read_lol_quotes_stats(guildId) {
         clientConn.connect(err => {
             if (err) return errorNotifications(`Blad polaczenia z baza ${err}`);
         });
-        clientConn.query(`SELECT id_discord, correct_answers, wrong_answers  from public."LOL_QUOTES_STATS" where id_guild='${guildId}' ORDER BY correct_answers DESC LIMIT 15;`, (err, res) => {
+        clientConn.query(`SELECT id_discord, correct_answers, wrong_answers  from public."LOL_QUOTES_STATS" where id_guild='${guildId}' ORDER BY correct_answers+wrong_answers DESC LIMIT 20;`, (err, res) => {
             if (err) {
                 console.log(err);
                 clientConn.end();
