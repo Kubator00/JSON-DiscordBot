@@ -7,12 +7,9 @@ module.exports = {
     description: "Wznawia wcześniej zapauzowaną piosenkę",
 
     async execute(msg) {
-        const musicBotChannel = await channelNames.fetch_channel(index.client, await channelNames.read_channel('music_bot', msg.guild.id));
-        if (musicBotChannel.id != msg.channel.id) {
-            msg.followUp(`Komenda może być tylko użyta na kanale ${musicBotChannel.name}`);
+        if (!await channelNames.check_channel(index.client, 'music_bot', msg))
             return;
-        }
-        
+            
         if (!queue.get(msg.guild.id))
             return await msg.followUp("Brak piosenki");
         try {

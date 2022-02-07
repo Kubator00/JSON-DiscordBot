@@ -27,13 +27,17 @@ async function send_time_voice(channel) {
 function embed_display(usersInfo, guildMembers) {
     let result = [];
     let number = 1;
+    let correctUsers = 0;
     for (let i = 0; i < usersInfo.length; i++) {
+        if (correctUsers >= 20)
+            break;
         let em = {};
         let hour = parseInt(usersInfo[i]['time_on_voice'] / 3600)
         let minute = parseInt(usersInfo[i]['time_on_voice'] / 60) - hour * 60;
         let nameToDisplay = guildMembers.get(usersInfo[i]['id_discord']);
         if (!nameToDisplay) //uzytkownik nie jest juz czlonkiem serwera
             continue;
+        correctUsers += 1;
         nameToDisplay = guildMembers.get(usersInfo[i]['id_discord']).nickname;
         if (nameToDisplay == null)
             nameToDisplay = guildMembers.get(usersInfo[i]['id_discord']).user.username;
@@ -44,5 +48,6 @@ function embed_display(usersInfo, guildMembers) {
         result.push(em);
         number += 1;
     }
+
     return result;
 }

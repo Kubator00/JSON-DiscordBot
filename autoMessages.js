@@ -1,4 +1,3 @@
-const { MessageEmbed } = require('discord.js');
 const displayVoiceStats = require("./VoiceStats/displayVoiceStats.js");
 const gif = require('./Gifs/gif');
 const channels = require('./Database/readChannelName');

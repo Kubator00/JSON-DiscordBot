@@ -32,20 +32,24 @@ module.exports = {
 
 async function read_database(guildId, userId) {
     const database = connect_database();
-    return new Promise(function (resolve, reject) {
-        const clientConn = new pg.Client(database);
-        clientConn.connect(err => {
-            if (err) return errorNotifications(`Blad polaczenia z baza ${err}`);
-            clientConn.query(`SELECT id_discord, correct_answers, wrong_answers  from public."LOL_QUOTES_STATS" where id_guild='${guildId}' AND id_discord='${userId}'`, (err, res) => {
-                if (err) {
-                    errorNotifications(`Blad polaczenia z baza ${err}`);
-                    clientConn.end();
-                }
-                else {
-                    clientConn.end();
-                    resolve(res.rows[0]);
-                }
+    const clientConn = new pg.Client(database);
+
+    let result = [];
+
+    try {
+        await clientConn.connect();
+        await clientConn.query(`SELECT id_discord, correct_answers, wrong_answers  from public."LOL_QUOTES_STATS" where id_guild='${guildId}' AND id_discord='${userId}'`)
+            .then(res => {
+                const rows = res.rows;
+                rows.map(row => {
+                    result.push(row);
+                })
             });
-        });
-    })
+
+    }
+    catch (err) {
+        console.log(err)
+    }
+    await clientConn.end();
+    return result[0];
 };

@@ -2,12 +2,13 @@ const databaseRandomMsg = require(`../../../Database/databaseRandomMsg.js`)
 
 module.exports = {
     name: 'siema',
-    aliases: ['witam', 'dzień dobry','dzien dobry','elo','hej','cześć','czesc'],
+    aliases: ['witam', 'dzień dobry', 'dzien dobry', 'elo', 'hej', 'cześć', 'czesc'],
     description: "Odpowiada na konkretne słowa",
 
     async execute(msg) {
         msg.react('🖐️');
         const result = await databaseRandomMsg("POWITANIE");
-        msg.channel.send(result);
+        msg.channel.send(result)
+            .catch(err => console.log(err));
     },
 };

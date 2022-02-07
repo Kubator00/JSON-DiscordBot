@@ -8,6 +8,7 @@ module.exports = {
     async execute(msg) {
         msg.react('👊');
         const result = await databaseRandomMsg("EGZORCYSTA");
-        msg.channel.send(result);
+        msg.channel.send(result)
+            .catch(err => console.log(err));
     },
 };

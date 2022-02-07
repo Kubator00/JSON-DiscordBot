@@ -22,14 +22,9 @@ const channelNameStats = require('./channelNameStats.js');
 const autoMessages = require('./autoMessages.js');
 const guildJoinMember = require('./guildJoinMember.js');
 const advertisement = require('./advertisement.js');
-const errorNotifications = require('./ErrorHandlers/errorHandlers.js').errorNotifications;
 const saveOnlineVoiceTime = require("./VoiceStats/saveOnlineVoiceTime");
 const channels = require('./Database/readChannelName');
-
-
 module.exports.client = client;
-
-
 
 
 client.once('ready', () => {
@@ -44,12 +39,11 @@ client.once('ready', () => {
     let result = (await databaseRandomMsg("BOT_STATUS"));
     console.log("Status: " + result);
     try {
-      client.user.setActivity(result, { type: 'LISTENING' })
+      client.user.setActivity(result, { type: 4 })
     }
-    catch {
-      errorNotifications("Błąd ustawienia statusu bota");
+    catch (err) {
+      console.log(`Bot status ${err}`);
     }
-
   })();
   channelNameStats.count_members(client);
   channelNameStats.new_date(client);
@@ -77,21 +71,66 @@ setInterval(() => {
 }, 600000);
 setInterval(() => {
   channelNameStats.count_online_members(client, channels);
-  console.log(`Memory usage rss, ${process.memoryUsage().rss/1000000}MB `)
+  console.log(`Memory usage rss, ${process.memoryUsage().rss / 1000000}MB `)
 }, 400000);
 
 setInterval(() => { //co godzine zmienia status bota
   (async () => {
     try {
-      let result = (await databaseRandomMsg("BOT_STATUS"));
-      client.user.setActivity(result, { type: 'LISTENING' })
+      let result = (await databaseRandomMsg('BOT_STATUS'));
+      client.user.setActivity(result, { type: 'PLAYING' })
     }
     catch {
-      errorNotifications("Błąd ustawienia statusu bota");
+      console.log("Błąd ustawienia statusu bota");
     }
   })();
 }, 3600000);
 
 
+async function block_button(i) {
+  i.component.setDisabled(true);
+  await i.update({
+    components: [
+      new MessageActionRow().addComponents(i.component)
+    ]
+  });
+  setTimeout(i.component.setDisabled(false), 10000);
+  await i.update({
+    components: [
+      new MessageActionRow().addComponents(i.component)
+    ]
+  });
+}
 
+const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
+const lolaccount = require('./Commands/SlashCommands/LolApi/Functions/account');
+const lolMessage = require('./Commands/SlashCommands/LolApi/Functions/message');
+client.on('interactionCreate', async i => {
+  if (!i.customId)
+    return;
 
+  if (i.customId.slice(0, 7) == 'account') {
+
+    i.component.setDisabled(true);
+    await i.update({
+      components: [
+        new MessageActionRow().addComponents(i.component)
+      ]
+    });
+
+    await lolaccount(i.message, i.customId.slice(8));
+    await lolMessage(i.message, i.customId.slice(8), false);
+  }
+  if (i.customId.slice(0, 4) == 'live') {
+
+    i.component.setDisabled(true);
+    await i.update({
+      components: [
+        new MessageActionRow().addComponents(i.component)
+      ]
+    });
+
+    await lolaccount(i.message, i.customId.slice(6));
+    await lolMessage(i.message, i.customId.slice(6), false);
+  }
+});

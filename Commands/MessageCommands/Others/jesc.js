@@ -4,6 +4,6 @@ module.exports = {
     description: "Odpowiada na konkretne słowa",
 
     async execute(msg) {
-        msg.channel.send("Smacznego 😋");
+        msg.channel.send("Smacznego 😋")
     },
 };

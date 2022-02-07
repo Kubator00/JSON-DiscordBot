@@ -4,7 +4,6 @@ const fetch = require('node-fetch');
 const lol_functions = require('./Functions/lolCommonFunctions.js');
 const lolToken = require('./Functions/lolToken.js');
 const apiLolToken = lolToken.apiLolToken;
-const errorNotifications = require('../../../ErrorHandlers/errorHandlers').errorNotifications;
 const channelNames = require('../../../Database/readChannelName.js');
 
 module.exports = {
@@ -25,9 +24,8 @@ module.exports = {
         },
     ],
     async execute(msg) {
-        const channel = await channelNames.fetch_channel(index.client, await channelNames.read_channel('lol_statistics', msg.guild.id));
-        if (channel.id != msg.channel.id) 
-            return msg.followUp(`Komenda może być tylko użyta na kanale ${channel.name}`);
+        if (!await channelNames.check_channel(index.client, 'lol_statistics', msg))
+            return;
 
         let summoner = msg.options.getString('nazwa');
         let matchNumber = msg.options.getNumber('nr_meczu') - 1;
@@ -56,7 +54,7 @@ module.exports = {
         const responseMatchList = await fetch(urlMatchList);
         if (responseMatchList.status != 200) {
             msg.channel.send("Błąd połączenia");
-            errorNotifications("Lol Api History, Błąd pobierania MatchList");
+            console.log("Lol Api History, Błąd pobierania MatchList");
             return;
         }
 
@@ -68,7 +66,7 @@ module.exports = {
         const responseMatchData = await fetch(urlMatchData);
         if (responseMatchData.status != 200) {
             msg.channel.send("Błąd połączenia");
-            errorNotifications("Lol Api History, Błąd pobierania MatchData");
+            console.log("Lol Api History, Błąd pobierania MatchData");
             return;
         }
         const jsonMatchData = await responseMatchData.json();
@@ -77,21 +75,21 @@ module.exports = {
             msg.channel.send("Przykro mi ale ten tryb gry nie jest obsługiwany");
             return;
         }
-    
-        if ((jsonMatchData.info.gameDuration)< 300) { //sprawdzanie czy nie było remake
+
+        if ((jsonMatchData.info.gameDuration) < 300) { //sprawdzanie czy nie było remake
             msg.channel.send("Gra była za krótka");
             return;
         }
         let matchData =
         {
-            gameDuration: Math.ceil(jsonMatchData.info.gameDuration/ 60) + " min",
+            gameDuration: Math.ceil(jsonMatchData.info.gameDuration / 60) + " min",
             gameMode: await lol_functions.read_game_mode(jsonMatchData.info.queueId),
         }
 
         if (!matchData.gameMode)  //sprawdzannie czy funkcja game_mode poprawnie pobrała dane
         {
             msg.channel.send("Błąd połączenia");
-            errorNotifications("Lol Api History, Błąd pobierania gameMode");
+            console.log("Lol Api History, Błąd pobierania gameMode");
             return;
         }
 
@@ -122,7 +120,7 @@ module.exports = {
             //sprawdzannie czy funkcja champion_mastery poprawnie pobrała dane
             if (!playerData.championMastery) {
                 msg.channel.send("Błąd połączenia");
-                errorNotifications("Lol Api History, Błąd pobierania championMastery");
+                console.log("Lol Api History, Błąd pobierania championMastery");
                 return;
             }
             // ragi przypisuje w ten sposób aby było mniej zapytań
@@ -130,7 +128,7 @@ module.exports = {
             //sprawdzanie czy funkcja player_rank poprawnie pobrała dane
             if (!playerRanks) {
                 msg.channel.send("Błąd połączenia");
-                errorNotifications("Lol Api History, Błąd pobierania playerRanks");
+                console.log("Lol Api History, Błąd pobierania playerRanks");
                 return;
             }
             playerData.soloqRank = playerRanks[0];
@@ -377,7 +375,7 @@ module.exports = {
             msg.channel.send({ embeds: [embed] });
         }
         catch {
-            errorNotifications("Lol Api History, Błąd wysłania wiadomości embed");
+            console.log("Lol Api History, Błąd wysłania wiadomości embed");
         }
 
     }

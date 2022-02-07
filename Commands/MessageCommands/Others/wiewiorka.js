@@ -7,7 +7,8 @@ module.exports = {
 
     async execute(msg) {
         msg.react('😎');
-        const result =await databaseRandomMsg("BOT_REACTION");
-        msg.channel.send(result);
+        const result = await databaseRandomMsg("BOT_REACTION");
+        msg.channel.send(result)
+            .catch(err => console.log(err));
     },
 };

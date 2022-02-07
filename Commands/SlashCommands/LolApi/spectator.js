@@ -4,7 +4,6 @@ const fetch = require('node-fetch');
 const lolFunctions = require('./Functions/lolCommonFunctions.js');
 const lolToken = require('./Functions/lolToken.js');
 const apiLolToken = lolToken.apiLolToken;
-const errorNotifications = require('../../../ErrorHandlers/errorHandlers').errorNotifications;
 const channelNames = require('../../../Database/readChannelName.js');
 
 module.exports = {
@@ -19,9 +18,8 @@ module.exports = {
         },
     ],
     async execute(msg) {
-        const channel = await channelNames.fetch_channel(index.client, await channelNames.read_channel('lol_statistics', msg.guild.id));
-        if (channel.id != msg.channel.id) 
-            return msg.followUp(`Komenda może być tylko użyta na kanale ${channel.name}`);
+        if (!await channelNames.check_channel(index.client, 'lol_statistics', msg))
+            return;
 
         let summoner = msg.options.getString('nazwa');
         if (summoner == 1) { summoner = "Hi Im Kubator"; }
@@ -49,7 +47,7 @@ module.exports = {
         }
         if (responseMatchData.status != 200) {
             msg.channel.send("Błąd połączenia");
-            errorNotifications("Lol Api Spectator, Błąd pobierania matchData");
+            console.log("Lol Api Spectator, Błąd pobierania matchData");
             return;
         }
         const jsonMatchData = await responseMatchData.json();
@@ -63,7 +61,7 @@ module.exports = {
         const gameMode = await lolFunctions.read_game_mode(jsonMatchData.gameQueueConfigId);
         if (!gameMode) {
             msg.channel.send("Błąd połączenia");
-            errorNotifications("Lol Api Spectator, Błąd pobierania gameMode");
+            console.log("Lol Api Spectator, Błąd pobierania gameMode");
             return;
         }
 
@@ -88,25 +86,25 @@ module.exports = {
             const ranks = await lolFunctions.read_player_rank_and_stats(jsonMatchData.participants[playerNumber].summonerId); //zwraca tablice 2-elementową gdzie element 0 to ranga na soloq a 1 na flexach
             if (!ranks) {
                 msg.channel.send("Błąd połączenia");
-                errorNotifications("Lol Api Spectator, Błąd pobierania playerRankAndStats");
+                console.log("Lol Api Spectator, Błąd pobierania playerRankAndStats");
                 return;
             }
             playerData.soloqRank = ranks[0];
             playerData.flexRank = ranks[1];
             playersData.push(playerData);
         }
-        
+
         playersData = await lolFunctions.read_spells_id(playersData); //do obiektu dodawane są nazwy czarów przywoływacza
         if (!playersData) {
             msg.channel.send("Błąd połączenia");
-            errorNotifications("Lol Api Spectator, Błąd pobierania playersData");
+            console.log("Lol Api Spectator, Błąd pobierania playersData");
             return;
         }
 
         playersData = await lolFunctions.read_champion_id(playersData); // do obiektu dodawane są nazwy postaci
         if (!playersData) {
             msg.channel.send("Błąd połączenia");
-            errorNotifications("Lol Api Spectator, Błąd pobierania championId");
+            console.log("Lol Api Spectator, Błąd pobierania championId");
             return;
         }
         let playerIndex;
@@ -223,12 +221,12 @@ module.exports = {
                 },
 
             )
-            
+
         try {
             msg.channel.send({ embeds: [embed] });
         }
         catch {
-            errorNotifications("Lol Api Spectator, Błąd wysłania wiadomości Embed");
+            console.log("Lol Api Spectator, Błąd wysłania wiadomości Embed");
         }
     }
 

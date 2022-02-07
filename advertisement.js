@@ -2,11 +2,9 @@ const channels = require('./Database/readChannelName');
 const checkPremissions = require('./ErrorHandlers/errorHandlers.js').checkPremissions;
 module.exports = (client) => {
     client.on('messageCreate', msg => {
-
-        if (msg.author.bot) {
+        if (msg.author.bot) 
             return;
-        }
-
+        
         msgToLower = msg.content.toLowerCase();
         //wysylanie ogloszen
         (async () => {

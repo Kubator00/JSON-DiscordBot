@@ -4,7 +4,6 @@ const { MessageEmbed } = require('discord.js');
 const fetch = require('node-fetch');
 const lolToken = require('./Functions/lolToken.js');
 const apiLolToken = lolToken.apiLolToken;
-const errorNotifications = require('../../../ErrorHandlers/errorHandlers').errorNotifications;
 const channelNames = require('../../../Database/readChannelName.js');
 
 module.exports = {
@@ -19,9 +18,8 @@ module.exports = {
         },
     ],
     async execute(msg) {
-        const channel = await channelNames.fetch_channel(index.client, await channelNames.read_channel('lol_statistics', msg.guild.id));
-        if (channel.id != msg.channel.id) 
-            return msg.followUp(`Komenda może być tylko użyta na kanale ${channel.name}`);
+        if (!await channelNames.check_channel(index.client, 'lol_statistics', msg))
+            return;
 
         let summoner = msg.options.getString('nazwa');
         summonerPlayerName = encodeURI(summoner);
@@ -41,7 +39,7 @@ module.exports = {
         const ranks = await lolFunctions.read_player_rank_and_stats(summonerIdPlayer);
         if (!ranks) {
             msg.followUp("Błąd połączenia");
-            errorNotifications("Lol Api AccountMastery, Błąd pobierania playerRankAndStats");
+            console.log("Lol Api AccountMastery, Błąd pobierania playerRankAndStats");
             return;
         }
 
@@ -61,7 +59,7 @@ module.exports = {
         const responseChampionMastery = await fetch(urlChampionMastery);
         if (responseChampionMastery.status != 200) {
             msg.followUp("Błąd połączenia");
-            errorNotifications("Lol Api AccountMastery, Błąd pobierania championMastery");
+            console.log("Lol Api AccountMastery, Błąd pobierania championMastery");
             return;
         }
         const jsonChampionMastery = await responseChampionMastery.json();
@@ -120,7 +118,7 @@ module.exports = {
             msg.followUp({ embeds: [embed] });
         }
         catch {
-            errorNotifications("Lol Api AccountMastery, Błąd wysłania wiadomości embed");
+            console.log("Lol Api AccountMastery, Błąd wysłania wiadomości embed");
         }
 
     }
