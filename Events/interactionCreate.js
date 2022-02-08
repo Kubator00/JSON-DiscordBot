@@ -5,12 +5,13 @@ module.exports = {
 
     async execute(client, interaction) {
 
+
         if (!interaction.isCommand())
             return;
-
+       
         if (!checkPremissions(interaction.channel))
             return;
-        
+
 
         await interaction.deferReply({ ephemeral: false }).catch(() => { });
 

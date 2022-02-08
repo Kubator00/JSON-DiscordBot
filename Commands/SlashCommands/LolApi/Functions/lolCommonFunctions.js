@@ -1,4 +1,3 @@
-const index = require('../../../../index.js');
 const fetch = require('node-fetch');
 const lolToken = require('./lolToken.js');
 const apiLolToken = lolToken.apiLolToken;
