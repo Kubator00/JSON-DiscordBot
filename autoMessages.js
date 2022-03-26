@@ -3,7 +3,7 @@ const gif = require('./Gifs/gif');
 const channels = require('./Database/readChannelName');
 const date = require('./date');
 const checkPremissions = require('./ErrorHandlers/errorHandlers').checkPremissions;
-const channelNameStats = require('./channelNameStats.js');
+const channelNameStats = require('./channelNameGuildStats.js');
 
 module.exports = (client) => {
 

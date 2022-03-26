@@ -5,9 +5,12 @@ module.exports = {
     name: 'quiz_lol_moje_statystyki',
     description: "Wyświetla twoje statystyki",
     async execute(msg) {
-        let userInfo = await read_database(msg.guild.id, msg.user.id);
-        if (!userInfo)
-            return msg.followUp(`Brak danych o użytkowniku😥`);
+        try {
+            var userInfo = await read_database(msg.guild.id, msg.user.id);
+        } catch (err) {
+            msg.followUp(err.message);
+            return;
+        }
 
         const guildMembers = msg.guild.members.cache;
         let nameToDisplay = guildMembers.get(userInfo['id_discord']).nickname;
@@ -35,7 +38,6 @@ async function read_database(guildId, userId) {
     const clientConn = new pg.Client(database);
 
     let result = [];
-
     try {
         await clientConn.connect();
         await clientConn.query(`SELECT id_discord, correct_answers, wrong_answers  from public."LOL_QUOTES_STATS" where id_guild='${guildId}' AND id_discord='${userId}'`)
@@ -45,11 +47,15 @@ async function read_database(guildId, userId) {
                     result.push(row);
                 })
             });
-
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err)
+        throw new Error('Błąd pobierania z bazy');
+    } finally {
+        await clientConn.end();
     }
-    await clientConn.end();
+
+    if (result.length < 1)
+        throw new Error('Brak danych o użytkowniku');
+
     return result[0];
 };

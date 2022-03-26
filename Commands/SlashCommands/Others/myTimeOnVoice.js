@@ -8,15 +8,6 @@ module.exports = {
 
     async execute(msg) {
 
-        //sprawdza czy uzytkownik wywolujacy komende posiada role 
-        // const roleName = "Zweryfikowany";
-        // const roleId = (msg.guild.roles.cache.find(p => p.name === roleName)).id;
-        // let hasRoles = 0;
-        // for (userRole of msg.member._roles)
-        //     if (userRole == roleId)
-        //         hasRoles = 1;
-        // if (hasRoles == 0 && msg.member.permissions.has('ADMINISTRATOR') != true)
-        //     return msg.followUp(`Aby użyć tej komendy musisz posiadać rolę "${roleName}".`);
         let userInfo = await read_database(msg.guild.id, msg.user.id);
         if (userInfo.length < 1)
             return msg.followUp(`Brak danych o użytkowniku😥`);

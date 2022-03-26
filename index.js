@@ -13,41 +13,18 @@ const client = new Client({
   ]
 });
 
-const discordToken = require('./discordToken.js');
-client.login(discordToken.login);
-
 const process = require('process')
-const databaseRandomMsg = require('./Database/databaseRandomMsg.js');
-const channelNameStats = require('./channelNameStats.js');
+const channelNameGuildStats = require('./channelNameGuildStats.js');
 const autoMessages = require('./autoMessages.js');
 const guildJoinMember = require('./guildJoinMember.js');
 const advertisement = require('./advertisement.js');
 const saveOnlineVoiceTime = require("./VoiceStats/saveOnlineVoiceTime");
 const channels = require('./Database/readChannelName');
+const changeBotStatus=require('./BotStatus/changeBotStatus');
 module.exports.client = client;
 
-
-client.once('ready', () => {
-  console.log(`Zalogowano jako ${client.user.tag}!`);
-  //status bota
-  (async () => {
-    let result = (await databaseRandomMsg("BOT_STATUS"));
-    console.log("Status: " + result);
-    try {
-      client.user.setActivity(result, { type: 'PLAYING' });
-    }
-    catch (err) {
-      console.log(`Bot status ${err}`);
-    }
-  })();
-  channelNameStats.count_members(client);
-  channelNameStats.new_date(client);
-  channelNameStats.count_online_members(client);
-  console.log("Zalogowany na serwerach:");
-  for (guild of client.guilds.cache) {
-    console.log(`-${guild[1].name}`);
-  }
-});
+const discordToken = require('./discordToken.js');
+client.login(discordToken.login);
 
 
 client.slashCommands = new Collection();
@@ -59,32 +36,37 @@ client.selectMenu = new Collection();
 });
 
 
-
 advertisement(client);
 autoMessages(client);
 guildJoinMember(client);
 saveOnlineVoiceTime(client);
+changeBotStatus(client);
 
 setInterval(() => {
-  channelNameStats.count_members(client, channels);
-  channelNameStats.new_date(client, channels);
+  channelNameGuildStats.count_members(client, channels);
+  channelNameGuildStats.new_date(client, channels);
 }, 600000);
+
+
 setInterval(() => {
-  channelNameStats.count_online_members(client, channels);
+  channelNameGuildStats.count_online_members(client, channels);
   console.log(`Memory usage rss, ${process.memoryUsage().rss / 1000000}MB `)
 }, 400000);
 
-setInterval(() => { //co godzine zmienia status bota
-  (async () => {
-    try {
-      let result = (await databaseRandomMsg('BOT_STATUS'));
-      client.user.setActivity(result, { type: 'PLAYING' })
-    }
-    catch {
-      console.log("Błąd ustawienia statusu bota");
-    }
-  })();
-}, 3600000);
+
+client.once('ready', () => {
+  console.log(`Logged as ${client.user.tag}!`);
+  channelNameGuildStats.count_members(client);
+  channelNameGuildStats.new_date(client);
+  channelNameGuildStats.count_online_members(client);
+  console.log("Logged on servers:");
+  for (guild of client.guilds.cache) {
+    console.log(`-${guild[1].name}`);
+  }
+});
+
+
+
 
 
 

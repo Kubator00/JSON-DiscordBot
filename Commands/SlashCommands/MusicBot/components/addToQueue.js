@@ -1,25 +1,23 @@
 const queue = require('./queueMap');
-const get_voice_connect=require('./getVoiceChannel').get_voice_connect;
+const get_voice_connect = require('./getVoiceChannel').get_voice_connect;
 const play_music = require('./playMusic').play_music;
 const auto_leave = require('./autoLeave').auto_leave;
 const {
-    joinVoiceChannel, 
+    joinVoiceChannel,
 } = require('@discordjs/voice');
 module.exports.add_to_queue = add_to_queue;
 async function add_to_queue(msg, music, addPlaylist) {
     const songQueue = queue.get(msg.guild.id);
     try {
-        if (songQueue.songs.length > 50) {
-            msg.channel.send("Kolejka zawiera zbyt dużą liczbę piosenek\nSpróbuj ponownie później");
-            return -1;
-        }
-    }
-    catch { }
-
-    voiceChannel = get_voice_connect(msg)
-    if (!voiceChannel)
+        if (songQueue)
+            if (songQueue.songs.length > 1)
+                throw new Error('Kolejka zawiera zbyt dużą liczbę piosenek\nSpróbuj ponownie później');
+        console.log('dupa');
+        voiceChannel = await get_voice_connect(msg)
+    } catch (err) {
+        msg.followUp(err.message);
         return;
-
+    }
 
     const serverQueue = queue.get(msg.guild.id);
     if (!serverQueue) {
@@ -47,7 +45,7 @@ async function add_to_queue(msg, music, addPlaylist) {
         if (addPlaylist == false)
             msg.followUp(`Dodano do kolejki: ${music.title}`);
 
-        if (songQueue.songs.length == 1) 
+        if (songQueue.songs.length == 1)
             await play_music(msg);
     }
 

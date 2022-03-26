@@ -1,4 +1,3 @@
-const date = require('./date');
 const checkPremissions = require('./ErrorHandlers/errorHandlers').checkPremissions;
 const channels = require('./Database/readChannelName');
 
