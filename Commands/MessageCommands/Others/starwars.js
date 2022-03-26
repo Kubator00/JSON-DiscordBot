@@ -1,5 +1,6 @@
 const getRandomInt = require('../../../Utilities/getRandomInt')
 const loadJSON = require('../../../Utilities/loadJSON')
+const path = require('path');
 
 module.exports = {
     name: 'star wars',
@@ -8,7 +9,7 @@ module.exports = {
 
     async execute(msg) {
         msg.react('⭐');
-        const quotes = loadJSON(__dirname + '\\data\\', 'starwarsQuotes.json');
+        const quotes = loadJSON(path.join(__dirname,'data'), 'starwarsQuotes.json');
         const result = quotes[getRandomInt(0, quotes.length)];
         msg.channel.send(result)
             .catch(err => console.log(err));

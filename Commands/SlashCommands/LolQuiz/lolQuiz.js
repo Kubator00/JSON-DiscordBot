@@ -1,12 +1,10 @@
 const { MessageEmbed } = require('discord.js');
-const index = require("../../../index.js");
-const Player = require('./components/player.js');
 const loadQuotes = require("../../../Utilities/loadJSON.js");
 const joinMsg = require("./components/joinMessage.js").joinMsg;
 const resultMsg = require("./components/resultMessage.js").resultMsg;
 const saveStatsToDatabase = require("./components/saveStatsToDatabase.js");
-const showStatsFromDatabase = require("./components/showStats.js");
 const getRandomInt = require("../../../Utilities/getRandomInt");
+const path = require('path');
 
 module.exports = {
     name: 'quiz_lol',
@@ -30,7 +28,7 @@ module.exports = {
         const filter = (a) => {
             return a.author.id == players[playerIndex].id;
         };
-        const quotes = loadQuotes(__dirname+'\\components\\','quotes.json');
+        const quotes = loadQuotes(path.join(__dirname,'components'),'quotes.json');
         let players = [];
         await joinMsg(msg, players, 10000);
         if (players.length == 0)

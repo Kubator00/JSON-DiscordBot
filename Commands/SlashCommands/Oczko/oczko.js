@@ -5,6 +5,8 @@ const resultMsg = require("./components/resultMessage.js").resultMsg;
 const getRandomInt = require("./components/getRandomInt.js");
 const bot = require("./components/bot.js");
 const gameStart = require("./components/gameBeggining.js");
+const path = require('path');
+
 
 module.exports = {
     name: 'oczko',
@@ -17,7 +19,7 @@ module.exports = {
         const filter = (reaction, user) => {
             return ['✅', '❌'].includes(reaction.emoji.name) && user.id == players[playerIndex].id;
         };
-        const cards = loadCards(__dirname+'\\components\\','cards.json');
+        const cards = loadCards(path.join(__dirname,'components'),'cards.json');
         let players = [];
         let gameIsFinish = () => {
             for (player of players)
