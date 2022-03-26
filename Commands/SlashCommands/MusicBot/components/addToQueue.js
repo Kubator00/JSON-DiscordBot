@@ -12,7 +12,6 @@ async function add_to_queue(msg, music, addPlaylist) {
         if (songQueue)
             if (songQueue.songs.length > 1)
                 throw new Error('Kolejka zawiera zbyt dużą liczbę piosenek\nSpróbuj ponownie później');
-        console.log('dupa');
         voiceChannel = await get_voice_connect(msg)
     } catch (err) {
         msg.followUp(err.message);
