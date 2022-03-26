@@ -1,0 +1,10 @@
+{
+    "command": "greeting",
+    "data": [
+        "Dzień dobry",
+        "Cześć!",
+        "Siema!",
+        "Hej!",
+        "Dzień dobry!"
+    ]
+}

@@ -1,7 +1,4 @@
-const { MessageEmbed } = require('discord.js');
-const index = require("../../../index.js");
-const Player = require('./components/player.js');
-const loadCards = require("./components/loadCards.js");
+const loadCards = require("../../../Utilities/loadJSON");
 const joinMsg = require("./components/joinMessage.js").joinMsg;
 const roundEndMsg = require("./components/roundEndMessage.js").roundEndMsg;
 const resultMsg = require("./components/resultMessage.js").resultMsg;
@@ -20,7 +17,7 @@ module.exports = {
         const filter = (reaction, user) => {
             return ['✅', '❌'].includes(reaction.emoji.name) && user.id == players[playerIndex].id;
         };
-        const cards = loadCards();
+        const cards = loadCards(__dirname+'\\components\\','cards.json');
         let players = [];
         let gameIsFinish = () => {
             for (player of players)

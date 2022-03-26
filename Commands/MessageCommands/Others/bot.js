@@ -2,7 +2,6 @@
 
 module.exports = {
     name: 'bot',
-    // aliases: ['bot'],
     description: "Odpowiada na konkretne słowa",
 
     async execute(msg) {

@@ -1,4 +1,5 @@
-const databaseRandomMsg = require(`../../../Database/databaseRandomMsg.js`)
+const getRandomInt = require('../../../Utilities/getRandomInt')
+const loadJSON = require('../../../Utilities/loadJSON')
 
 module.exports = {
     name: 'siema',
@@ -7,7 +8,8 @@ module.exports = {
 
     async execute(msg) {
         msg.react('🖐️');
-        const result = await databaseRandomMsg("POWITANIE");
+        const quotes = loadJSON(__dirname + '\\data\\', 'greetingQuotes.json');
+        const result = quotes[getRandomInt(0, quotes.length)];
         msg.channel.send(result)
             .catch(err => console.log(err));
     },
