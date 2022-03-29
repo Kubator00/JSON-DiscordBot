@@ -15,11 +15,12 @@ module.exports =
                         result.push(row);
                     })
                 });
-        }
-        catch (err) {
+        } catch (err) {
             console.log(err);
+            return null;
+        } finally {
+            await clientConn.end();
         }
-        await clientConn.end();
         return result;
     };
 

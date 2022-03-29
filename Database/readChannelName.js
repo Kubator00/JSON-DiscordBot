@@ -47,11 +47,11 @@ async function read_channel(channelRole, guildId) {
                     result.push(row);
                 })
             });
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err);
+        return null;
+    } finally {
+        await clientConn.end();
     }
-    await clientConn.end();
     return result[0];
 }
-

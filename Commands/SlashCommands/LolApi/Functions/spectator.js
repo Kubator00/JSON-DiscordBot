@@ -7,98 +7,64 @@ const apiLolToken = lolToken.apiLolToken;
 
 
 module.exports = async (msg, summoner) => {
-
     summonerPlayerName = encodeURI(summoner);
     const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName + "?api_key=" + apiLolToken;
-    const responseSummoner = await fetch(urlSummoner);
-    if (responseSummoner.status == 429) {
-        msg.channel.send("Wykorzystano dostępną ilość zapytań, spróbuj ponownie za chwilę");
+    let responseSummoner;
+    try {
+        responseSummoner = await fetch(urlSummoner);
+    } catch (err) {
+        msg.channel.send("Wystąpił błąd połączenia z serwerem").catch(() => console.log("Błąd wysłania wiadomości"));
         return;
     }
-    if (responseSummoner.status != 200) {
-        msg.channel.send("```diff\n-Nie ma konta o takiej nazwie 🙁\n-Pamiętaj że konto musi znajdować się na serwerze EUNE```");
+
+    try {
+        lolFunctions.checkResponseStatus(responseSummoner.status);
+    } catch (err) {
+        msg.channel.send(err.message).catch(() => console.log("Błąd wysłania wiadomości"));
         return;
     }
+
     const jsonSummoner = await responseSummoner.json();
     const summonerIdPlayer = jsonSummoner.id;
 
     const urlMatchData = "https://eun1.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/" + summonerIdPlayer + "/?api_key=" + apiLolToken;
-    const responseMatchData = await fetch(urlMatchData);
+    let responseMatchData;
+    try {
+        responseMatchData = await fetch(urlMatchData);
+    }catch(err){
+        msg.channel.send("Błąd łączenia z serwerem").catch(() => console.log("Błąd wysłania wiadomości"));
+        return;
+    }
+
     if (responseMatchData.status == 404) {
-        msg.channel.send("```diff\n-Obecnie nie znajdujesz się w grze```");
+        msg.channel.send("```diff\n-Obecnie nie znajdujesz się w grze```").catch(() => console.log("Błąd wysłania wiadomości"));
         return;
     }
-    if (responseMatchData.status != 200) {
-        msg.channel.send("Błąd połączenia");
-        console.log("Lol Api Spectator, Błąd pobierania matchData");
+    try {
+        lolFunctions.checkResponseStatus(responseSummoner.status);
+    } catch (err) {
+        msg.channel.send(err.message).catch(() => console.log("Błąd wysłania wiadomości"));
         return;
     }
+
     const jsonMatchData = await responseMatchData.json();
-
-
     if (jsonMatchData.gameMode != "CLASSIC" && jsonMatchData.gameMode != "ARAM") {
-        msg.channel.send("Przykro mi ale ten tryb gry nie jest obsługiwany");
+        msg.channel.send("Przykro mi ale ten tryb gry nie jest obsługiwany").catch(() => console.log("Błąd wysłania wiadomości"));
         return;
     }
 
-    const gameMode = await lolFunctions.read_game_mode(jsonMatchData.gameQueueConfigId);
-    if (!gameMode) {
-        msg.channel.send("Błąd połączenia");
-        console.log("Lol Api Spectator, Błąd pobierania gameMode");
+    let gameMode, playersData;
+    try {
+        playersData = await fetchPlayers(jsonMatchData);
+        gameMode = await lolFunctions.readGameMode(jsonMatchData.gameQueueConfigId);
+        await lolFunctions.readSpellsName(playersData);
+        await lolFunctions.readChampionsName(playersData); // do obiektu dodawane są nazwy postaci
+    } catch (err) {
+        msg.channel.send(err.message).catch(() => console.log("Błąd wysłania wiadomości"));
         return;
     }
 
-
-    playersData = [];
-    for (const playerNumber in jsonMatchData.participants) {
-        let playerData = {
-            teamId: jsonMatchData.participants[playerNumber].teamId,
-            summonerId: jsonMatchData.participants[playerNumber].summonerId,
-            summonerName: jsonMatchData.participants[playerNumber].summonerName,
-            summonerLevel: await lolFunctions.read_account_level(jsonMatchData.participants[playerNumber].summonerName),
-            spell1Id: jsonMatchData.participants[playerNumber].spell1Id,
-            spell1Name: "",
-            spell2Id: jsonMatchData.participants[playerNumber].spell2Id,
-            spell2Name: "",
-            championId: jsonMatchData.participants[playerNumber].championId,
-            championName: "",
-            championMastery: (await lolFunctions.read_champion_mastery(jsonMatchData.participants[playerNumber].summonerId, jsonMatchData.participants[playerNumber].championId)).toLocaleString('en'),
-            soloqRank: "",
-            flexRank: "",
-        }
-        const ranks = await lolFunctions.read_player_rank_and_stats(jsonMatchData.participants[playerNumber].summonerId); //zwraca tablice 2-elementową gdzie element 0 to ranga na soloq a 1 na flexach
-        if (!ranks) {
-            msg.channel.send("Błąd połączenia");
-            console.log("Lol Api Spectator, Błąd pobierania playerRankAndStats");
-            return;
-        }
-        playerData.soloqRank = ranks[0];
-        playerData.flexRank = ranks[1];
-        playersData.push(playerData);
-    }
-
-    playersData = await lolFunctions.read_spells_id(playersData); //do obiektu dodawane są nazwy czarów przywoływacza
-    if (!playersData) {
-        msg.channel.send("Błąd połączenia");
-        console.log("Lol Api Spectator, Błąd pobierania playersData");
-        return;
-    }
-
-    playersData = await lolFunctions.read_champion_id(playersData); // do obiektu dodawane są nazwy postaci
-    if (!playersData) {
-        msg.channel.send("Błąd połączenia");
-        console.log("Lol Api Spectator, Błąd pobierania championId");
-        return;
-    }
-    let playerIndex;
-    for (const playerNumber in playersData) {
-        if (summonerIdPlayer == playersData[playerNumber].summonerId) {
-            playerIndex = playerNumber;
-            break;
-        }
-    }
-
-
+    let playerIndex = playersData.findIndex(p => p.summonerId === summonerIdPlayer);
     if (playerIndex >= playersData.length / 2) //jeśli drużyna gracza jest po prawej stronie to przesuwamy ją na lewo a przeciwników na prawo
     {
         for (let i = 0; i < playersData.length / 2; i++) {
@@ -106,8 +72,6 @@ module.exports = async (msg, summoner) => {
         }
         playerIndex -= playersData.length / 2;
     }
-
-
 
     let embed = new MessageEmbed()
         .setColor('#ffa500')
@@ -117,109 +81,86 @@ module.exports = async (msg, summoner) => {
         .setFooter('🧔 Autor: Kubator')
         .setTimestamp()
         .addFields(
-            {
-                name: '\u200B',
-                value: "```fix\nTwoja drużyna```",
-                inline: true
-            },
-            {
-                name: '\u200B',
-                value: "```fix\nPrzeciwnicy```",
-                inline: true
-            },
-            {
-                name: '\u200B',
-                value: '\u200B',
-                inline: false
-            },
-            {
-                name: lolFunctions.embed_display_name(playersData[0]),
-                value: embed_display_player_stats(playersData[0]),
-                inline: true
-            },
-            {
-                name: lolFunctions.embed_display_name(playersData[5]),
-                value: embed_display_player_stats(playersData[5]),
-                inline: true
-            },
-            {
-                name: '\u200B',
-                value: '\u200B',
-                inline: false
-            },
-            {
-                name: lolFunctions.embed_display_name(playersData[1]),
-                value: embed_display_player_stats(playersData[1]),
-                inline: true
-            },
-            {
-                name: lolFunctions.embed_display_name(playersData[6]),
-                value: embed_display_player_stats(playersData[6]),
-                inline: true
-            },
-            {
-                name: '\u200B',
-                value: '\u200B',
-                inline: false
-            },
-            {
-                name: lolFunctions.embed_display_name(playersData[2]),
-                value: embed_display_player_stats(playersData[2]),
-                inline: true
-            },
-            {
-                name: lolFunctions.embed_display_name(playersData[7]),
-                value: embed_display_player_stats(playersData[7]),
-                inline: true
-            },
-            {
-                name: '\u200B',
-                value: '\u200B',
-                inline: false
-            },
-            {
-                name: lolFunctions.embed_display_name(playersData[3]),
-                value: embed_display_player_stats(playersData[3]),
-                inline: true
-            },
-            {
-                name: lolFunctions.embed_display_name(playersData[8]),
-                value: embed_display_player_stats(playersData[8]),
-                inline: true
-            },
-            {
-                name: '\u200B',
-                value: '\u200B',
-                inline: false
-            },
-            {
-                name: lolFunctions.embed_display_name(playersData[4]),
-                value: embed_display_player_stats(playersData[4]),
-                inline: true
-            },
-            {
-                name: lolFunctions.embed_display_name(playersData[9]),
-                value: embed_display_player_stats(playersData[9]),
-                inline: true
-            },
-
+            embedFields(playersData)
         )
 
     try {
         msg.channel.send({ embeds: [embed] });
-    }
-    catch {
-        console.log("Lol Api Spectator, Błąd wysłania wiadomości Embed");
+    } catch {
+        console.log("Błąd wysłania wiadomości").catch(() => console.log("Błąd wysłania wiadomości"));
     }
 };
 
+async function fetchPlayers(jsonMatchData) {
+    let playersData = [];
+    for (const playerNumber in jsonMatchData.participants) {
+        let playerData = {};
+        try {
+            playerData = {
+                teamId: jsonMatchData.participants[playerNumber].teamId,
+                summonerId: jsonMatchData.participants[playerNumber].summonerId,
+                summonerName: jsonMatchData.participants[playerNumber].summonerName,
+                summonerLevel: await lolFunctions.readAccountLevel(jsonMatchData.participants[playerNumber].summonerName),
+                spell1Id: jsonMatchData.participants[playerNumber].spell1Id,
+                spell1Name: "",
+                spell2Id: jsonMatchData.participants[playerNumber].spell2Id,
+                spell2Name: "",
+                championId: jsonMatchData.participants[playerNumber].championId,
+                championName: "",
+                championMastery: (await lolFunctions.readChampionMastery(jsonMatchData.participants[playerNumber].summonerId, jsonMatchData.participants[playerNumber].championId)).toLocaleString('en'),
+                soloqRank: "",
+                flexRank: "",
+            }
+            const ranks = await lolFunctions.readPlayerRankAndStats(jsonMatchData.participants[playerNumber].summonerId); //zwraca tablice 2-elementową gdzie element 0 to ranga na soloq a 1 na flexach
+            playerData.soloqRank = ranks[0];
+            playerData.flexRank = ranks[1];
+        } catch (err) {
+            console.log(err);
+            throw "Błąd pobierania danych z serwera"
+        }
+        playersData.push(playerData);
+    }
+    return playersData;
+}
+
+
+function embedFields(playersData) {
+    const result = [
+        {
+            name: '\u200B',
+            value: "```fix\nTwoja drużyna```",
+            inline: true
+        },
+        {
+            name: '\u200B',
+            value: "```fix\nPrzeciwnicy```",
+            inline: true
+        }]
+    for (let i = 0; i < playersData.length / 2; i++) {
+        result.push(
+            {
+                name: '\u200B',
+                value: '\u200B',
+                inline: false
+            },
+            {
+                name: lolFunctions.embedDisplayName(playersData[i]),
+                value: embedDisplayPlayerStats(playersData[i]),
+                inline: true
+            },
+            {
+                name: lolFunctions.embedDisplayName(playersData[i + 5]),
+                value: embedDisplayPlayerStats(playersData[i + 5]),
+                inline: true
+            },
+        )
+    }
+    return result;
+}
 
 
 
-
-
-
-function embed_display_player_stats(playerData) {
+function embedDisplayPlayerStats(playerData) {
     return ("Czary: " + playerData.spell1Name + ", " + playerData.spell2Name +
         "\nPoziom: " + playerData.summonerLevel +
         "\nMastery: " + playerData.championMastery + "pkt" +

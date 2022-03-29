@@ -9,25 +9,32 @@ const apiLolToken = lolToken.apiLolToken;
 module.exports = async (msg, summoner) => {
     summonerPlayerName = encodeURI(summoner);
     const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName + "?api_key=" + apiLolToken;
-    const responseSummoner = await fetch(urlSummoner);
-    if (responseSummoner.status == 429) {
-        msg.channel.send("Wykorzystano dostępną ilość zapytań, spróbuj ponownie za chwilę");
+
+    let responseSummoner;
+    try {
+        responseSummoner = await fetch(urlSummoner);
+    } catch (err) {
+        msg.channel.send("Wystąpił błąd połączenia z serwerem").catch(() => console.log("Błąd wysłania wiadomości"));
         return;
     }
-    if (responseSummoner.status != 200) {
-        msg.channel.send("```diff\n-Nie ma konta o takiej nazwie 🙁\n-Pamiętaj że konto musi znajdować się na serwerze EUNE```");
+    try {
+        lolFunctions.checkResponseStatus(responseSummoner.status);
+    } catch (err) {
+        msg.channel.send(err).catch(() =>  console.log("Błąd wysłania wiadomości"));
         return;
     }
+
     const jsonSummoner = await responseSummoner.json();
     const summonerIdPlayer = jsonSummoner.id;
 
-    const ranks = await lolFunctions.read_player_rank_and_stats(summonerIdPlayer);
-    if (!ranks) {
-        msg.channel.send("Błąd połączenia");
-        console.log("Lol Api AccountMastery, Błąd pobierania playerRankAndStats");
+    let ranks;
+    try {
+        ranks = await lolFunctions.readPlayerRankAndStats(summonerIdPlayer);
+    } catch (err) {
+        console.log("Error: LolApi ChampionMastery readPlayerRankAndStats")
+        msg.channel.send(err).catch(() =>  console.log("Błąd wysłania wiadomości"));
         return;
     }
-
 
     let player =
     {
@@ -38,17 +45,22 @@ module.exports = async (msg, summoner) => {
         flexRank: ranks[1]
     }
 
-
-
     const urlChampionMastery = "https://eun1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summonerIdPlayer + "?api_key=" + apiLolToken;
-    const responseChampionMastery = await fetch(urlChampionMastery);
-    if (responseChampionMastery.status != 200) {
-        msg.channel.send("Błąd połączenia");
-        console.log("Lol Api AccountMastery, Błąd pobierania championMastery");
+    let responseChampionMastery;
+    try {
+        responseChampionMastery = await fetch(urlChampionMastery);
+    } catch (err) {
+        msg.channel.send("Błąd połączenia z serwerem").catch(() =>  console.log("Błąd wysłania wiadomości"));
         return;
     }
-    const jsonChampionMastery = await responseChampionMastery.json();
+    try {
+        lolFunctions.checkResponseStatus(responseChampionMastery.status);
+    } catch (err) {
+        msg.channel.send(err).catch(() =>  console.log("Błąd wysłania wiadomości"));
+        return;
+    }
 
+    const jsonChampionMastery = await responseChampionMastery.json();
     let numberOfChamp = 20;
     if (jsonChampionMastery.length < numberOfChamp)
         numberOfChamp = jsonChampionMastery.length - 1;
@@ -65,39 +77,24 @@ module.exports = async (msg, summoner) => {
         championsData.push(championData);
     }
 
-
-    championsData = await lolFunctions.read_champion_id(championsData);
-
+    try {
+        await lolFunctions.readChampionsName(championsData);
+    } catch (err) {
+        msg.channel.send(err).catch(() =>  console.log("Błąd wysłania wiadomości"));
+        return;
+    }
 
     let embed = new MessageEmbed()
         .setColor('#ffa500')
         .setAuthor("Informacje o koncie\n"
             + "●════════════════════════════════════════●",
-            'http://ddragon.leagueoflegends.com/cdn/' + await lolFunctions.dataDragonVersion + '/img/profileicon/' + player.profileIconId + '.png')
+            'http://ddragon.leagueoflegends.com/cdn/' + await lolFunctions.getDragonVersion() + '/img/profileicon/' + player.profileIconId + '.png')
 
         .setTitle(player.summonerName)
         .setDescription('Poziom: ' + player.summonerLevel)
         .setFooter('🧔 Autor: Kubator')
         .setTimestamp()
-        .addFields(
-            {
-                name: "SoloQ:",
-                value: player.soloqRank,
-                inline: true
-            },
-            {
-                name: "FlexQ:",
-                value: player.flexRank,
-                inline: true
-            },
-            {
-                name: '\u200B',
-                value: "```fix\nStatystyki bohaterów: ```",
-                inline: false
-            },
-            embed_display(championsData)
-
-        )
+        .addFields(embedDisplay(player, championsData))
 
     try {
         msg.channel.send({ embeds: [embed] });
@@ -110,8 +107,24 @@ module.exports = async (msg, summoner) => {
 
 
 
-function embed_display(championsData) {
-    let result = [];
+function embedDisplay(player, championsData) {
+    let result = [
+        {
+            name: "SoloQ:",
+            value: player.soloqRank,
+            inline: true
+        },
+        {
+            name: "FlexQ:",
+            value: player.flexRank,
+            inline: true
+        },
+        {
+            name: '\u200B',
+            value: "```fix\nStatystyki bohaterów: ```",
+            inline: false
+        },
+    ];
     let number = 1;
 
 
@@ -126,8 +139,8 @@ function embed_display(championsData) {
         }
         else {
             em = {
-                name: (number) + '.' + embed_display_name(championsData[number - 1]),
-                value: embed_display_value(championsData[number - 1]),
+                name: (number) + '.' + embedDisplayName(championsData[number - 1]),
+                value: embedDisplayValue(championsData[number - 1]),
                 inline: true,
             }
             number += 1;
@@ -139,11 +152,11 @@ function embed_display(championsData) {
 
 }
 
-function embed_display_name(championsData) {
+function embedDisplayName(championsData) {
     return (championsData.championName);
 }
 
-function embed_display_value(championsData) {
+function embedDisplayValue(championsData) {
     return ("Maestry: " + championsData.championPoints.toLocaleString('en') + "pkt\n"
         + "Poziom: " + championsData.championLevel +
         "\nOstatnio grany: " + championsData.lastPlayTime);

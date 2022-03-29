@@ -5,27 +5,23 @@ const apiLolToken = lolToken.apiLolToken;
 const lolFunctions = require('./lolCommonFunctions.js');
 
 
-
 module.exports = async (msg, summoner, isFollowUp) => {
-
     summonerPlayerName = encodeURI(summoner);
     const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName + "?api_key=" + apiLolToken;
-    const responseSummoner = await fetch(urlSummoner);
-    if (responseSummoner.status == 429) {
-        return msg.channel.send("Wykorzystano dostępną ilość zapytań, spróbuj ponownie za chwilę");
-    }
 
-    if (responseSummoner.status != 200) {
-        if (isFollowUp)
-            return await msg.followUp("Nie ma takiego konta");
-        else
-            return await msg.channel.send("Nie ma takiego konta");
+    const responseSummoner = await fetch(urlSummoner);
+    try {
+        lolFunctions.checkResponseStatus(responseSummoner.status);
+    } catch (err) {
+        msg.followUp(err).catch(() => console.log("Błąd wysłania wiadomości"));
+        return;
     }
     const data = await responseSummoner.json();
-    const ranks = await lolFunctions.read_player_rank_and_stats(data.id);
-    if (!ranks) {
-        msg.channel.send("Błąd połączenia");
-        console.log("Lol Api Account, Błąd pobierania playerRankAndStats");
+    let ranks;
+    try {
+        ranks = await lolFunctions.readPlayerRankAndStats(data.id);
+    } catch (err) {
+        msg.followUp(err).catch(() => console.log("Błąd wysłania wiadomości"));
         return;
     }
 
@@ -38,13 +34,15 @@ module.exports = async (msg, summoner, isFollowUp) => {
         flexRank: ranks[1]
     }
 
-
-    if (isFollowUp)
-        await msg.followUp({ ephemeral: false, embeds: [await createEmbed(player)], components: [buttons(summoner), selMenu(summoner)] });
-    else
-        await msg.channel.send({ ephemeral: false, embeds: [await createEmbed(player)], components: [buttons(summoner), selMenu(summoner)] });
+    try {
+        if (isFollowUp)
+            await msg.followUp({ ephemeral: false, embeds: [await createEmbed(player)], components: [buttons(summoner), selMenu(summoner)] });
+        else
+            await msg.channel.send({ ephemeral: false, embeds: [await createEmbed(player)], components: [buttons(summoner), selMenu(summoner)] });
+    } catch (err) {
+        console.log("Błąd wysłania wiadomości");
+    }
 }
-
 
 const createEmbed = async (player) => {
     return (
@@ -53,7 +51,7 @@ const createEmbed = async (player) => {
             .setAuthor("League of Legends - informacje o koncie")
             .setTitle(player.summonerName)
             .setDescription('Poziom: ' + player.summonerLevel)
-            .setThumbnail('http://ddragon.leagueoflegends.com/cdn/' + await lolFunctions.dataDragonVersion + '/img/profileicon/' + player.profileIconId + '.png')
+            .setThumbnail('http://ddragon.leagueoflegends.com/cdn/' + await lolFunctions.getDragonVersion() + '/img/profileicon/' + player.profileIconId + '.png')
             .addFields(
                 {
                     name: "SoloQ:",
@@ -119,3 +117,4 @@ const addSelectMenuOptions = () => {
     return result;
 }
 
+    
