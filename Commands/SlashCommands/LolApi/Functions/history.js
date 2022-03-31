@@ -9,7 +9,7 @@ const apiLolToken = lolToken.apiLolToken;
 module.exports = async (msg, summoner, matchNumber) => {
     matchNumber -= 1;
     if (matchNumber < 0 || matchNumber > 19) { //gry możliwe do wyszukania są z tego przedziału
-        msg.channel.send("W poleceniu wpisano błędą liczbę").catch(() => console.log("Błąd wysłania wiadomości")).catch(() => console.log("Błąd wysłania wiadomości"));
+        msg.channel.send("W poleceniu wpisano błędą liczbę").catch(() => console.log("Błąd wysłania wiadomości"));
         return;
     }
 
