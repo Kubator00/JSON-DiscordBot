@@ -9,28 +9,31 @@ const embedPlayer = require('./embedPlayer');
 module.exports.add_to_queue = add_to_queue;
 async function add_to_queue(msg, music, isPlaylist) {
     const songQueue = queue.get(msg.guild.id);
-
     if (songQueue)
         if (songQueue.songs?.length > 40)
             msg.channel.send('Kolejka zawiera zbyt dużą liczbę piosenek\nSpróbuj ponownie później').catch(err => console.log(err));
 
-    voiceChannel = await get_voice_connect(msg)
-
+    let voiceChannel;
+    try {
+        voiceChannel = await get_voice_connect(msg)
+    } catch (err) {
+        msg.channel.send(err).catch(err => console.log(err));
+    }
 
     const serverQueue = queue.get(msg.guild.id);
     if (!serverQueue) {
         const queueConstructor = {
+            guildId: msg.guild.id,
             voiceChannel: msg.member.voice.channel,
             textChannel: msg.channel,
-            connection: null,
-            songs: [],
+            connection:  joinVoiceChannel(voiceChannel),
             player: null,
             stream: null,
-            guildId: msg.guild.id
+            songs: [],
         }
+        
         queue.set(msg.guild.id, queueConstructor);
         queueConstructor.songs.push(music);
-        queue.get(msg.guild.id).connection = joinVoiceChannel(voiceChannel);
         play_music(queueConstructor.guildId);
         setTimeout(() => auto_leave(queueConstructor.guildId), 5000);
     }

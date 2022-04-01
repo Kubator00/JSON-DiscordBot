@@ -1,6 +1,6 @@
 const lolHistory = require('../../SlashCommands/LolApi/Functions/history');
 const lolMessage = require('../../SlashCommands/LolApi/Functions/message');
-const blockButton = require('../../../blockButton');
+const blockButton = require('../../../Utilities/blockButton');
 module.exports = {
     name: 'lollastgamehistory',
     async execute(msg) {

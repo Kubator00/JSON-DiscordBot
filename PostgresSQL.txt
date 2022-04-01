@@ -1,0 +1,28 @@
+CREATE TABLE CHANNEL_NAMES(
+id INT PRIMARY KEY,
+guild_id VARCHAR(30),
+role VARCHAR(30),
+channel_id VARCHAR(30)
+);
+
+CREATE TABLE GIF_CATEGORY(
+id INT PRIMARY KEY,
+value VARCHAR(30)
+);
+
+
+CREATE TABLE LOL_QUOTES_STATS(
+id INT PRIMARY KEY,
+id_guild VARCHAR(30),
+id_discord VARCHAR(30),
+correct_answers INT,
+wrong_answers INT
+);
+	
+
+CREATE TABLE VOICE_COUNTER_USERS(
+id INT PRIMARY KEY,
+id_guild VARCHAR(30),
+id_discord VARCHAR(30),
+time_on_voice BIGINT
+);

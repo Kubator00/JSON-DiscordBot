@@ -23,8 +23,7 @@ async function find_music(msg, url) {
                 }
             }
         }
-    }
-    catch (err) {
+    } catch (err) {
         console.log(`Blad odtawrzacza ${err}`);
     }
     await msg.followUp("Nie znaleziono piosenki");

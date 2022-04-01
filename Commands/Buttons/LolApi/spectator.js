@@ -1,6 +1,6 @@
 const lolSpectator = require('../../SlashCommands/LolApi/Functions/spectator');
 const lolMessage = require('../../SlashCommands/LolApi/Functions/message');
-const blockButton=require('../../../blockButton');
+const blockButton = require('../../../Utilities/blockButton');
 module.exports = {
     name: 'lolspectator',
     

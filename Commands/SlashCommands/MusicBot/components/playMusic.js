@@ -14,9 +14,10 @@ async function play_music(guildId) {
             await embedPlayer(guildId);
             return;
         }
+    } catch (err) {
+        await embedPlayer(guildId);
+        return;
     }
-    catch(err) {await embedPlayer(guildId); return;}
-
 
     const stream = ytdl(songQueue.songs[0].url, { filter: 'audioonly', highWaterMark: 33554432 })
         .on('error', error => {
@@ -25,7 +26,6 @@ async function play_music(guildId) {
         });
 
     queue.get(guildId).stream = stream;
-
 
     const resource = createAudioResource(stream, { seek: 0, volume: 1 });
     let player;

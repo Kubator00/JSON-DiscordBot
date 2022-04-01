@@ -13,7 +13,7 @@ module.exports = async (guildId) => {
         (async () => {
             try {
                 if (channel.messages.fetch(oldMsg.id)) //sprawdzam czy istnieje bo inaczej przy wpiasniu 
-                    await oldMsg.delete();                   //wiekszej ilosci polecen na raz usuwa ta sama wiadomosc
+                    await oldMsg.delete();             //wiekszej ilosci polecen na raz usuwa ta sama wiadomosc
             } catch (err) {                            //po kilka razy i apilkacja sie crashuje
                 console.log('Błąd usuwania wiadomości');
             }
