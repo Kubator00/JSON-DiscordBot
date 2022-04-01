@@ -11,6 +11,8 @@ async function check_channel(client, channelRole, msg) {
     const guildId = msg.guild.id;
     let dbResult = await read_channel(channelRole, guildId);
     let channel = await fetch_channel(client, dbResult);
+    if (!channel)
+        msg.followUp(`Funkcja aktualnie niedostępna`);
     if (channel.id != msg.channel.id) {
         if (!channel.name)
             msg.followUp(`Funkcja aktualnie niedostępna`);
@@ -40,7 +42,7 @@ async function read_channel(channelRole, guildId) {
     let result = [];
     try {
         await clientConn.connect();
-        await clientConn.query(`SELECT channel_id, name from public."CHANNEL_NAMES" where guild_id='${guildId}' AND role='${channelRole}';`)
+        await clientConn.query(`SELECT channel_id from public."CHANNEL_NAMES" where guild_id='${guildId}' AND role='${channelRole}';`)
             .then(res => {
                 const rows = res.rows;
                 rows.map(row => {

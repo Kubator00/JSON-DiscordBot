@@ -2,8 +2,7 @@ const index = require('../../../index.js');
 const channelNames = require('../../../Database/readChannelName.js');
 const find_playlist = require('./components/findYtPlaylist.js').find_playlist;
 const add_to_queue = require('./components/addToQueue.js').add_to_queue;
-const display_queue = require('./components/displayQueue.js').display_queue;
-
+const embedPlayer = require('./components/embedPlayer');
 module.exports = {
     name: 'grajliste',
     description: "Odtwarzaj całą playliste z Youtube-a",
@@ -27,9 +26,8 @@ module.exports = {
                     break;
                 }
             }
-            display_queue(msg);
         }
-
+        embedPlayer(msg.guild.id);
     }
 }
 

@@ -6,56 +6,56 @@ const {
     createAudioResource,
 } = require('@discordjs/voice');
 module.exports.play_music = play_music;
-async function play_music(msg) {
-    const songQueue = queue.get(msg.guild.id);
+const embedPlayer = require('./embedPlayer');
+async function play_music(guildId) {
+    const songQueue = queue.get(guildId);
     try {
-        if (songQueue.songs.length == 0)
+        if (songQueue.songs.length == 0) {
+            await embedPlayer(guildId);
             return;
+        }
     }
-    catch {
-        return msg.channel.send("Błąd odtwarzacza");
-    }
+    catch(err) {await embedPlayer(guildId); return;}
 
 
     const stream = ytdl(songQueue.songs[0].url, { filter: 'audioonly', highWaterMark: 33554432 })
         .on('error', error => {
             console.log(error);
-            play_music(msg);
+            play_music(guildId);
         });
 
-    queue.get(msg.guild.id).stream = stream;
+    queue.get(guildId).stream = stream;
 
 
     const resource = createAudioResource(stream, { seek: 0, volume: 1 });
     let player;
-    if (!queue.get(msg.guild.id).player) {
-        console.log(`New AudioPlayer: ${msg.guild.name}`);
+    if (!queue.get(guildId).player) {
         player = createAudioPlayer();
-        queue.get(msg.guild.id).player = player;
+        queue.get(guildId).player = player;
     }
     else
-        player = queue.get(msg.guild.id).player;
+        player = queue.get(guildId).player;
+
+    await embedPlayer(guildId);
 
     try {
         player.play(resource);
-        const subscription = queue.get(msg.guild.id).connection.subscribe(player);
+        queue.get(guildId).connection.subscribe(player);
         player.on('error', error => {
             console.log(error);
-            queue.get(msg.guild.id).player.removeAllListeners();
+            queue.get(guildId).player.removeAllListeners();
             stream.destroy();
-            play_music(msg);
+            play_music(guildId);
         })
 
         player.on(AudioPlayerStatus.Idle, () => {
             songQueue.songs.shift();
-            queue.get(msg.guild.id).player.removeAllListeners();
+            queue.get(guildId).player.removeAllListeners();
             stream.destroy();
-            play_music(msg)
+            play_music(guildId)
         });
-
     }
     catch (err) {
         console.log(`Blad odtwarzacza, ${err}`);
-        msg.channel.send("Błąd odtwarzacza");
     }
 }

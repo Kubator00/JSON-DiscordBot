@@ -5,18 +5,17 @@ const auto_leave = require('./autoLeave').auto_leave;
 const {
     joinVoiceChannel,
 } = require('@discordjs/voice');
+const embedPlayer = require('./embedPlayer');
 module.exports.add_to_queue = add_to_queue;
-async function add_to_queue(msg, music, addPlaylist) {
+async function add_to_queue(msg, music, isPlaylist) {
     const songQueue = queue.get(msg.guild.id);
-    try {
-        if (songQueue)
-            if (songQueue.songs.length > 1)
-                throw new Error('Kolejka zawiera zbyt dużą liczbę piosenek\nSpróbuj ponownie później');
-        voiceChannel = await get_voice_connect(msg)
-    } catch (err) {
-        msg.followUp(err.message);
-        return;
-    }
+
+    if (songQueue)
+        if (songQueue.songs?.length > 40)
+            msg.channel.send('Kolejka zawiera zbyt dużą liczbę piosenek\nSpróbuj ponownie później').catch(err => console.log(err));
+
+    voiceChannel = await get_voice_connect(msg)
+
 
     const serverQueue = queue.get(msg.guild.id);
     if (!serverQueue) {
@@ -26,26 +25,21 @@ async function add_to_queue(msg, music, addPlaylist) {
             connection: null,
             songs: [],
             player: null,
-            stream: null
+            stream: null,
+            guildId: msg.guild.id
         }
         queue.set(msg.guild.id, queueConstructor);
         queueConstructor.songs.push(music);
-
-        connection = joinVoiceChannel(voiceChannel);
-        queue.get(msg.guild.id).connection = connection;
-
-        msg.followUp(`Teraz gramy: ${music.title}`);
-
-        await play_music(msg);
+        queue.get(msg.guild.id).connection = joinVoiceChannel(voiceChannel);
+        play_music(queueConstructor.guildId);
         setTimeout(() => auto_leave(msg), 5000);
     }
     else {
         serverQueue.songs.push(music);
-        if (addPlaylist == false)
-            msg.followUp(`Dodano do kolejki: ${music.title}`);
-
+        if (songQueue.songs.length != 1 && !isPlaylist)
+            embedPlayer(serverQueue.guildId);
         if (songQueue.songs.length == 1)
-            await play_music(msg);
+            play_music(serverQueue.guildId);
     }
 
 }

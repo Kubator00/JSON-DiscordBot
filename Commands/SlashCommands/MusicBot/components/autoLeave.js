@@ -1,22 +1,23 @@
 const queue = require('./queueMap');
+const embedPlayer = require('./embedPlayer');
 module.exports.auto_leave = auto_leave;
-function auto_leave(msg) {
+async function auto_leave(guildId) {
     try {
-        const server = queue.get(msg.guild.id);
+        const server = queue.get(guildId);
         if (!server) {
             return;
         }
-        const voiceChannel = queue.get(msg.guild.id).voiceChannel;
+        const voiceChannel = queue.get(guildId).voiceChannel;
         if (voiceChannel.members.size == 1) {
-            const conn = queue.get(msg.guild.id).connection;
+            const conn = queue.get(guildId).connection;
             conn.destroy();
-            queue.delete(msg.guild.id);
+            queue.delete(guildId);
+            await embedPlayer(guildId);
         }
         else
-            setTimeout(() => auto_leave(msg), 60000);
+            setTimeout(() => auto_leave(guildId), 60000);
     }
-    catch(err)
-    {
+    catch(err){
         console.log(`Błąd wyjścia z kanału głosowego, ${err}`);
     }
 }

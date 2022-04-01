@@ -28,37 +28,6 @@ module.exports = {
                     value: "```fix\n/grajliste [link] ```"
 
                 },
-                {
-                    name: "Lista piosenek",
-                    value: "```fix\n/kolejka```"
-
-                },
-                {
-                    name: "Przejdź do danej piosenki",
-                    value: "```fix\n/przejdz [nr_piosenki]```"
-
-                },
-                {
-                    name: "Usunięcie piosenki",
-                    value: "```fix\n/usun [nr_piosenki]```"
-
-                },
-                {
-                    name: 'Pomiń piosenke',
-                    value: "```fix\n/pomin```"
-
-                },
-                {
-                    name: 'Pauza piosenki',
-                    value: "```fix\n/pauza```"
-
-                },
-                {
-                    name: 'Wznowienie piosenki',
-                    value: "```fix\n/wznow```"
-
-                },
-
 
             )
 

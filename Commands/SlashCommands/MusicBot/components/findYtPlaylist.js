@@ -14,7 +14,8 @@ async function find_playlist(msg, url) {
             for (music of musicList.items) {
                 let musicInfo = {
                     title: music.title,
-                    url: music.url
+                    url: music.url,
+                    img: music.thumbnails[0].url
                 };
                 result.push(musicInfo);
             }
