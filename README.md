@@ -8,6 +8,6 @@ Wiewiorka is Discord Bot for Polish servers.
   <li> integrates with Riot Api allows searching live matches, history game and champions mastery in League Of Legends </li>
   <li> listen music from YT </li>
   <li> get gifs from Tenor API in particular text channel </li>
-  <li> display online members, date as voice channel names  </li>
+  <li> display number of online and total members and current date as voice channel names  </li>
 </ul>  
 
