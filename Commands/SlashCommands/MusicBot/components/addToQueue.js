@@ -32,7 +32,7 @@ async function add_to_queue(msg, music, isPlaylist) {
         queueConstructor.songs.push(music);
         queue.get(msg.guild.id).connection = joinVoiceChannel(voiceChannel);
         play_music(queueConstructor.guildId);
-        setTimeout(() => auto_leave(msg), 5000);
+        setTimeout(() => auto_leave(queueConstructor.guildId), 5000);
     }
     else {
         serverQueue.songs.push(music);
