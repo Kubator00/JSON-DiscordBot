@@ -1,5 +1,5 @@
 const pg = require('pg');
-const connect_database = require('../Database/databaseConn.js');
+const connect_database = require('../../Database/databaseConn.js');
 module.exports.read_voice_stats = read_voice_stats;
 async function read_voice_stats(guildId) {
     const database = connect_database();

@@ -1,12 +1,12 @@
 let usersVoiceMap = new Map();
 module.exports.usersVoiceMap = usersVoiceMap;
-const setStatsOnReady = require('./setStatsOnReady');
-const saveStatsInterval = require('./saveStatsInterval');
-const actionOnEvent = require('./actionOnEvent');
+const setStatsOnReady = require('./saveStatsComponents/setStatsOnReady');
+const saveStatsInterval = require('./saveStatsComponents/saveStatsInterval');
+const saveStatsOnLeave = require('./saveStatsComponents/saveStatsOnLeave');
 
 module.exports = (client) => {
     setStatsOnReady(client);
     saveStatsInterval();
-    actionOnEvent(client);
+    saveStatsOnLeave(client);
 }
 

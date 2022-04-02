@@ -11,15 +11,20 @@ async function check_channel(client, channelRole, msg) {
     const guildId = msg.guild.id;
     let dbResult = await read_channel(channelRole, guildId);
     let channel = await fetch_channel(client, dbResult);
-    if (!channel)
-        msg.followUp(`Funkcja aktualnie niedostępna`);
-    if (channel.id != msg.channel.id) {
-        if (!channel.name)
-            msg.followUp(`Funkcja aktualnie niedostępna`);
-        else
-            msg.followUp(`Komenda może być tylko użyta na kanale ${channel.name}`);
+
+    try {
+        if (channel.id != msg.channel.id) {
+            if (!channel.name)
+                msg.followUp(`Funkcja aktualnie niedostępna`).catch(err=>console.log(err));
+            else
+                msg.followUp(`Komenda może być tylko użyta na kanale ${channel.name}`).catch(err=>console.log(err));
+            return false;
+        }
+    } catch (err) {
+        msg.followUp(`Funkcja aktualnie niedostępna`).catch(err=>console.log(err));
         return false;
     }
+
     return true;
 }
 
@@ -29,9 +34,9 @@ async function fetch_channel(client, channelDB) {
     let channel;
     try {
         channel = await client.channels.fetch(channelDB.channel_id);
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err);
+        return false;
     }
     return channel;
 }

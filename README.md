@@ -5,14 +5,16 @@ Wiewiorka is Discord Bot for Polish servers used on PostgresSQL database.
 
 <h1>Features</h1>
 <ul>
-  <li> counting time which user spent on voice time channels  </li>
-  <li> integrates with Riot Api allows searching live matches, history game and champions mastery in League Of Legends </li>
-  <li> listen music from YT </li>
-  <li> get gifs from Tenor API in particular text channel </li>
-  <li> display number of online, total members and current date as voice channel names  </li>
-  <li> drawing numbers from the range  </li>
-  <li> blackjack game </li>
-  <li> LeagueOfLegends quiz, compete with your friends in game knowledge (Riot Token not required )</li>
+  <li> Time Counter - counting time which user spent on voice time channels </li>
+  <li> MusicBot - listen music from YT </li>
+  <li> Gifs - get gifs from Tenor API in particular text channel (Tenor Token required) </li>
+  <li> LeagueOfLegends - search live matches, history game and champions mastery  (Riot Token required) </li>
+  <li> LeagueOfLegends Quiz - compete with your friends in the quiz  (Riot Token not required) </li>
+  <li> Blackjack game - play a card game against bot and friend </li>
+  <li> Statistics - display number of online/total members and current date as voice channel names  </li>
+  <li> Draw Number - draw number from range </li>
+
+
 </ul>  
 
 <h1>Set up</h1>
@@ -27,14 +29,14 @@ You need create some environmental variable:
   <li>
        <b>TENOR_TOKEN</b> <- your personal tenor to use gif functions
   </li>
-   <li>
-    <b>POSTGRESSQL CONNECTION</b> <- database connection data
-    <ul>
+  <li>
+    <b>POSTGRESSQL DATA:</b>
+    <ul> 
       <li> DATABASE_HOST    </li>
       <li> DATABASE_NAME    </li>
       <li> DATABASE_PASSWORD</li>
-      <li> DATABASE_USER    </li>
-    </ul>  
+      <li> DATABASE_USER    </li> 
+    </ul>
   </li>
   In Database you must create 4 tables which are in file "PostgresSQL.txt". 
   Table "CHANNEL_NAMES" contains columns: channelId, guildId, and channel role. This table
@@ -56,6 +58,6 @@ You need create some environmental variable:
   Add to database rows with the following pattern: 
   INSERT INTO public."CHANNEL_NAMES"(guild_id, role, channel_id) VALUES (YOU_GUILD_ID, ROLE, CHANNEL_ID);
   
-  In the table "GIF_CATEGORY" complete the categories to be displayed in the text channel with the role of "gifs". 
+  In the table "GIF_CATEGORY" insert the categories which you want to be displayed in the text channel with the role of "gifs". 
   
  </ol>

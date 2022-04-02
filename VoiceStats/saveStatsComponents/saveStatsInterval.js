@@ -1,7 +1,7 @@
 const pg = require('pg');
-const connect_database = require('../Database/databaseConn.js');
+const connect_database = require('../../Database/databaseConn.js');
 const database = connect_database();
-const usersVoiceMap = require('./saveOnlineVoiceTime').usersVoiceMap;
+const usersVoiceMap = require('../saveOnlineVoiceTime').usersVoiceMap;
 
 module.exports = async () => {
     setInterval(() => {

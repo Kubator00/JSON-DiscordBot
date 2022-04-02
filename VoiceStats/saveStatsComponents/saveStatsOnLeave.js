@@ -1,7 +1,7 @@
 const pg = require('pg');
-const connect_database = require('../Database/databaseConn.js');
+const connect_database = require('../../Database/databaseConn.js');
 const database = connect_database();
-const usersVoiceMap = require('./saveOnlineVoiceTime').usersVoiceMap;
+const usersVoiceMap = require('../saveOnlineVoiceTime').usersVoiceMap;
 
 module.exports = async (client) => {
     client.on("voiceStateUpdate", (oldState, newState) => {
@@ -19,12 +19,12 @@ module.exports = async (client) => {
                             try {
                                 await clientConn.connect();
                                 await clientConn.query(saveDatabaseQuery(element,timeOnVoiceChannel));
+                                console.log(`Uzytkownik  ${element.id} opuscil kanal czas: ${timeOnVoiceChannel}, zapis do bazy VOICE_COUNTER_USERS `);
                             } catch (err) {
                                 console.log(err);
                             } finally {
                                 await clientConn.end();
                             }
-                            console.log(`Uzytkownik  ${element.id} opuscil kanal czas: ${timeOnVoiceChannel}, zapis do bazy VOICE_COUNTER_USERS `);
                             element.timeStamp = Date.now();
                             usersVoiceMap.delete(element.id);
                         })();

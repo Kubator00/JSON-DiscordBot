@@ -114,8 +114,8 @@ const fieldsCreator = (songs) => {
     let result = [];
 
     result.push({
-        name: 'Teraz gramy:',
-        value: `${songs[0].title}`,
+        name: `Teraz gramy: ${songs[0].title}`,
+        value: '\u200B',
     })
     if (queueLengthToDisplay > 1)
         result.push({

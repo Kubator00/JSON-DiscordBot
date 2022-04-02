@@ -1,5 +1,5 @@
 const { MessageEmbed } = require('discord.js');
-const database = require('./readVoiceStats.js');
+const database = require('./readStatsComponents/readVoiceStats.js');
 
 module.exports.send_time_voice = send_time_voice;
 async function send_time_voice(channel) {

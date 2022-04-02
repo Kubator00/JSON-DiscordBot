@@ -1,4 +1,4 @@
-const usersVoiceMap = require('./saveOnlineVoiceTime').usersVoiceMap;
+const usersVoiceMap = require('../saveOnlineVoiceTime').usersVoiceMap;
 module.exports = (client) => {
     // dodaje użytkowników do struktury mapy jeśli bot się zresetuje
     client.on("ready", () => {
