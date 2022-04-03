@@ -41,7 +41,7 @@ const createEmbed = async (songs) => {
         new MessageEmbed()
             .setColor('#0099ff')
             .setAuthor("DJ Wiewiór")
-            .setTitle("Odtwarzacz muzyki")
+            .setTitle("🎵 │ Odtwarzacz muzyki │ 🎵")
             .addFields(
                 fieldsCreator(songs)
             )

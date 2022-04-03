@@ -10,7 +10,7 @@ async function count_members(client) {
     try {
       if (channel) {
         if (channel.permissionsFor(channel.guild.me).has("MANAGE_CHANNELS")) {
-          const newName = `👦 Członków: ${guild.memberCount.toLocaleString()}`;
+          const newName = `┃ 👦 ┃ Członków: ${guild.memberCount.toLocaleString()}`;
           if (channel.name != newName)
             channel.setName(newName);
         }
@@ -33,7 +33,7 @@ async function count_online_members(client) {
     try {
       if (channel) {
         if (channel.permissionsFor(channel.guild.me).has("MANAGE_CHANNELS")) {
-          const newName = `✅ Online: ${online_members.toLocaleString()}`;
+          const newName = `┃ ✅ ┃ Online: ${online_members.toLocaleString()}`;
           if (channel.name != newName)
             channel.setName(newName);
         }
@@ -55,7 +55,7 @@ async function new_date(client) {
     try {
       if (channel) {
         if (channel.permissionsFor(channel.guild.me).has("MANAGE_CHANNELS")) {
-          const newName = "📅 " + date.day_of_the_week1() + " - " + date.day_message();
+          const newName = "┃ 📅 ┃ " + date.day_of_the_week();
           if (channel.name != newName)
             channel.setName(newName);
         }
