@@ -3,7 +3,7 @@
 Wiewiorka is Discord Bot for Polish servers used on PostgresSQL database.
 
 
-<h1>Features</h1>
+<h1>❗Features</h1>
 <ul>
   <li> Time Counter - counting time which user spent on voice time channels </li>
   <li> MusicBot - listen music from YT </li>
@@ -16,8 +16,26 @@ Wiewiorka is Discord Bot for Polish servers used on PostgresSQL database.
 
 
 </ul>  
+ 
+ <h2>🎵Music Bot🎵</h2> 
+ 
+![screen22](https://user-images.githubusercontent.com/71319403/162089746-ea1efa09-e92b-4d4e-bbef-f92bfc7dc764.jpg)
 
-<h1>Set up</h1>
+<h2>🏆VoiceTime Ranking </h2>
+
+![screen11](https://user-images.githubusercontent.com/71319403/162089648-f3ea229b-7753-4753-835a-1f388bffbe28.jpg)
+
+<h2>🎮 LeagueofLegends Functions<h2> 
+  
+![screen33](https://user-images.githubusercontent.com/71319403/162089869-65ccf5e2-1e26-4261-8495-1ec65b51841c.jpg)
+
+
+<h2>✅ Statistics as Channel Names </h2>
+  
+![obraz](https://user-images.githubusercontent.com/71319403/162089267-e20ed7da-df24-4235-89c6-c09a62b391c2.png)
+
+<br/><br/>
+<h1>⚙️Set Up</h1>
 You need create some environmental variable:
 <ol>
   <li>
