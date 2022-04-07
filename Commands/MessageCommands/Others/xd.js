@@ -3,6 +3,6 @@ module.exports = {
     description: "Odpowiada na konkretne słowa",
 
     async execute(msg) {
-        msg.react('😂')
+        await msg.react('😂')
     },
 };

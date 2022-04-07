@@ -21,8 +21,7 @@ async function tenor_gif(keywords) {
 
 
 async function rand_gif_category() {
-  let result = (await randDatabase("GIF_CATEGORY"));
-  return result;
+  return (await randDatabase("GIF_CATEGORY"));
 }
 
 

@@ -14,7 +14,7 @@ const client = new Client({
 });
 
 const process = require('process')
-const channelNameGuildStats = require('./channelNameGuildStats.js');
+const channelNameGuildStats = require('./channelNamesGuildStats.js');
 const autoMessages = require('./autoMessages.js');
 const guildJoinMember = require('./guildJoinMember.js');
 const advertisement = require('./advertisement.js');
@@ -43,24 +43,24 @@ saveOnlineVoiceTime(client);
 changeBotStatus(client);
 
 setInterval(() => {
-  channelNameGuildStats.count_members(client, channels);
-  channelNameGuildStats.new_date(client, channels);
+  channelNameGuildStats.countTotalMembers(client);
+  channelNameGuildStats.countOnlineMembers(client);
 }, 600000);
 
 
 setInterval(() => {
-  channelNameGuildStats.count_online_members(client, channels);
+  channelNameGuildStats.countOnlineMembers(client);
   console.log(`Memory usage rss, ${process.memoryUsage().rss / 1000000}MB `)
 }, 400000);
 
 
 client.once('ready', () => {
   console.log(`Logged as ${client.user.tag}!`);
-  channelNameGuildStats.count_members(client);
-  channelNameGuildStats.new_date(client);
-  channelNameGuildStats.count_online_members(client);
+  channelNameGuildStats.currentDate(client);
+  channelNameGuildStats.countTotalMembers(client);
+  channelNameGuildStats.countOnlineMembers(client);
   console.log("Logged on servers:");
-  for (guild of client.guilds.cache) {
+  for (let guild of client.guilds.cache) {
     console.log(`-${guild[1].name}`);
   }
 });

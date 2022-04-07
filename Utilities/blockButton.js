@@ -1,4 +1,4 @@
-const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
+const { MessageActionRow } = require('discord.js');
 
 module.exports = async (msg) => {
     msg.component.setDisabled(true);

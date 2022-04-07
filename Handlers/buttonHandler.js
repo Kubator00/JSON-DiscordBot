@@ -10,7 +10,7 @@ module.exports = (client) => {
         for (const file of messageFiles) {
             const command = require(`../Commands/Buttons/${folder}/${file}`);
             client.buttons.set(command.name, command);
-        };
-    };
+        }
+    }
 
 };

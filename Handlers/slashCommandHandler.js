@@ -9,8 +9,8 @@ module.exports = (client) => {
             const command = require(`../Commands/SlashCommands/${folder}/${file}`);
             client.slashCommands.set(command.name, command);
             commandsArry.push(command)
-        };
-    };
+        }
+    }
 
 
 

@@ -4,7 +4,7 @@ const database = require('./readStatsComponents/readVoiceStats.js');
 module.exports.send_time_voice = send_time_voice;
 async function send_time_voice(channel) {
     let result = await database.read_voice_stats(channel.guild.id);
-    if (result.length < 1)
+    if (!result || result.length < 1)
         return;
     const guildMembers = channel.guild.members.cache;
     try {
@@ -12,7 +12,6 @@ async function send_time_voice(channel) {
             .setColor('#ffa500')
             .setTitle("Czas spędzony przez użytkowników na kanałach głosowych\n")
             .setDescription("Jeśli nie ma cie na liście możesz wpisać komendę /moje_dane")
-            .setFooter('🧔 Autor: Kubator')
             .setTimestamp()
             .addFields(
                 embed_display(result, guildMembers)
@@ -20,7 +19,7 @@ async function send_time_voice(channel) {
         channel.send({ embeds: [embed] });
     }
 
-    catch (err) { console.log(`Błąd łączenia się z bazą ${err}`) };
+    catch (err) { console.log(`Błąd łączenia się z bazą ${err}`) }
 
 }
 

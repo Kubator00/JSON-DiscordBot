@@ -17,7 +17,7 @@ module.exports = {
         const timeToReaction = 7000;
         let playerIndex;
         const filter = (reaction, user) => {
-            return ['✅', '❌'].includes(reaction.emoji.name) && user.id == players[playerIndex].id;
+            return ['✅', '❌'].includes(reaction.emoji.name) && user.id === players[playerIndex].id;
         };
         const cards = loadCards(path.join(__dirname,'components'),'cards.json');
         let players = [];
@@ -34,7 +34,7 @@ module.exports = {
         }
 
         await joinMsg(msg, players,timeToReaction);
-        if (players.length == 0)
+        if (players.length === 0)
             return;
         gameStart(msg, cards, players, playToNumber);
 

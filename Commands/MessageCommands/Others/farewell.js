@@ -8,7 +8,7 @@ module.exports = {
     description: "Odpowiada na konkretne słowa",
 
     async execute(msg) {
-        msg.react('🖐️');
+        await msg.react('🖐️');
         const quotes = loadJSON(path.join(__dirname,'data'), 'farewellQuotes.json');
         const result = quotes[getRandomInt(0, quotes.length)];
         msg.channel.send(result)

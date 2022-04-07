@@ -1,14 +1,19 @@
-const connect_database = require("../../../Database/databaseConn.js");
-const errorNotifications = require("../../../ErrorHandlers/errorHandlers").errorNotifications;
-const { MessageEmbed } = require('discord.js');
-const pg = require('pg');
+const poolDB = require("../../../Database/databaseConn.js");
+const {MessageEmbed} = require('discord.js');
+
 module.exports = {
     name: 'moje_dane',
     description: "Wyświetla informacje o użytkowniku",
 
     async execute(msg) {
 
-        let userInfo = await read_database(msg.guild.id, msg.user.id);
+
+        let userInfo;
+        try {
+            userInfo = await read_database(msg.guild.id, msg.user.id);
+        } catch (err) {
+            console.log(err);
+        }
 
         let hour, minute;
         try {
@@ -34,7 +39,7 @@ module.exports = {
             Czas spędzony na kanałach głosowych: ${hour} godz. ${minute}min.`)
                 .setTimestamp()
 
-            msg.followUp({ embeds: [embed] });
+            msg.followUp({embeds: [embed]});
         } catch (err) {
             console.log("Wystąpił błąd polecenia moje_dane")
             console.log(err);
@@ -44,24 +49,19 @@ module.exports = {
 
 
 async function read_database(guildId, userId) {
-    const database = connect_database();
-    return new Promise(function (resolve, reject) {
-        const clientConn = new pg.Client(database);
-        clientConn.connect(err => {
-            if (err){
-                console.log(err);
-                return;
-            } 
-            clientConn.query(`SELECT id_discord, time_on_voice  from public."VOICE_COUNTER_USERS" where id_guild='${guildId}' AND id_discord='${userId}'`, (err, res) => {
-                if (err) {
-                    console.log(err);
-                    clientConn.end();
-                }
-                else {
-                    clientConn.end();
-                    resolve(res.rows[0]);
-                }
-            });
-        });
-    })
-};
+
+    const clientConn = await poolDB.connect();
+    try {
+        let result = await clientConn.query(`SELECT id_discord, time_on_voice  from public."VOICE_COUNTER_USERS" where id_guild='${guildId}' AND id_discord='${userId}'`);
+        return result.rows[0];
+    }catch (err){
+        console.log(err);
+        throw err;
+    }
+    finally {
+        clientConn?.release();
+    }
+}
+
+
+

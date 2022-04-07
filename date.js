@@ -14,8 +14,6 @@ function hour() {
 function minute() {
   var date = new Date();
   var minute = date.getMinutes();
-  if (minute < 10)
-    minute = "0" + minute;
   return minute;
 }
 

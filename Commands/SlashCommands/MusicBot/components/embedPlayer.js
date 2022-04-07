@@ -8,17 +8,19 @@ module.exports = async (guildId) => {
     if (!channel)
         return;
 
-    messages = await channel.messages.fetch();
-    messages.forEach(oldMsg => {
-        (async () => {
-            try {
-                if (channel.messages.fetch(oldMsg.id)) //sprawdzam czy istnieje bo inaczej przy wpiasniu 
-                    await oldMsg.delete();             //wiekszej ilosci polecen na raz usuwa ta sama wiadomosc
-            } catch (err) {                            //po kilka razy i apilkacja sie crashuje
-                console.log('Błąd usuwania wiadomości');
-            }
-        })();
-    })
+    let messages = await channel.messages.fetch();
+    if (channel.permissionsFor(channel.client.user).has('MANAGE_MESSAGES')) {
+        messages.forEach(oldMsg => {
+            (async () => {
+                try {
+                    if (channel.messages.fetch(oldMsg.id)) //sprawdzam czy istnieje bo inaczej przy wpiasniu
+                        await oldMsg.delete();             //wiekszej ilosci polecen na raz usuwa ta sama wiadomosc
+                } catch (err) {                            //po kilka razy i apilkacja sie crashuje
+                    console.log('Błąd usuwania wiadomości');
+                }
+            })();
+        })
+    }
 
     let songs, embeds;
     try {
@@ -98,7 +100,6 @@ const getURL = (songs) => {
 }
 
 const fieldsCreator = (songs) => {
-    console.log
     if (!songs || songs.length < 1)
         return [{
             name: '\u200B',
@@ -129,7 +130,7 @@ const fieldsCreator = (songs) => {
             value: `${i}.  ${songs[i].title}`,
         })
     }
-    if (queueLengthToDisplay == 10)
+    if (queueLengthToDisplay === 10)
         result.push({
             name: `I więcej...`,
             value: `\u200B`,

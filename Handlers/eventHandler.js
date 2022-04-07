@@ -8,6 +8,6 @@ module.exports = (client) => {
         const event = require(`../Events/${file}`);
 
         client.on(event.name, (msg) => event.execute(client, msg));
-    };
+    }
 
 };

@@ -1,6 +1,4 @@
-const pg = require('pg');
-const connect_database = require('../../Database/databaseConn.js');
-const database = connect_database();
+const poolDB = require('../../Database/databaseConn.js');
 const usersVoiceMap = require('../saveOnlineVoiceTime').usersVoiceMap;
 
 module.exports = async (client) => {
@@ -11,19 +9,19 @@ module.exports = async (client) => {
         usersVoiceMap.forEach(
             element => {
                 const member = guild.members.cache.get(element.id);
-                if (member && member.guild.id == element.id_guild) { //jesli member jest nullem to nie dotyczy tego serwera
+                if (member && member.guild.id === element.id_guild) { //jesli member jest nullem to nie dotyczy tego serwera
                     if (!member.voice.channel) {
                         const timeOnVoiceChannel = parseInt((Date.now() - element.timeStamp) / 1000);
                         (async () => {
-                            const clientConn = new pg.Client(database);
+                            let clientConn;
                             try {
-                                await clientConn.connect();
-                                await clientConn.query(saveDatabaseQuery(element,timeOnVoiceChannel));
+                                clientConn = await poolDB.connect();
+                                await clientConn.query(saveDatabaseQuery(element, timeOnVoiceChannel));
                                 console.log(`Uzytkownik  ${element.id} opuscil kanal czas: ${timeOnVoiceChannel}, zapis do bazy VOICE_COUNTER_USERS `);
                             } catch (err) {
                                 console.log(err);
                             } finally {
-                                await clientConn.end();
+                                clientConn.release();
                             }
                             element.timeStamp = Date.now();
                             usersVoiceMap.delete(element.id);
@@ -54,7 +52,7 @@ module.exports = async (client) => {
 }
 
 
-const saveDatabaseQuery = (element,timeOnVoiceChannel) => {
+const saveDatabaseQuery = (element, timeOnVoiceChannel) => {
     return (
         `DO $$
     BEGIN

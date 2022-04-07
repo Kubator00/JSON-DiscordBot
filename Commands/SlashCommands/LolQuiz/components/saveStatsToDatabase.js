@@ -1,17 +1,12 @@
 const pg = require('pg');
-const connect_database = require('../../../../Database/databaseConn.js');
+const poolDB = require('../../../../Database/databaseConn.js');
 
 module.exports = (players, guildId) => {
 
-    const conn = connect_database()
-    const clientConn = new pg.Client(conn);
-
     (async () => {
-        await clientConn.connect(err => {
-            if (err) return console.log(err);
-        });
+        const clientConn = await poolDB.connect();
 
-        for (player of players) {
+        for (let player of players) {
             await clientConn
                 .query(`
         DO $$
@@ -27,7 +22,7 @@ module.exports = (players, guildId) => {
                     console.log(err);
                 })
         }
-        await clientConn.end();
+        clientConn?.release();
 
     })();
 }

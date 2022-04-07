@@ -1,18 +1,12 @@
-const pg = require('pg');
-const connect_database = require('../../Database/databaseConn.js');
-const database = connect_database();
+const poolDB = require('../../Database/databaseConn.js');
 const usersVoiceMap = require('../saveOnlineVoiceTime').usersVoiceMap;
 
 module.exports = async () => {
     setInterval(() => {
         (async () => {
             if (usersVoiceMap.size > 0) {
-                const clientConn = new pg.Client(database);
-                await clientConn.connect(err => {
-                    if (err) return console.log(err);
-                });
+                const clientConn = await poolDB.connect();
                 //wszystkie dane z mapy zapisuje do tablicy poniewaz inaczej nie jestem w stanie wywolac zapisu do bazy danych przez async/await
-
                 let members = [];
                 usersVoiceMap.forEach(
                     element => {
@@ -25,7 +19,7 @@ module.exports = async () => {
                         members.push(result);
                     }
                 )
-                for (member of members) {
+                for (let member of members) {
                     try {
                         await clientConn.query(`
                     DO $$
@@ -36,15 +30,15 @@ module.exports = async () => {
                             INSERT INTO public."VOICE_COUNTER_USERS"(id_guild, id_discord, time_on_voice) VALUES ('${member.id_guild}','${member.id}',${member.timeOnVoiceChannel});
                     END IF;
                     END $$;`)
-                    }catch(err){
+                    } catch (err) {
                         console.log(err);
                         continue;
                     }
-                        console.log(`Zapis do bazy VOICE_COUNTER_USERS  ${member.id}, czas: ${member.timeOnVoiceChannel}s`);
-                    }
-                await clientConn.end();
+                    console.log(`Zapis do bazy VOICE_COUNTER_USERS  ${member.id}, czas: ${member.timeOnVoiceChannel}s`);
                 }
+                clientConn.release();
+            }
 
-            })();
+        })();
     }, 60000 * 10);
 }

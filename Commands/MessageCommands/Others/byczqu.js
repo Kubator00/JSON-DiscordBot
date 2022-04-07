@@ -4,7 +4,7 @@ module.exports = {
     description: "Odpowiada na konkretne słowa",
 
     async execute(msg) {
-        msg.react('👍');
+        await msg.react('👍');
         msg.channel.send("Oj tak byczq +1")
             .catch(err => console.log(err));
     },

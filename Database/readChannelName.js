@@ -1,34 +1,33 @@
-const pg = require('pg');
-const connect_database = require('./databaseConn.js');
+const poolDB = require('./databaseConn.js');
 
 
-module.exports.read_channel = read_channel;
-module.exports.fetch_channel = fetch_channel;
-module.exports.check_channel = check_channel;
+module.exports.read_channel = findChannel;
+module.exports.fetch_channel = fetchChannel;
+module.exports.check_channel = checkChannel;
 
 
-async function check_channel(client, channelRole, msg) {
+async function checkChannel(client, channelRole, msg) {
     const guildId = msg.guild.id;
-    let dbResult = await read_channel(channelRole, guildId);
-    let channel = await fetch_channel(client, dbResult);
+    let dbResult = await findChannel(channelRole, guildId);
+    let channel = await fetchChannel(client, dbResult);
 
     try {
-        if (channel.id != msg.channel.id) {
+        if (channel.id !== msg.channel.id) {
             if (!channel.name)
-                msg.followUp(`Funkcja aktualnie niedostępna`).catch(err=>console.log(err));
+                msg.followUp(`Funkcja aktualnie niedostępna`).catch(err => console.log(err));
             else
-                msg.followUp(`Komenda może być tylko użyta na kanale ${channel.name}`).catch(err=>console.log(err));
+                msg.followUp(`Komenda może być tylko użyta na kanale ${channel.name}`).catch(err => console.log(err));
             return false;
         }
     } catch (err) {
-        msg.followUp(`Funkcja aktualnie niedostępna`).catch(err=>console.log(err));
+        msg.followUp(`Funkcja aktualnie niedostępna`).catch(err => console.log(err));
         return false;
     }
 
     return true;
 }
 
-async function fetch_channel(client, channelDB) {
+async function fetchChannel(client, channelDB) {
     if (!channelDB || channelDB.length < 1)
         return false;
     let channel;
@@ -41,24 +40,19 @@ async function fetch_channel(client, channelDB) {
     return channel;
 }
 
-async function read_channel(channelRole, guildId) {
-    const database = connect_database();
-    const clientConn = new pg.Client(database);
-    let result = [];
+async function findChannel(channelRole, guildId) {
+
+
+    let clientConn;
     try {
-        await clientConn.connect();
-        await clientConn.query(`SELECT channel_id from public."CHANNEL_NAMES" where guild_id='${guildId}' AND role='${channelRole}';`)
-            .then(res => {
-                const rows = res.rows;
-                rows.map(row => {
-                    result.push(row);
-                })
-            });
+        clientConn = await poolDB.connect();
+        const result = await clientConn.query(`SELECT channel_id from public."CHANNEL_NAMES" where guild_id='${guildId}' AND role='${channelRole}';`);
+        return result.rows[0];
     } catch (err) {
         console.log(err);
         return null;
     } finally {
-        await clientConn.end();
+        clientConn?.release()
     }
-    return result[0];
+
 }
