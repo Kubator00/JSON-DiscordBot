@@ -27,7 +27,8 @@ JSON is Discord Bot for Polish servers using PostgresSQL database.
 
 <h2>🎮 LeagueofLegends Functions<h2> 
   
-![screen33](https://user-images.githubusercontent.com/71319403/162089869-65ccf5e2-1e26-4261-8495-1ec65b51841c.jpg)
+![obraz](https://user-images.githubusercontent.com/71319403/162447266-e1ca81b8-29a8-4455-b090-8bb693ade74b.png)
+
 
 
 <h2>✅ Statistics as Channel Names </h2>
