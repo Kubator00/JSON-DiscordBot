@@ -1,7 +1,7 @@
 import { MessageActionRow, MessageButton, MessageSelectMenu, MessageEmbed } from 'discord.js';
-import {client} from "../../../../index.js";
+import { client } from "../../../../index.js";
 import queue from "./queueMap.js";
-import {findChannel} from "../../../../Database/readChannelName.js";
+import { findChannel } from "../../../../Database/readChannelName.js";
 export default async (guildId) => {
     const channel = await findChannel(client, 'music_bot', guildId);
     if (!channel)
@@ -41,7 +41,6 @@ const createEmbed = async (songs) => {
     return (
         new MessageEmbed()
             .setColor('#0099ff')
-            .setAuthor("DJ Wiewiór")
             .setTitle("🎵 │ Odtwarzacz muzyki │ 🎵")
             .addFields(
                 fieldsCreator(songs)
