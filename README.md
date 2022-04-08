@@ -1,6 +1,6 @@
-# DiscordBot-JSON
+# DiscordBot-PatrickBot
 
-JSON is Discord Bot for Polish servers using PostgresSQL database.
+Patrick is Discord Bot for Polish servers using PostgresSQL database.
 
 <h1>❗Features</h1>
 <ul>
@@ -18,16 +18,19 @@ JSON is Discord Bot for Polish servers using PostgresSQL database.
  
  <h2>🎵Music Bot🎵</h2> 
  
-![s2](https://user-images.githubusercontent.com/71319403/162446809-90bf3eb5-d84c-4137-810b-0bcfcf166455.jpg)
+![s3](https://user-images.githubusercontent.com/71319403/162534333-a803f0fd-8949-4683-a131-c9ca4e4aaed1.jpg)
+
 
 <h2>🏆VoiceTime Ranking </h2>
 
-![s1](https://user-images.githubusercontent.com/71319403/162446801-dc0c8215-9a56-4bbb-8df5-de06d95b7f1f.jpg)
+
+![s1jpg](https://user-images.githubusercontent.com/71319403/162534096-d0ce6f7c-1cd0-4ca2-b4fd-11da8a99cecb.jpg)
 
 
 <h2>🎮 LeagueofLegends Functions<h2> 
   
-![obraz](https://user-images.githubusercontent.com/71319403/162447266-e1ca81b8-29a8-4455-b090-8bb693ade74b.png)
+
+![s2](https://user-images.githubusercontent.com/71319403/162534105-10f85350-e1b9-4768-a2b1-a5217f217e10.jpg)
 
 
 
@@ -57,6 +60,7 @@ You need create some environmental variable:
       <li> DATABASE_USER    </li> 
     </ul>
   </li>
+   </ol>
   In Database you must create 4 tables which are in file "PostgresSQL.txt". 
   Table "CHANNEL_NAMES" contains columns: channelId, guildId, and channel role. This table
   is used to separate bot functions into particular channels <br/>
@@ -79,4 +83,4 @@ You need create some environmental variable:
   
   In the table "GIF_CATEGORY" insert the categories which you want to be displayed in the text channel with the role of "gifs". 
   
- </ol>
+
