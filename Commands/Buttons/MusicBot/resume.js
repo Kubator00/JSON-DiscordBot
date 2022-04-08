@@ -1,6 +1,6 @@
-const queue = require('../../SlashCommands/MusicBot/components/queueMap');
+import queue from "../../SlashCommands/MusicBot/components/queueMap.js";
 
-module.exports = {
+export default {
     name: 'resume',
     async execute(msg) {
         msg.deferUpdate();

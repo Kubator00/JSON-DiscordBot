@@ -1,6 +1,5 @@
-const { MessageEmbed } = require('discord.js');
-module.exports.roundEndMsg = roundEndMsg;
-async function roundEndMsg(msg, round, players, playToNumber) {
+import {MessageEmbed} from "discord.js";
+export default async function roundEndMsg(msg, round, players, playToNumber) {
     let imgUrl;
     let max = 0;
     //wyswietla w wiadomosci avatar z osoba ktora jest najblizej wyniku
@@ -26,7 +25,7 @@ async function roundEndMsg(msg, round, players, playToNumber) {
 function generateEmbedFields(players, round) {
     let result = [];
     for (let i in round) {
-        const player = players.find(element => element.id == round[i].id);
+        const player = players.find(element => element.id === round[i].id);
         result.push(
             {
                 name: `Gracz ${player.name}`,

@@ -1,21 +1,20 @@
-const { DiscordTogether } = require('discord-together');
-const index = require('../../../index.js');
-index.client.discordTogether = new DiscordTogether(index.client);
+import {DiscordTogether} from "discord-together";
+import {client} from "../../../index.js";
 
-module.exports = {
+client.discordTogether = new DiscordTogether(client);
+
+export default {
     name: 'betrayal',
     description: "Graj wspólnie na Discordzie",
 
-    async execute(msg) {  
+    async execute(msg) {
         if (msg.member.voice.channel) {
-            index.client.discordTogether.createTogetherCode(msg.member.voice.channel.id, 'betrayal').then(async invite => {
-                msg.followUp("Link do gry: ")
+            client.discordTogether.createTogetherCode(msg.member.voice.channel.id, 'betrayal').then(async invite => {
+                await msg.followUp("Link do gry: ")
                 return msg.channel.send(`${invite.code}`);
             });
+        } else {
+            await msg.followUp("Musisz znajdować się na kanale głosowym!")
         }
-        else {
-            msg.followUp("Musisz znajdować się na kanale głosowym!")
-        }
-
     }
 }

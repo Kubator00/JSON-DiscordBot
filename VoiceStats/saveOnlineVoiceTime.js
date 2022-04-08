@@ -1,10 +1,10 @@
 let usersVoiceMap = new Map();
-module.exports.usersVoiceMap = usersVoiceMap;
-const setStatsOnReady = require('./saveStatsComponents/setStatsOnReady');
-const saveStatsInterval = require('./saveStatsComponents/saveStatsInterval');
-const saveStatsOnLeave = require('./saveStatsComponents/saveStatsOnLeave');
+export {usersVoiceMap};
+import setStatsOnReady from "./saveStatsComponents/setStatsOnReady.js";
+import saveStatsInterval from "./saveStatsComponents/saveStatsInterval.js";
+import saveStatsOnLeave from "./saveStatsComponents/saveStatsOnLeave.js";
 
-module.exports = (client) => {
+export default (client) => {
     setStatsOnReady(client);
     saveStatsInterval();
     saveStatsOnLeave(client);

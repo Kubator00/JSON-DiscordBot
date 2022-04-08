@@ -1,4 +1,4 @@
-module.exports = {
+export default{
     name: 'jeść',
     aliases: ['zjeść','jem','zjem', 'wszamam', 'wszamać',],
     description: "Odpowiada na konkretne słowa",

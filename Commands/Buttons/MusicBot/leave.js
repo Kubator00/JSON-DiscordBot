@@ -1,12 +1,11 @@
-const queue = require('../../SlashCommands/MusicBot/components/queueMap');
-const embedPlayer = require('../../SlashCommands/MusicBot/components/embedPlayer');
+import queue from "../../SlashCommands/MusicBot/components/queueMap.js";
+import embedPlayer from "../../SlashCommands/MusicBot/components/embedPlayer.js";
 
-
-module.exports = {
+export default{
     name: 'leave',
     async execute(msg) {
         try {
-            msg.deferUpdate();
+            await msg.deferUpdate();
             const conn = queue.get(msg.guild.id).connection;
             const voiceChannel = msg.member.voice.channel;
             if (!voiceChannel) return;

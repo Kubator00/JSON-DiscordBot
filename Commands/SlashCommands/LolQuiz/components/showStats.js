@@ -1,9 +1,9 @@
-const { MessageEmbed } = require('discord.js');
-const database = require('./readStatsFromDatabase.js');
+import {MessageEmbed} from "discord.js";
+import readLolQuizStats from "./readStatsFromDatabase.js";
 
-module.exports = (channel) => {
+export default (channel) => {
     (async () => {
-        let result = await database.read_lol_quotes_stats(channel.guild.id);
+        let result = await readLolQuizStats(channel.guild.id);
         if (result.length < 1)
             channel.send("Brak danych do wyświetlenia");
         const guildMembers = channel.guild.members.cache;
@@ -20,7 +20,7 @@ module.exports = (channel) => {
 
         }
 
-        catch (err) { console.log(`Błąd łączenia się z bazą ${err}`) };
+        catch (err) { console.log(`Błąd łączenia się z bazą ${err}`) }
 
     })();
 }

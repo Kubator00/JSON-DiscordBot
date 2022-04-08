@@ -1,6 +1,7 @@
-const index = require('../../../index');
-const errorNotifications = require('../../../ErrorHandlers/errorHandlers').errorNotifications;
-module.exports = {
+import {client} from "../../../index.js";
+
+
+export default {
     name: 'lista2',
     description: "Wyświetla listę znajdujących się na kanale głosowych",
 
@@ -8,14 +9,14 @@ module.exports = {
         const voiceChannel = msg.member.voice.channel;
         if (!voiceChannel)
             return msg.followUp("Musisz znajdować sie na kanale głosowym!");
-        const guild = index.client.guilds.cache.get(msg.guild.id);
+        const guild = client.guilds.cache.get(msg.guild.id);
         const channelVoiceId = msg.member.voice.channelId;
-        const channel = guild.channels.cache.find(element => (element.id == channelVoiceId));
+        const channel = guild.channels.cache.find(element => (element.id === channelVoiceId));
 
 
         let userList = [];
         channel.members.forEach(
-            user = (user) => {
+             (user) => {
                 if (user.nickname)
                     userList.push(user.nickname);
                 else
@@ -25,7 +26,7 @@ module.exports = {
         userList.sort();
         let result = `Lista członków na kanale "${channel.name}":\n`;
         let i = 1;
-        for (user of userList) {
+        for (let user of userList) {
             result += `${i}. ${user}\n`;
             i += 1;
         }
@@ -33,7 +34,7 @@ module.exports = {
             await msg.followUp(result);
         }
         catch (err) {
-            errorNotifications(`Wykryto błąd, komenda /lista, ${err}`);
+          console.log(err);
         }
     }
 }

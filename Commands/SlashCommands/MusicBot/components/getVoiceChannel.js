@@ -1,5 +1,4 @@
-module.exports.get_voice_connect=get_voice_connect;
-async function get_voice_connect(msg) {
+export default async function getVoiceConnection(msg) {
     const voiceChannel = msg.member.voice.channel;
     if (!voiceChannel) 
         throw new Error('Musisz znajdować sie na kanale głosowym!')
@@ -9,11 +8,9 @@ async function get_voice_connect(msg) {
     if (!permissions.has('CONNECT') || !permissions.has('SPEAK'))
         throw new Error('Nie mam uprawnień do połączenia z tym kanałem głosowym')
 
-    const connection = {
+    return {
         channelId: voiceChannel.id,
         guildId: voiceChannel.guild.id,
         adapterCreator: voiceChannel.guild.voiceAdapterCreator,
-    };
-
-    return connection
+    }
 }

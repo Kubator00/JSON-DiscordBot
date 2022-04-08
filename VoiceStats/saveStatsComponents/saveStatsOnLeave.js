@@ -1,7 +1,7 @@
-const poolDB = require('../../Database/databaseConn.js');
-const usersVoiceMap = require('../saveOnlineVoiceTime').usersVoiceMap;
+import poolDB from '../../Database/databaseConn.js';
+import {usersVoiceMap} from "../saveOnlineVoiceTime.js";
 
-module.exports = async (client) => {
+export default async (client) => {
     client.on("voiceStateUpdate", (oldState, newState) => {
 
         const guild = client.guilds.cache.get(newState.guild.id);
@@ -21,7 +21,7 @@ module.exports = async (client) => {
                             } catch (err) {
                                 console.log(err);
                             } finally {
-                                clientConn.release();
+                                clientConn?.release();
                             }
                             element.timeStamp = Date.now();
                             usersVoiceMap.delete(element.id);

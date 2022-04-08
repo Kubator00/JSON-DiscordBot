@@ -1,6 +1,6 @@
-const { MessageActionRow } = require('discord.js');
+import {MessageActionRow} from "discord.js";
 
-module.exports = async (msg) => {
+export default async (msg) => {
     msg.component.setDisabled(true);
     await msg.update({
         components: [

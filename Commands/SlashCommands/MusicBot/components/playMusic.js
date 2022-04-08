@@ -1,16 +1,16 @@
-const ytdl = require('ytdl-core');
-const queue = require('./queueMap');
-const {
+import ytdl from "ytdl-core";
+import queue from "./queueMap.js";
+import embedPlayer from "./embedPlayer.js";
+import {
     AudioPlayerStatus,
     createAudioPlayer,
     createAudioResource,
-} = require('@discordjs/voice');
-module.exports.play_music = play_music;
-const embedPlayer = require('./embedPlayer');
-async function play_music(guildId) {
+} from '@discordjs/voice';
+
+export default async function playMusic(guildId) {
     const songQueue = queue.get(guildId);
     try {
-        if (songQueue.songs.length == 0) {
+        if (songQueue.songs.length === 0) {
             await embedPlayer(guildId);
             return;
         }
@@ -19,21 +19,20 @@ async function play_music(guildId) {
         return;
     }
 
-    const stream = ytdl(songQueue.songs[0].url, { filter: 'audioonly', highWaterMark: 33554432 })
+    const stream = ytdl(songQueue.songs[0].url, {filter: 'audioonly', highWaterMark: 33554432})
         .on('error', error => {
             console.log(error);
-            play_music(guildId);
+            playMusic(guildId);
         });
 
     queue.get(guildId).stream = stream;
 
-    const resource = createAudioResource(stream, { seek: 0, volume: 1 });
+    const resource = createAudioResource(stream, {seek: 0, volume: 1});
     let player;
     if (!queue.get(guildId).player) {
         player = createAudioPlayer();
         queue.get(guildId).player = player;
-    }
-    else
+    } else
         player = queue.get(guildId).player;
 
     await embedPlayer(guildId);
@@ -45,17 +44,16 @@ async function play_music(guildId) {
             console.log(error);
             queue.get(guildId).player.removeAllListeners();
             stream.destroy();
-            play_music(guildId);
+            playMusic(guildId);
         })
 
         player.on(AudioPlayerStatus.Idle, () => {
             songQueue.songs.shift();
             queue.get(guildId).player.removeAllListeners();
             stream.destroy();
-            play_music(guildId)
+            playMusic(guildId)
         });
-    }
-    catch (err) {
+    } catch (err) {
         console.log(`Blad odtwarzacza, ${err}`);
     }
 }

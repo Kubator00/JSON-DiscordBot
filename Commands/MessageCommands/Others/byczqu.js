@@ -1,4 +1,4 @@
-module.exports = {
+export default{
     name: 'byczqu',
     aliases: ['byqu', 'byczq', 'byczu'],
     description: "Odpowiada na konkretne słowa",

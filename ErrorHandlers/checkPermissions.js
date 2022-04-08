@@ -1,10 +1,9 @@
-const date = require('../date.js')
+import * as date from '../Utilities/date.js'
 
-module.exports = (channel) => {
-    if (!channel) {
-        // errorNotifications(`Na serwerze brakuje kanału`)
+export default  (channel) => {
+    if (!channel)
         return false;
-    }
+
     if (!channel.permissionsFor(channel.guild.me).has("VIEW_CHANNEL")) {
         const description = `Nie mam uprawnień wyświetlania kanału: ${channel.name}, serwer:  ${channel.guild.name}`;
         console.log(`Wykryto błąd\nData: ${date.day_message()}\nOpis: ${description}`);
@@ -31,5 +30,4 @@ module.exports = (channel) => {
 
     return true;
 }
-
 

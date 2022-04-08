@@ -1,14 +1,13 @@
-const lolHistory = require('../../SlashCommands/LolApi/Functions/history');
-const lolMessage = require('../../SlashCommands/LolApi/Functions/message');
-const blockButton = require('../../../Utilities/blockButton');
+import history from "../../SlashCommands/LolApi/Functions/history.js";
+import message from "../../SlashCommands/LolApi/Functions/message.js";
+import blockButton from "../../../Utilities/blockButton.js";
 
-
-module.exports = {
+export default {
     name: 'lolhistory',
     async execute(msg) {
         await blockButton(msg);
         const summoner = msg.customId.split(':');
-        await lolHistory(msg, summoner[1], msg.values[0]);
-        await lolMessage(msg, summoner[1], false);
+        await history(msg, summoner[1], msg.values[0]);
+        await message(msg, summoner[1], false);
     }
 }

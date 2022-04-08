@@ -1,8 +1,6 @@
-module.exports.resultMsg = resultMsg;
-const { MessageEmbed } = require('discord.js');
-const Player = require('./player');
+import {MessageEmbed} from "discord.js";
 
-async function resultMsg(msg, players) {
+export default async function resultMsg(msg, players) {
     let embed = new MessageEmbed()
         .setColor('#ffa500')
         .setTitle("Końcowy rezultat rozgrywki")
@@ -17,7 +15,7 @@ async function resultMsg(msg, players) {
 
 function embed_display(players) {
     let result = [];
-    for (player of players) {
+    for (let player of players) {
         let em = {};
         em = {
             name: `${player.name} `,

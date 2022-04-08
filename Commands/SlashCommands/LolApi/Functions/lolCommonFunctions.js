@@ -1,21 +1,9 @@
-const fetch = require('node-fetch');
-const lolToken = require('./lolToken.js');
-const apiLolToken = lolToken.apiLolToken;
-
-module.exports.readChampionMastery = readChampionMastery;
-module.exports.readChampionsName = readChampionsName;
-module.exports.readSpellsName = readSpellsName;
-module.exports.embedDisplayName = embedDisplayName;
-module.exports.readAccountLevel = readAccountLevel;
-module.exports.readGameMode = readGameMode;
-module.exports.readPlayerRank = readPlayerRank;
-module.exports.readPlayerRankAndStats = readPlayerRankAndStats;
-module.exports.findYourTeam = findYourTeam; ``
-module.exports.getDragonVersion = getDragonVersion;
-module.exports.checkResponseStatus = checkResponseStatus;
+import fetch from 'node-fetch'
+import apiLolToken from "./lolToken.js";
 
 
-async function getDragonVersion() {
+
+export async function getDragonVersion() {
     let url = "https://ddragon.leagueoflegends.com/api/versions.json";
     let response, json;
     try {
@@ -31,7 +19,7 @@ async function getDragonVersion() {
 }
 
 
-async function readChampionMastery(summonerId, championId) {
+export async function readChampionMastery(summonerId, championId) {
     let url = `https://eun1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${summonerId}/by-champion/${championId}?api_key=${apiLolToken}`;
     let response;
     try {
@@ -54,7 +42,7 @@ async function readChampionMastery(summonerId, championId) {
     return json.championPoints;
 }
 
-function checkResponseStatus(responseStatus) {
+export function checkResponseStatus(responseStatus) {
     try {
         if (responseStatus == 429)
             throw "Wykorzystano dostępną ilość zapytań, spróbuj ponownie później";
@@ -67,7 +55,7 @@ function checkResponseStatus(responseStatus) {
     }
 }
 
-async function readChampionsName(playersData) {
+export async function readChampionsName(playersData) {
     const url = `http://ddragon.leagueoflegends.com/cdn/${await getDragonVersion()}/data/pl_PL/champion.json`;
     let response;
     try {
@@ -92,7 +80,7 @@ async function readChampionsName(playersData) {
     });
 }
 
-async function readSpellsName(playersData) {
+export async function readSpellsName(playersData) {
     let url = "http://ddragon.leagueoflegends.com/cdn/" + await getDragonVersion() + "/data/pl_PL/summoner.json";
     let response;
     try {
@@ -119,12 +107,12 @@ async function readSpellsName(playersData) {
 }
 
 
-function embedDisplayName(playerData) {
+export function embedDisplayName(playerData) {
     return playerData.championName + " -> " + playerData.summonerName;
 }
 
 
-async function readAccountLevel(summonerName) {
+export async function readAccountLevel(summonerName) {
     summonerName = encodeURI(summonerName);
     const url = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName + "?api_key=" + apiLolToken;
     let response;
@@ -145,7 +133,7 @@ async function readAccountLevel(summonerName) {
 }
 
 
-async function readGameMode(queueID) {
+export async function readGameMode(queueID) {
     let url = "http://static.developer.riotgames.com/docs/lol/queues.json";
 
     let response;
@@ -171,7 +159,7 @@ async function readGameMode(queueID) {
     return "Brak danych"
 }
 
-function findYourTeam(playerIndex, teamNumber) { //teamNumber przyjmuje wartości 0 lub 1
+export function findYourTeam(playerIndex, teamNumber) { //teamNumber przyjmuje wartości 0 lub 1
     if (playerIndex < 5 && teamNumber == 0)
         return "Twoja drużyna";
     if ((playerIndex >= 5 && teamNumber == 0))
@@ -185,7 +173,7 @@ function findYourTeam(playerIndex, teamNumber) { //teamNumber przyjmuje wartośc
 
 
 
-async function readPlayerRank(playerId) {
+export async function readPlayerRank(playerId) {
     let url = "https://eun1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + playerId + "/?api_key=" + apiLolToken;
     let response;
     try{
@@ -229,7 +217,7 @@ async function readPlayerRank(playerId) {
 }
 
 
-async function readPlayerRankAndStats(playerId) {
+export async function readPlayerRankAndStats(playerId) {
     let url = "https://eun1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + playerId + "/?api_key=" + apiLolToken;
     let response;
     try {

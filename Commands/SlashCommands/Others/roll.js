@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     name: 'losowanie',
     description: "Losowanie liczby",
     options: [
@@ -12,11 +12,11 @@ module.exports = {
     async execute(msg) {
         let number = msg.options.getNumber('zakres');
         if (number < 2 || number > 100000) {
-            msg.followUp("Podano błędną wartość 😑");
+            await msg.followUp("Podano błędną wartość 😑");
 
         }
         else {
-            msg.followUp("Wylosowano liczbę numer: " + Math.floor(Math.random() * number + 1));
+            await msg.followUp("Wylosowano liczbę numer: " + Math.floor(Math.random() * number + 1));
         }
     }
 }

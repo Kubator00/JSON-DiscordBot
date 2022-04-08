@@ -1,16 +1,19 @@
-const connect_database = require("../../../Database/databaseConn.js");
-const { MessageEmbed } = require('discord.js');
-const pg = require('pg');
-module.exports = {
+import poolDB from '../../../Database/databaseConn.js'
+import {MessageEmbed} from "discord.js";
+
+export default {
     name: 'quiz_lol_moje_statystyki',
     description: "Wyświetla twoje statystyki",
     async execute(msg) {
+        let userInfo;
         try {
-            var userInfo = await read_database(msg.guild.id, msg.user.id);
+            userInfo = await readStatsFromDatabase(msg.guild.id, msg.user.id);
         } catch (err) {
-            msg.followUp(err.message);
+            await msg.followUp(err.message);
             return;
         }
+        if (userInfo.length < 1)
+            return await msg.followUp("Brak danych o użytkowniku");
 
         const guildMembers = msg.guild.members.cache;
         let nameToDisplay = guildMembers.get(userInfo['id_discord']).nickname;
@@ -29,33 +32,23 @@ module.exports = {
                 },
             )
 
-        msg.followUp({ embeds: [embed] });
+        await msg.followUp({embeds: [embed]});
     }
 }
 
-async function read_database(guildId, userId) {
-    const database = connect_database();
-    const clientConn = new pg.Client(database);
+async function readStatsFromDatabase(guildId, userId) {
+    let clientConn;
 
-    let result = [];
     try {
-        await clientConn.connect();
-        await clientConn.query(`SELECT id_discord, correct_answers, wrong_answers  from public."LOL_QUOTES_STATS" where id_guild='${guildId}' AND id_discord='${userId}'`)
-            .then(res => {
-                const rows = res.rows;
-                rows.map(row => {
-                    result.push(row);
-                })
-            });
+        clientConn = await poolDB.connect();
+        let result = await clientConn.query(`SELECT id_discord, correct_answers, wrong_answers  from public."LOL_QUOTES_STATS" where id_guild='${guildId}' AND id_discord='${userId}'`);
+        if (result.rows.length > 0)
+            return result.rows[0];
     } catch (err) {
         console.log(err)
         throw new Error('Błąd pobierania z bazy');
     } finally {
-        await clientConn.end();
+        await clientConn?.release();
     }
 
-    if (result.length < 1)
-        throw new Error('Brak danych o użytkowniku');
-
-    return result[0];
-};
+}

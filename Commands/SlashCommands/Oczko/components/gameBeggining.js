@@ -1,6 +1,7 @@
-const getRandomInt = require("./getRandomInt.js");
-const { MessageEmbed } = require('discord.js');
-module.exports = (msg, cards, players,playToNumber) => {
+import getRandomInt from "../../../../Utilities/getRandomInt.js";
+import {MessageEmbed} from "discord.js";
+
+export default (msg, cards, players,playToNumber) => {
     let round = [];
     for (let i in players) {
         const randNumber1 = getRandomInt(0, cards.length);
@@ -43,7 +44,7 @@ module.exports = (msg, cards, players,playToNumber) => {
 function generateFirstEmbedFields(players, round) {
     let result = [];
     for (let i in round) {
-        const player = players.find(element => element.id == round[i].id);
+        const player = players.find(element => element.id === round[i].id);
         result.push(
             {
                 name: `Gracz ${player.name}`,

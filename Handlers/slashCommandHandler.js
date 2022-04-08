@@ -1,25 +1,24 @@
-const { readdirSync } = require('fs');
+import {readdirSync} from 'fs';
 
-module.exports = (client) => {
-    let commandsArry = [];
+export default async (client) => {
+
+    let commands = [];
     const commandFolder = readdirSync('./Commands/SlashCommands')
     for (const folder of commandFolder) {
         const commandFiles = readdirSync(`./Commands/SlashCommands/${folder}`).filter(file => file.endsWith('.js'));
         for (const file of commandFiles) {
-            const command = require(`../Commands/SlashCommands/${folder}/${file}`);
+            const command= (await import(`../Commands/SlashCommands/${folder}/${file}`)).default;
             client.slashCommands.set(command.name, command);
-            commandsArry.push(command)
+            commands.push(command)
         }
     }
 
-
-
     client.on("ready", () => {
-        for (guild of client.guilds.cache.map(guild => guild.id))
-            client.guilds.cache.get(guild).commands.set(commandsArry);
+        for (let guild of client.guilds.cache.map(guild => guild.id))
+            client.guilds.cache.get(guild).commands.set(commands);
     });
     client.on("guildCreate", (guild) => {
-        client.guilds.cache.get(guild.id).commands.set(commandsArry);
+        client.guilds.cache.get(guild.id).commands.set(commands);
     });
 
 };

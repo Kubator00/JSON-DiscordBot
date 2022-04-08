@@ -1,5 +1,6 @@
-const usersVoiceMap = require('../saveOnlineVoiceTime').usersVoiceMap;
-module.exports = (client) => {
+import {usersVoiceMap} from "../saveOnlineVoiceTime.js";
+
+export default (client) => {
     // dodaje użytkowników do struktury mapy jeśli bot się zresetuje
     client.on("ready", () => {
         for (let guildId of client.guilds.cache.map(guild => guild.id)) {

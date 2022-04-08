@@ -1,15 +1,15 @@
-const channels = require('./Database/readChannelName');
-const checkPremissions = require('./ErrorHandlers/errorHandlers.js').checkPremissions;
-module.exports = (client) => {
+import {findChannel} from "./Database/readChannelName.js";
+import {checkPermissions} from "./ErrorHandlers/errorHandlers.js";
+export default  (client) => {
     client.on('messageCreate', msg => {
         if (msg.author.bot) 
             return;
         
-        msgToLower = msg.content.toLowerCase();
+        const msgToLower = msg.content.toLowerCase();
         //wysylanie ogloszen
         (async () => {
-            const channel = await channels.fetch_channel(client, await channels.read_channel('advertisment', msg.guild.id));
-            if (!checkPremissions(channel))
+            const channel = await findChannel(client,'advertisment', msg.guild.id);
+            if (!checkPermissions(channel))
                 return;
             if (msg.channel.id === channel.id) {
                 if (msgToLower === '/nazwy_kanałów' || msgToLower === '/nazwy_kanalow') {
@@ -23,7 +23,7 @@ module.exports = (client) => {
                 }
                 const splitMsg = msgToLower.split(":");
                 const channelToSend = msg.guild.channels.cache.find(element => (element.name === splitMsg[0] && element.type === "GUILD_TEXT"));
-                if (!checkPremissions(channelToSend)) {
+                if (!checkPermissions(channelToSend)) {
                     msg.channel.send("Kanał nie istnieje");
                     return;
                 }

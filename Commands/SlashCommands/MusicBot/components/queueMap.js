@@ -1,2 +1,1 @@
-let queue = new Map();
-module.exports = queue;
+export default new Map();

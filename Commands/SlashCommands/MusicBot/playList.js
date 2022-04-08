@@ -1,9 +1,10 @@
-const index = require('../../../index.js');
-const channelNames = require('../../../Database/readChannelName.js');
-const find_playlist = require('./components/findYtPlaylist.js').find_playlist;
-const add_to_queue = require('./components/addToQueue.js').add_to_queue;
-const embedPlayer = require('./components/embedPlayer');
-module.exports = {
+import {client} from "../../../index.js";
+import {checkIfChannelIsCorrect} from "../../../Database/readChannelName.js";
+import findPlaylistYT from "./components/findYtPlaylist.js";
+import addSongToQueue from "./components/addToQueue.js";
+import embedPlayer from "./components/embedPlayer.js";
+
+export default {
     name: 'grajliste',
     description: "Odtwarzaj całą playliste z Youtube-a",
     options: [
@@ -15,14 +16,14 @@ module.exports = {
         },
     ],
     async execute(msg) {
-        if (!await channelNames.check_channel(index.client, 'music_bot', msg))
+        if (!await checkIfChannelIsCorrect(client, 'music_bot', msg))
             return;
 
         const url = msg.options.getString('url');
-        let musicList = await find_playlist(msg, url);
+        let musicList = await findPlaylistYT(msg, url);
         if (musicList) {
-            for (music of musicList) {
-                if (await add_to_queue(msg, music, true) == -1) {
+            for (let music of musicList) {
+                if (await addSongToQueue(msg, music, true) === -1) {
                     break;
                 }
             }

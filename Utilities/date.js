@@ -1,7 +1,5 @@
-module.exports = { minute, hour, day_message, day_of_the_week, full_day_message }
-
 //tylko godzina
-function hour() {
+export function hour() {
   var date = new Date();
   var hour = date.getHours();
   if (hour == 24)
@@ -11,14 +9,14 @@ function hour() {
   return hour;
 }
 //tylko minuta
-function minute() {
+export function minute() {
   var date = new Date();
   var minute = date.getMinutes();
   return minute;
 }
 
 //data + pełna nazwa miesiąca + rok
-function full_day_message() {
+export function full_day_message() {
   var date = new Date();
   var fullMonth = full_month();
 
@@ -26,7 +24,7 @@ function full_day_message() {
 }
 
 //data liczbowo
-function day_message() {
+export function day_message() {
   var date = new Date();
   var month = Number.parseInt(date.getMonth()) + 1;
   return date.getDate() + "." + month + "." + date.getFullYear() + "r.";
@@ -34,7 +32,7 @@ function day_message() {
 
 
 //nazwa dnia tygodnia, tytul kanalu glosowego
-function day_of_the_week() {
+export function day_of_the_week() {
   var date = new Date();
   var dayOfTheWeek = date.getDay();
   switch (dayOfTheWeek) {

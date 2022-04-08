@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     name: 'xd',
     description: "Odpowiada na konkretne słowa",
 

@@ -1,13 +1,13 @@
-const queue = require('./queueMap');
-const get_voice_connect = require('./getVoiceChannel').get_voice_connect;
-const play_music = require('./playMusic').play_music;
-const auto_leave = require('./autoLeave').auto_leave;
-const {
-    joinVoiceChannel,
-} = require('@discordjs/voice');
-const embedPlayer = require('./embedPlayer');
-module.exports.add_to_queue = add_to_queue;
-async function add_to_queue(msg, music, isPlaylist) {
+import queue from "./queueMap.js";
+import embedPlayer from "./embedPlayer.js";
+import getVoiceConnection from "./getVoiceChannel.js";
+import playMusic from "./playMusic.js";
+import autoLeaveChannel from "./autoLeave.js";
+import {joinVoiceChannel} from "@discordjs/voice";
+
+
+
+export default async function addSongToQueue(msg, music, isPlaylist) {
     const songQueue = queue.get(msg.guild.id);
     if (songQueue)
         if (songQueue.songs?.length > 40)
@@ -15,7 +15,7 @@ async function add_to_queue(msg, music, isPlaylist) {
 
     let voiceChannel;
     try {
-        voiceChannel = await get_voice_connect(msg)
+        voiceChannel = await getVoiceConnection(msg)
     } catch (err) {
         msg.channel.send(err).catch(err => console.log(err));
     }
@@ -31,18 +31,18 @@ async function add_to_queue(msg, music, isPlaylist) {
             stream: null,
             songs: [],
         }
-        
+
         queue.set(msg.guild.id, queueConstructor);
         queueConstructor.songs.push(music);
-        play_music(queueConstructor.guildId);
-        setTimeout(() => auto_leave(queueConstructor.guildId), 5000);
+        playMusic(queueConstructor.guildId);
+        setTimeout(() => autoLeaveChannel(queueConstructor.guildId), 5000);
     }
     else {
         serverQueue.songs.push(music);
-        if (songQueue.songs.length != 1 && !isPlaylist)
+        if (songQueue.songs.length !== 1 && !isPlaylist)
             embedPlayer(serverQueue.guildId);
-        if (songQueue.songs.length == 1)
-            play_music(serverQueue.guildId);
+        if (songQueue.songs.length === 1)
+            playMusic(serverQueue.guildId);
     }
 
 }

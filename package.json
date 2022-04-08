@@ -1,6 +1,7 @@
 {
   "name": "wiewiorka",
   "version": "1.0.0",
+  "type": "module",
   "description": "Discord Bot",
   "main": "index.js",
   "scripts": {

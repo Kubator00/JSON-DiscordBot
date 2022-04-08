@@ -1,8 +1,8 @@
-const fs = require('fs');
-const pathR = require('path');
+import * as fs from 'fs';
+import * as pathR from 'path'
 
 
-module.exports = (dirname,filename) => {
+export default (dirname,filename) => {
     const path = pathR.join(dirname, filename);
     let cards = fs.readFileSync(path,
         { encoding: 'utf8', flag: 'r' });

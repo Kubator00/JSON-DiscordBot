@@ -1,14 +1,12 @@
-const checkPremissions = require("../ErrorHandlers/errorHandlers").checkPremissions;
+import {checkPermissions} from "../ErrorHandlers/errorHandlers.js";
 
-module.exports = {
+export default {
     name: "messageCreate",
-
     async execute(client, msg) {
-        if (!checkPremissions(msg.channel))
+        if (!checkPermissions(msg.channel))
             return;
         if (msg.author.bot)
             return;
-
         let normalizeMsg = msg.content.toLowerCase();
         let command;
         let name;
@@ -32,7 +30,7 @@ module.exports = {
 
         if (!command)
             return;
-        if (normalizeMsg.length != name.length) {
+        if (normalizeMsg.length !== name.length) {
             let index = normalizeMsg.indexOf(name)
             //sprawdzamy czy następny znak to litera jeśli tak to anulujemy
             if (isLetter(normalizeMsg.charAt(index + name.length)))
@@ -40,7 +38,7 @@ module.exports = {
 
             //sprawdzamy czy poprzedni znak to spacja jeśli nie to anulujemy
             if (index > 0)
-                if (normalizeMsg.charAt(index - 1) != ' ')
+                if (normalizeMsg.charAt(index - 1) !== ' ')
                     return;
             //sprawdzam czy dlugosc wiadomosci nie rozni sie znaczaco od komendy
             if (Math.abs(normalizeMsg.length - name.length) > 4)

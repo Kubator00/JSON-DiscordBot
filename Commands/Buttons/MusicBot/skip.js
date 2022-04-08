@@ -1,11 +1,9 @@
-const embedPlayer = require('../../SlashCommands/MusicBot/components/embedPlayer');
-const queue = require('../../SlashCommands/MusicBot/components/queueMap');
-const play_music = require('../../SlashCommands/MusicBot/components/playMusic').play_music;
-
-module.exports = {
+import queue from "../../SlashCommands/MusicBot/components/queueMap.js";
+import playMusic from "../../SlashCommands/MusicBot/components/playMusic.js";
+export default{
     name: 'skip',
     async execute(msg) {
-        msg.deferUpdate();
+        await msg.deferUpdate();
         if (!queue.get(msg.guild.id))
             return;
         try {
@@ -15,7 +13,7 @@ module.exports = {
             queue.get(msg.guild.id).stream.destroy();
             queue.get(msg.guild.id).player.removeAllListeners();
             queue.get(msg.guild.id).songs.shift();
-            play_music(msg.guild.id, false);
+            playMusic(msg.guild.id, false);
         }
         catch (err) {
             console.log(err);

@@ -1,13 +1,13 @@
-const { MessageEmbed } = require('discord.js');
-const fetch = require('node-fetch');
-const lolFunctions = require('./lolCommonFunctions.js');
-const lolToken = require('./lolToken.js');
-const apiLolToken = lolToken.apiLolToken;
+import {MessageEmbed} from "discord.js";
+import fetch from "node-fetch";
+import * as lolFunctions from './lolCommonFunctions.js'
+import apiLolToken from './lolToken.js'
 
 
 
-module.exports = async (msg, summoner) => {
-    summonerPlayerName = encodeURI(summoner);
+
+export default async (msg, summoner) => {
+    const summonerPlayerName = encodeURI(summoner);
     const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName + "?api_key=" + apiLolToken;
 
     let responseSummoner;

@@ -1,10 +1,9 @@
-const { MessageActionRow, MessageButton, MessageSelectMenu, MessageEmbed } = require('discord.js');
-const index = require('../../../../index.js');
-const queue = require('./queueMap');
-const channels = require('../../../../Database/readChannelName');
-
-module.exports = async (guildId) => {
-    const channel = await channels.fetch_channel(index.client, await channels.read_channel('music_bot', guildId));
+import { MessageActionRow, MessageButton, MessageSelectMenu, MessageEmbed } from 'discord.js';
+import {client} from "../../../../index.js";
+import queue from "./queueMap.js";
+import {findChannel} from "../../../../Database/readChannelName.js";
+export default async (guildId) => {
+    const channel = await findChannel(client, 'music_bot', guildId);
     if (!channel)
         return;
 

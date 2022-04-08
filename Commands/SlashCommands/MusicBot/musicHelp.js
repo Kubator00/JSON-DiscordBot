@@ -1,12 +1,12 @@
-const index = require('../../../index.js');
-const { MessageEmbed } = require('discord.js');
-const channelNames = require('../../../Database/readChannelName.js');
-module.exports = {
+import {client} from "../../../index.js";
+import {MessageEmbed} from "discord.js";
+import {checkIfChannelIsCorrect} from "../../../Database/readChannelName.js";
+export default {
     name: 'muzykapomoc',
     description: "Wyświetla dostępne komendy do interakcji z botem muzycznym",
 
     async execute(msg) {
-        if (!await channelNames.check_channel(index.client, 'music_bot', msg))
+        if (!await checkIfChannelIsCorrect(client, 'music_bot', msg))
             return;
         let embed = new MessageEmbed()
             .setColor('#ffa500')
@@ -30,8 +30,6 @@ module.exports = {
                 },
 
             )
-
-
-        msg.followUp({ embeds: [embed] });
+        await msg.followUp({embeds: [embed]}).catch((err) => console.log(err));
     }
 };

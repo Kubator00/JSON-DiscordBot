@@ -1,14 +1,13 @@
+import {readdirSync} from 'fs';
 
-const { readdirSync } = require('fs');
-
-module.exports = (client) => {
+export default async (client) => {
 
 
     const messageFolder = readdirSync('./Commands/Buttons');
     for (const folder of messageFolder) {
         const messageFiles = readdirSync(`./Commands/Buttons/${folder}`).filter(file => file.endsWith('.js'));
         for (const file of messageFiles) {
-            const command = require(`../Commands/Buttons/${folder}/${file}`);
+            const command = (await import(`../Commands/Buttons/${folder}/${file}`)).default;
             client.buttons.set(command.name, command);
         }
     }

@@ -1,12 +1,11 @@
-const { MessageActionRow, MessageButton, MessageSelectMenu, MessageEmbed } = require('discord.js');
-const fetch = require('node-fetch');
-const lolToken = require('./lolToken.js');
-const apiLolToken = lolToken.apiLolToken;
-const lolFunctions = require('./lolCommonFunctions.js');
+import {MessageActionRow, MessageButton, MessageSelectMenu, MessageEmbed} from "discord.js";
+import fetch from "node-fetch";
+import * as lolFunctions from './lolCommonFunctions.js'
+import apiLolToken from './lolToken.js'
 
 
-module.exports = async (msg, summoner, isFollowUp) => {
-    summonerPlayerName = encodeURI(summoner);
+export default async (msg, summoner, isFollowUp) => {
+    const summonerPlayerName = encodeURI(summoner);
     const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName + "?api_key=" + apiLolToken;
 
     const responseSummoner = await fetch(urlSummoner);
@@ -26,19 +25,27 @@ module.exports = async (msg, summoner, isFollowUp) => {
     }
 
     let player =
-    {
-        summonerName: data.name,
-        summonerLevel: data.summonerLevel,
-        profileIconId: data.profileIconId,
-        soloqRank: ranks[0],
-        flexRank: ranks[1]
-    }
+        {
+            summonerName: data.name,
+            summonerLevel: data.summonerLevel,
+            profileIconId: data.profileIconId,
+            soloqRank: ranks[0],
+            flexRank: ranks[1]
+        }
 
     try {
         if (isFollowUp)
-            await msg.followUp({ ephemeral: false, embeds: [await createEmbed(player)], components: [buttons(summoner), selMenu(summoner)] });
+            await msg.followUp({
+                ephemeral: false,
+                embeds: [await createEmbed(player)],
+                components: [buttons(summoner), selMenu(summoner)]
+            });
         else
-            await msg.channel.send({ ephemeral: false, embeds: [await createEmbed(player)], components: [buttons(summoner), selMenu(summoner)] });
+            await msg.channel.send({
+                ephemeral: false,
+                embeds: [await createEmbed(player)],
+                components: [buttons(summoner), selMenu(summoner)]
+            });
     } catch (err) {
         console.log("Błąd wysłania wiadomości");
     }

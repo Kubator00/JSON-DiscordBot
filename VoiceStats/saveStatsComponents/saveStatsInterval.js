@@ -1,7 +1,7 @@
-const poolDB = require('../../Database/databaseConn.js');
-const usersVoiceMap = require('../saveOnlineVoiceTime').usersVoiceMap;
+import poolDB from '../../Database/databaseConn.js';
+import {usersVoiceMap} from "../saveOnlineVoiceTime.js";
 
-module.exports = async () => {
+export default async () => {
     setInterval(() => {
         (async () => {
             if (usersVoiceMap.size > 0) {
@@ -36,7 +36,7 @@ module.exports = async () => {
                     }
                     console.log(`Zapis do bazy VOICE_COUNTER_USERS  ${member.id}, czas: ${member.timeOnVoiceChannel}s`);
                 }
-                clientConn.release();
+                clientConn?.release();
             }
 
         })();

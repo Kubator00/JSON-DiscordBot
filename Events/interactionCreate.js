@@ -1,26 +1,21 @@
-const checkPremissions = require("../ErrorHandlers/errorHandlers").checkPremissions;
+import {checkPermissions} from "../ErrorHandlers/errorHandlers.js";
 
-module.exports = {
+export default {
     name: "interactionCreate",
-
     async execute(client, interaction) {
-
-
         if (!interaction.isCommand())
             return;
-       
-        if (!checkPremissions(interaction.channel))
+        if (!checkPermissions(interaction.channel))
             return;
-
-
-        await interaction.deferReply({ ephemeral: false }).catch(() => { });
+        await interaction.deferReply({ephemeral: false}).catch(() => {
+        });
 
         const command = client.slashCommands.get(interaction.commandName);
-        if (!command) return interaction.followUp({ content: "BLAD1" }) && client.slashCommands.delete(interaction.commandName);
+        if (!command) return await interaction.followUp({content: "Polecenie nie istnieje"}) && client.slashCommands.delete(interaction.commandName);
         try {
             command.execute(interaction);
-        }
-        catch {
+        } catch (err) {
+            console.log(err);
             console.log("Odnotowano błąd wysłania wiadomości");
         }
     }

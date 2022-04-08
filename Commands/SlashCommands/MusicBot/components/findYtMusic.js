@@ -1,8 +1,7 @@
+import ytdl from "ytdl-core";
+import ytsr from "ytsr";
 
-module.exports.find_music = find_music;
-const ytdl = require('ytdl-core');
-const ytsr = require('ytsr');
-async function find_music(msg, url) {
+export default async function findMusicYT(msg, url) {
     const voiceChannel = msg.member.voice.channel;
     if (!voiceChannel) {
         await msg.followUp("Musisz być na kanale głosowym aby dodać piosenkę!");
@@ -18,7 +17,7 @@ async function find_music(msg, url) {
         else {
             const musicList = await ytsr(url, { limit: 1 });
             if (musicList.items.length >= 1) {
-                if (musicList.items[0].type == 'video') {
+                if (musicList.items[0].type === 'video') {
                     return { title: musicList.items[0].title, url: musicList.items[0].url, img: musicList.items[0]?.thumbnails[0].url };
                 }
             }
@@ -27,5 +26,5 @@ async function find_music(msg, url) {
         console.log(`Blad odtawrzacza ${err}`);
     }
     await msg.followUp("Nie znaleziono piosenki");
-    return;
+
 }

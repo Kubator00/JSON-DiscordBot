@@ -1,9 +1,8 @@
-const { MessageEmbed } = require('discord.js');
-const database = require('./readStatsComponents/readVoiceStats.js');
+import {MessageEmbed} from "discord.js";
+import poolDB from "../Database/databaseConn.js";
 
-module.exports.send_time_voice = send_time_voice;
-async function send_time_voice(channel) {
-    let result = await database.read_voice_stats(channel.guild.id);
+export default async function sendVoiceTimeRanking(channel) {
+    let result = await readVoiceStatsFromDatabase(channel.guild.id);
     if (!result || result.length < 1)
         return;
     const guildMembers = channel.guild.members.cache;
@@ -14,7 +13,7 @@ async function send_time_voice(channel) {
             .setDescription("Jeśli nie ma cie na liście możesz wpisać komendę /moje_dane")
             .setTimestamp()
             .addFields(
-                embed_display(result, guildMembers)
+                generateEmbedFields(result, guildMembers)
             )
         channel.send({ embeds: [embed] });
     }
@@ -23,7 +22,7 @@ async function send_time_voice(channel) {
 
 }
 
-function embed_display(usersInfo, guildMembers) {
+function generateEmbedFields(usersInfo, guildMembers) {
     let result = [];
     let number = 1;
     let correctUsers = 0;
@@ -49,4 +48,19 @@ function embed_display(usersInfo, guildMembers) {
     }
 
     return result;
+}
+
+
+async function readVoiceStatsFromDatabase(guildId) {
+    let clientConn;
+    try {
+        clientConn = await poolDB.connect();
+        const result = await clientConn.query(`SELECT id_discord, time_on_voice  from public."VOICE_COUNTER_USERS" where id_guild='${guildId}' ORDER BY time_on_voice DESC LIMIT 30;`)
+        return result.rows;
+    } catch (err) {
+        console.log(err);
+        return null;
+    } finally{
+        clientConn?.release();
+    }
 }

@@ -1,7 +1,8 @@
-const lolMessage = require('./Functions/message')
-const channelNames = require('../../../Database/readChannelName.js');
-const index = require('../../../index')
-module.exports = {
+import {checkIfChannelIsCorrect} from "../../../Database/readChannelName.js";
+import lolMessage from './Functions/message.js';
+import {client} from "../../../index.js";
+
+export default {
     name: 'lol',
     description: "Wyświetla dane konta League of Legends",
     options: [
@@ -13,7 +14,7 @@ module.exports = {
         },
     ],
     async execute(msg) {
-        if (!await channelNames.check_channel(index.client, 'lol_statistics', msg))
+        if (!await checkIfChannelIsCorrect(client, 'lol_statistics', msg))
             return;
         let summoner = msg.options.getString('nazwa');
         await lolMessage(msg, summoner, true);

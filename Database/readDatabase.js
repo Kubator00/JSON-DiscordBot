@@ -1,9 +1,7 @@
-const poolDB = require('./databaseConn.js');
+import poolDB from "./databaseConn.js";
 
 
-module.exports =
-    async function read_database(tableName) {
-
+export  async function readFromDatabase(tableName) {
         let clientConn;
         try {
             clientConn = await poolDB.connect();

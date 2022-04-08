@@ -1,14 +1,9 @@
-const poolDB = require('./databaseConn.js');
+import poolDB from "./databaseConn.js";
 
 
-module.exports.read_channel = findChannel;
-module.exports.fetch_channel = fetchChannel;
-module.exports.check_channel = checkChannel;
-
-
-async function checkChannel(client, channelRole, msg) {
+export async function checkIfChannelIsCorrect(client, channelRole, msg) {
     const guildId = msg.guild.id;
-    let dbResult = await findChannel(channelRole, guildId);
+    let dbResult = await findChannelInDatabase(channelRole, guildId);
     let channel = await fetchChannel(client, dbResult);
 
     try {
@@ -27,22 +22,26 @@ async function checkChannel(client, channelRole, msg) {
     return true;
 }
 
+export async function findChannel(client, channelRole, guildId) {
+    let dbResult = await findChannelInDatabase(channelRole, guildId);
+    return await fetchChannel(client, dbResult);
+}
+
+
 async function fetchChannel(client, channelDB) {
     if (!channelDB || channelDB.length < 1)
-        return false;
+        return null;
     let channel;
     try {
         channel = await client.channels.fetch(channelDB.channel_id);
     } catch (err) {
         console.log(err);
-        return false;
+        return null;
     }
     return channel;
 }
 
-async function findChannel(channelRole, guildId) {
-
-
+async function findChannelInDatabase(channelRole, guildId) {
     let clientConn;
     try {
         clientConn = await poolDB.connect();

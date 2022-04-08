@@ -1,10 +1,10 @@
-const index = require("../../../index.js");
+import {client} from "../../../index.js";
 
-module.exports = {
+export default {
     name: 'ping',
     description: "Wyświetla ping bota",
 
     async execute(msg) {
-        msg.followUp(`Ping bota: ${index.client.ws.ping} ms`);
+        await msg.followUp(`Ping bota: ${client.ws.ping} ms`);
     }
 }

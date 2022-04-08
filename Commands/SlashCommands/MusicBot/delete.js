@@ -1,8 +1,7 @@
-const index = require('../../../index.js');
-const queue = require('./components/queueMap.js');
-const channelNames = require('../../../Database/readChannelName.js');
-
-module.exports = {
+import {client} from "../../../index.js";
+import queue from "./components/queueMap.js";
+import {checkIfChannelIsCorrect} from "../../../Database/readChannelName.js";
+export default {
     name: 'usun',
     options: [
         {
@@ -14,11 +13,11 @@ module.exports = {
     ],
     description: "Usuwamy piosenkę podaną w argumencie z kolejki",
     async execute(msg) {
-        if (!await channelNames.check_channel(index.client, 'music_bot', msg))
+        if (!await checkIfChannelIsCorrect(client, 'music_bot', msg))
             return;
 
         const voiceChannel = msg.member.voice.channel;
-        if (!voiceChannel) return await msg.followUp("Musisz być na kanale głosowym aby usunąć piosenkę!");
+        if (!voiceChannel) return await msg.followUp("Musisz być na kanale głosowym aby usunąć piosenkę!").catch((err)=>console.log(err));
 
         const musicNubmer = msg.options.getNumber('nr_piosenki');
 
@@ -26,15 +25,15 @@ module.exports = {
 
 
         if (!serverQueue || serverQueue.length <= 1) {
-            msg.followUp("Nie ma piosenek w kolejce");
+            await msg.followUp("Nie ma piosenek w kolejce").catch((err)=>console.log(err));
         }
 
         if (musicNubmer > serverQueue.songs.length || musicNubmer <= 0) {
-            msg.followUp("Podano błędny numer piosenki");
+            await msg.followUp("Podano błędny numer piosenki").catch((err)=>console.log(err));
         }
 
         queue.get(msg.guild.id).songs.splice(musicNubmer, 1);
 
-        msg.followUp("Usunięto piosenkę");
+        await msg.followUp("Usunięto piosenkę").catch((err)=>console.log(err));
     }
 }

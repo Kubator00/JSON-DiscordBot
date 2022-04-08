@@ -1,9 +1,6 @@
-const pg = require('pg');
-const poolDB = require('../../../../Database/databaseConn.js');
+import poolDB from '../../../../Database/databaseConn.js';
 
-module.exports = (players, guildId) => {
-
-    (async () => {
+export default async (players, guildId) => {
         const clientConn = await poolDB.connect();
 
         for (let player of players) {
@@ -24,5 +21,4 @@ module.exports = (players, guildId) => {
         }
         clientConn?.release();
 
-    })();
 }

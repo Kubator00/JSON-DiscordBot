@@ -1,10 +1,8 @@
-const randDatabase = require('../Database/databaseRandomMsg');
-const fetch = require('node-fetch');
-
-module.exports = { tenor_gif, rand_gif_category }
+import randomMessageFromDatabase from '../Database/databaseRandomMsg.js'
+import fetch from 'node-fetch';
 
 
-async function tenor_gif(keywords) {
+export async function getGif(keywords) {
   let url = `https://g.tenor.com/v1/search?q=${keywords}&key=${process.env.TENOR_TOKEN}&ContentFilter=high`;
   let json, i;
   try {
@@ -20,8 +18,8 @@ async function tenor_gif(keywords) {
 }
 
 
-async function rand_gif_category() {
-  return (await randDatabase("GIF_CATEGORY"));
+export async function randomGifCategory() {
+  return (await randomMessageFromDatabase("GIF_CATEGORY"));
 }
 
 

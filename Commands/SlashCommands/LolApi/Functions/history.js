@@ -1,12 +1,11 @@
-const { MessageEmbed } = require('discord.js');
-const fetch = require('node-fetch');
-const lolFunctions = require('./lolCommonFunctions.js');
-const lolToken = require('./lolToken.js');
-const apiLolToken = lolToken.apiLolToken;
+import {MessageEmbed} from "discord.js";
+import fetch from "node-fetch";
+import * as lolFunctions from './lolCommonFunctions.js'
+import apiLolToken from './lolToken.js'
 
 
 
-module.exports = async (msg, summoner, matchNumber) => {
+export default async (msg, summoner, matchNumber) => {
     matchNumber -= 1;
     if (matchNumber < 0 || matchNumber > 19) { //gry możliwe do wyszukania są z tego przedziału
         msg.channel.send("W poleceniu wpisano błędą liczbę").catch(() => console.log("Błąd wysłania wiadomości"));

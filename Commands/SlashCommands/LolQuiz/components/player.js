@@ -1,4 +1,4 @@
-module.exports =
+export default 
     class Player {
         constructor(playerId, playerName, avatarURL) {
             this.id = playerId;

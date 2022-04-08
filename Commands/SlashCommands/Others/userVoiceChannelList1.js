@@ -1,6 +1,6 @@
-const index = require('../../../index');
-const errorNotifications = require('../../../ErrorHandlers/errorHandlers').errorNotifications;
-module.exports = {
+import {client} from "../../../index.js";
+
+export default {
     name: 'lista1',
     description: "Wyświetla listę znajdujących się na kanale głosowych",
 
@@ -8,14 +8,14 @@ module.exports = {
         const voiceChannel = msg.member.voice.channel;
         if (!voiceChannel)
             return msg.followUp("Musisz znajdować sie na kanale głosowym!");
-        const guild = index.client.guilds.cache.get(msg.guild.id);
+        const guild = client.guilds.cache.get(msg.guild.id);
         const channelVoiceId = msg.member.voice.channelId;
-        const channel = guild.channels.cache.find(element => (element.id == channelVoiceId));
-     
-   
+        const channel = guild.channels.cache.find(element => (element.id === channelVoiceId));
+
+
         const guildAllMembers = guild.members.cache;
         let channelAllMembers = [];
-        guildAllMembers.forEach(member = (member) => {
+        guildAllMembers.forEach((member) => {
             if (channel.permissionsFor(member).has("CONNECT") && channel.permissionsFor(member).has("VIEW_CHANNEL") && !member.permissions.has('ADMINISTRATOR')) {
                 if (member.nickname)
                     channelAllMembers.push({
@@ -33,9 +33,9 @@ module.exports = {
         });
 
         channel.members.forEach(
-            member = (member) => {
+            (member) => {
                 if (!member.permissions.has('ADMINISTRATOR')) {
-                    const presentMember = channelAllMembers.find(element => element.id == member.user.id);
+                    const presentMember = channelAllMembers.find(element => element.id === member.user.id);
                     presentMember.present = "✅"
                 }
             }
@@ -52,9 +52,8 @@ module.exports = {
                 try {
                     await msg.followUp(result);
                     result = "";
-                }
-                catch (err) {
-                    errorNotifications(`Wykryto błąd, komenda /lista, ${err}`);
+                } catch (err) {
+                    console.log(err);
                     result = "";
                 }
             }
@@ -65,9 +64,8 @@ module.exports = {
             try {
                 await msg.followUp(result);
                 result = "";
-            }
-            catch (err) {
-                errorNotifications(`Wykryto błąd, komenda /lista, ${err}`);
+            } catch (err) {
+                console.log(err);
                 result = "";
             }
         }

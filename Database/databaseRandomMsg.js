@@ -1,7 +1,6 @@
-const read_database = require('./readDatabase.js');
-module.exports =
-  async function rand_message(table_name) {
-    let result = await read_database(table_name);
+import {readFromDatabase} from "./readDatabase.js";
+export default  async function randomMessageFromDatabase(table_name) {
+    let result = await readFromDatabase(table_name);
     if(!result || result.length<1)
       return false;
     let rand = Math.floor(Math.random() * result.length);

@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     name: 'bot',
     description: "Odpowiada na konkretne słowa",
 

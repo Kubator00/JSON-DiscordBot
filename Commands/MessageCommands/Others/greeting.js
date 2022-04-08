@@ -1,15 +1,16 @@
-const getRandomInt = require('../../../Utilities/getRandomInt')
-const loadJSON = require('../../../Utilities/loadJSON')
-const path = require('path');
+import getRandomInt from "../../../Utilities/getRandomInt.js";
+import loadJSON from "../../../Utilities/loadJSON.js";
+import {dirname, join} from "path";
+import {fileURLToPath} from 'url';
 
-module.exports = {
+export default {
     name: 'siema',
     aliases: ['witam', 'dzień dobry', 'dzien dobry', 'elo', 'hej', 'cześć', 'czesc'],
     description: "Odpowiada na konkretne słowa",
 
     async execute(msg) {
         await msg.react('🖐️');
-        const quotes = loadJSON(path.join(__dirname,'data'), 'greetingQuotes.json');
+        const quotes = loadJSON(join(dirname(fileURLToPath(import.meta.url)),'data'), 'greetingQuotes.json');
         const result = quotes[getRandomInt(0, quotes.length)];
         msg.channel.send(result)
             .catch(err => console.log(err));

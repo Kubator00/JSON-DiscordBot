@@ -1,7 +1,7 @@
-const queue = require('../../SlashCommands/MusicBot/components/queueMap');
-const playMusic = require('../../SlashCommands/MusicBot/components/playMusic').play_music;
+import queue from "../../SlashCommands/MusicBot/components/queueMap.js";
+import playMusic from "../../SlashCommands/MusicBot/components/playMusic.js";
 
-module.exports = {
+export default{
     name: 'gotosong',
     async execute(msg) {
         const musicNubmer = msg.values[0];
@@ -17,7 +17,7 @@ module.exports = {
         if (!serverQueue || serverQueue.length <= 1) 
             return;
         
-        if (musicNubmer > serverQueue.songs.length || musicNubmer < 0) 
+        if (musicNubmer > serverQueue.songs.length || musicNubmer < 0)
             return;
         
 

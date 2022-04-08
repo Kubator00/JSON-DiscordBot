@@ -1,2 +1,4 @@
-const checkPremissions = require('./checkPremissions');
-module.exports = { checkPremissions }
+import checkPermissions from './checkPermissions.js';
+
+
+export {checkPermissions};

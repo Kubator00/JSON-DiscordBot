@@ -1,14 +1,15 @@
-const loadCards = require("../../../Utilities/loadJSON");
-const joinMsg = require("./components/joinMessage.js").joinMsg;
-const roundEndMsg = require("./components/roundEndMessage.js").roundEndMsg;
-const resultMsg = require("./components/resultMessage.js").resultMsg;
-const getRandomInt = require("./components/getRandomInt.js");
-const bot = require("./components/bot.js");
-const gameStart = require("./components/gameBeggining.js");
-const path = require('path');
+import joinMsg from "./components/joinMessage.js";
+import roundEndMsg from "./components/roundEndMessage.js";
+import resultMsg from "./components/resultMessage.js";
+import getRandomInt from "../../../Utilities/getRandomInt.js";
+import bot from "./components/bot.js";
+import gameStart from "./components/gameBeggining.js";
+import {dirname} from 'path';
+import { fileURLToPath } from 'url';
+import loadJSON from "../../../Utilities/loadJSON.js";
+import * as path from 'path';
 
-
-module.exports = {
+export default {
     name: 'oczko',
     description: "Zagraj w oczko",
 
@@ -19,10 +20,10 @@ module.exports = {
         const filter = (reaction, user) => {
             return ['✅', '❌'].includes(reaction.emoji.name) && user.id === players[playerIndex].id;
         };
-        const cards = loadCards(path.join(__dirname,'components'),'cards.json');
+        const cards = loadJSON(path.join(dirname(fileURLToPath(import.meta.url)),'components'),'cards.json');
         let players = [];
         let gameIsFinish = () => {
-            for (player of players)
+            for (let player of players)
                 if (!player.isFinish)
                     return false;
             return true;
@@ -47,11 +48,11 @@ module.exports = {
                 if (players[playerIndex].isFinish) {
                     playerIndex += 1;
                     continue;
-                };
+                }
 
                 const questionMsg = await msg.channel.send("```fix\n" + players[playerIndex].name + ", czy losujesz następną liczbę?```");
                 if (players[playerIndex].isBot) {
-                    round = bot(msg, players[playerIndex], questionMsg, cards, round);
+                    round = await bot(msg, players[playerIndex], questionMsg, cards, round);
                     playerIndex += 1;
                     continue;
                 }

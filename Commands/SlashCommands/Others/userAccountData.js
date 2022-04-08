@@ -1,7 +1,7 @@
-const poolDB = require("../../../Database/databaseConn.js");
-const {MessageEmbed} = require('discord.js');
+import poolDB from '../../../Database/databaseConn.js'
+import {MessageEmbed} from "discord.js";
 
-module.exports = {
+export default {
     name: 'moje_dane',
     description: "Wyświetla informacje o użytkowniku",
 
@@ -39,7 +39,7 @@ module.exports = {
             Czas spędzony na kanałach głosowych: ${hour} godz. ${minute}min.`)
                 .setTimestamp()
 
-            msg.followUp({embeds: [embed]});
+           await msg.followUp({embeds: [embed]});
         } catch (err) {
             console.log("Wystąpił błąd polecenia moje_dane")
             console.log(err);

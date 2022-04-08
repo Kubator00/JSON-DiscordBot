@@ -1,12 +1,13 @@
-const date = require('./date');
-const channels = require('./Database/readChannelName');
-module.exports = {countTotalMembers, currentDate, countOnlineMembers}
+import * as date from './Utilities/date.js'
+import {findChannel} from './Database/readChannelName.js'
+
+
 
 //liczba członków serwera
-async function countTotalMembers(client) {
+export async function countTotalMembers(client) {
     for (let guildId of client.guilds.cache.map(guild => guild.id)) {
         const guild = client.guilds.cache.get(guildId);
-        const channel = await channels.fetch_channel(client, await channels.read_channel('guild_members_number', guildId));
+        const channel = await findChannel(client, 'guild_members_number', guildId);
         try {
             if (channel) {
                 if (channel.permissionsFor(channel.guild.me).has("MANAGE_CHANNELS")) {
@@ -19,14 +20,15 @@ async function countTotalMembers(client) {
             console.log(err);
         }
     }
+
 }
 
 //liczba członków ONLINE serwera
-async function countOnlineMembers(client) {
+export async function countOnlineMembers(client) {
     for (let guildId of client.guilds.cache.map(guild => guild.id)) {
         const guild = client.guilds.cache.get(guildId)
         const online_members = guild.presences.cache.filter(member => member.status === 'online').size;
-        const channel = await channels.fetch_channel(client, await channels.read_channel('online_members_number', guildId));
+        const channel = await findChannel(client, 'online_members_number', guildId);
         try {
             if (channel) {
                 if (channel.permissionsFor(channel.guild.me).has("MANAGE_CHANNELS")) {
@@ -44,9 +46,9 @@ async function countOnlineMembers(client) {
 
 
 //wysyłanie w tytuł kanału daty dzień tygodnia + data
-async function currentDate(client) {
+export async function currentDate(client) {
     for (let guildId of client.guilds.cache.map(guild => guild.id)) {
-        const channel = await channels.fetch_channel(client, await channels.read_channel('date', guildId));
+        const channel = await findChannel(client, 'date', guildId);
         try {
             const guild = client.guilds.cache.get(guildId);
             if (channel) {

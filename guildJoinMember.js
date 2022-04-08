@@ -1,11 +1,11 @@
-const checkPremissions = require('./ErrorHandlers/errorHandlers').checkPremissions;
-const channels = require('./Database/readChannelName');
+import {checkPermissions} from  './ErrorHandlers/errorHandlers.js'
+import {findChannel} from "./Database/readChannelName.js";
 
-module.exports = (client) => {
+export default (client) => {
     client.on("guildMemberAdd", member => {
         (async () => {
-            let channel = await channels.fetch_channel(client, await channels.read_channel('guild_members_update', member.guild.id));
-            if (checkPremissions(channel))
+            const channel = await findChannel(client, 'guild_members_update', member.guild.id);
+            if (checkPermissions(channel))
                 channel.send(`Witaj ${member.user.username} na naszym serwerze.\nŻyczymy miło spędzonego czasu 😀`);
         })();
     });
@@ -13,8 +13,8 @@ module.exports = (client) => {
 
     client.on("guildMemberRemove", member => {
         (async () => {
-            channel = await channels.fetch_channel(client, await channels.read_channel('guild_members_update', member.guild.id))
-            if (checkPremissions(channel))
+            const channel = await findChannel(client,'guild_members_update', member.guild.id);
+            if (checkPermissions(channel))
                 channel.send(`Użytkownik ${member.user.username} opuścił serwer 😥`);
         })();
     });

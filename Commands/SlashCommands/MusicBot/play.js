@@ -1,9 +1,10 @@
-const index = require('../../../index.js');
-const channelNames = require('../../../Database/readChannelName.js');
-const find_music = require('./components/findYtMusic.js').find_music;
-const add_to_queue = require('./components/addToQueue.js').add_to_queue;
+import {client} from "../../../index.js";
+import {checkIfChannelIsCorrect} from "../../../Database/readChannelName.js";
+import findMusicYT from "./components/findYtMusic.js";
+import addSongToQueue from "./components/addToQueue.js";
 
-module.exports = {
+
+export default {
     name: 'graj',
     description: "Odtwarzaj muzyke",
     options: [
@@ -15,14 +16,14 @@ module.exports = {
         },
     ],
     async execute(msg) {
-        if (!await channelNames.check_channel(index.client, 'music_bot', msg))
+        if (!await checkIfChannelIsCorrect(client, 'music_bot', msg))
             return;
 
         const url = msg.options.getString('nazwa');
 
-        let song = await find_music(msg, url);
+        let song = await findMusicYT(msg, url);
         if (song)
-            await add_to_queue(msg, song, false);
+            await addSongToQueue(msg, song, false);
 
     },
 }
