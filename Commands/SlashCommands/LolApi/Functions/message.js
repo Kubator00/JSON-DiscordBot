@@ -1,27 +1,29 @@
 import {MessageActionRow, MessageButton, MessageSelectMenu, MessageEmbed} from "discord.js";
 import fetch from "node-fetch";
 import * as lolFunctions from './lolCommonFunctions.js'
-import apiLolToken from './lolToken.js'
-
+import fetchHeaders from "./fetchHeaders.js";
+import {checkResponseStatusMsg, sendErrorMsg} from "./lolCommonFunctions.js";
 
 export default async (msg, summoner, isFollowUp) => {
     const summonerPlayerName = encodeURI(summoner);
-    const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName + "?api_key=" + apiLolToken;
-
-    const responseSummoner = await fetch(urlSummoner);
+    const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName;
+    let responseSummoner;
     try {
-        lolFunctions.checkResponseStatus(responseSummoner.status);
+        responseSummoner = await fetch(urlSummoner, fetchHeaders);
     } catch (err) {
-        msg.followUp(err).catch(() => console.log("Błąd wysłania wiadomości"));
+        msg.channel.send("Błąd łączenia z serwerem").catch(() => console.log("Błąd wysłania wiadomości"));
+        console.log(err);
         return;
     }
+    if (!checkResponseStatusMsg(responseSummoner.status, msg))
+        return;
+
     const data = await responseSummoner.json();
     let ranks;
     try {
-        ranks = await lolFunctions.readPlayerRankAndStats(data.id);
+        ranks = await lolFunctions.readPlayerRankAndStats(data.id, msg);
     } catch (err) {
-        msg.followUp(err).catch(() => console.log("Błąd wysłania wiadomości"));
-        return;
+        return sendErrorMsg(err, msg);
     }
 
     let player =
@@ -41,7 +43,7 @@ export default async (msg, summoner, isFollowUp) => {
                 components: [buttons(summoner), selMenu(summoner)]
             });
         else
-            await msg.channel.send({
+            msg.channel.send({
                 ephemeral: false,
                 embeds: [await createEmbed(player)],
                 components: [buttons(summoner), selMenu(summoner)]

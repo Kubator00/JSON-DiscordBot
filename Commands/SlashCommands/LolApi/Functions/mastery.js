@@ -1,28 +1,24 @@
 import {MessageEmbed} from "discord.js";
 import fetch from "node-fetch";
 import * as lolFunctions from './lolCommonFunctions.js'
-import apiLolToken from './lolToken.js'
-
-
+import fetchHeaders from "./fetchHeaders.js";
+import {checkResponseStatusMsg, defaultErrorMsg, sendErrorMsg} from "./lolCommonFunctions.js";
 
 
 export default async (msg, summoner) => {
     const summonerPlayerName = encodeURI(summoner);
-    const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName + "?api_key=" + apiLolToken;
+    const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName;
 
     let responseSummoner;
     try {
-        responseSummoner = await fetch(urlSummoner);
+        responseSummoner = await fetch(urlSummoner, fetchHeaders);
     } catch (err) {
-        msg.channel.send("Wystąpił błąd połączenia z serwerem").catch(() => console.log("Błąd wysłania wiadomości"));
+        msg.channel.send(lolFunctions.defaultErrorMsg).catch(() => console.log("Błąd wysłania wiadomości"));
         return;
     }
-    try {
-        lolFunctions.checkResponseStatus(responseSummoner.status);
-    } catch (err) {
-        msg.channel.send(err).catch(() =>  console.log("Błąd wysłania wiadomości"));
+    if (!checkResponseStatusMsg(responseSummoner.status, msg))
         return;
-    }
+
 
     const jsonSummoner = await responseSummoner.json();
     const summonerIdPlayer = jsonSummoner.id;
@@ -31,34 +27,27 @@ export default async (msg, summoner) => {
     try {
         ranks = await lolFunctions.readPlayerRankAndStats(summonerIdPlayer);
     } catch (err) {
-        console.log("Error: LolApi ChampionMastery readPlayerRankAndStats")
-        msg.channel.send(err).catch(() =>  console.log("Błąd wysłania wiadomości"));
-        return;
+        return sendErrorMsg(err, msg);
     }
 
     let player =
-    {
-        summonerName: jsonSummoner.name,
-        summonerLevel: jsonSummoner.summonerLevel,
-        profileIconId: jsonSummoner.profileIconId,
-        soloqRank: ranks[0],
-        flexRank: ranks[1]
-    }
+        {
+            summonerName: jsonSummoner.name,
+            summonerLevel: jsonSummoner.summonerLevel,
+            profileIconId: jsonSummoner.profileIconId,
+            soloqRank: ranks[0],
+            flexRank: ranks[1]
+        }
 
-    const urlChampionMastery = "https://eun1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summonerIdPlayer + "?api_key=" + apiLolToken;
+    const urlChampionMastery = "https://eun1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summonerIdPlayer;
     let responseChampionMastery;
     try {
-        responseChampionMastery = await fetch(urlChampionMastery);
+        responseChampionMastery = await fetch(urlChampionMastery, fetchHeaders);
     } catch (err) {
-        msg.channel.send("Błąd połączenia z serwerem").catch(() =>  console.log("Błąd wysłania wiadomości"));
-        return;
+        return msg.channel.send(defaultErrorMsg).catch(() => console.log("Błąd wysłania wiadomości"));
     }
-    try {
-        lolFunctions.checkResponseStatus(responseChampionMastery.status);
-    } catch (err) {
-        msg.channel.send(err).catch(() =>  console.log("Błąd wysłania wiadomości"));
+    if (!checkResponseStatusMsg(responseChampionMastery.status, msg))
         return;
-    }
 
     const jsonChampionMastery = await responseChampionMastery.json();
     let numberOfChamp = 20;
@@ -78,11 +67,11 @@ export default async (msg, summoner) => {
     }
 
     try {
-        await lolFunctions.readChampionsName(championsData);
+        await lolFunctions.readChampionsName(championsData)
     } catch (err) {
-        msg.channel.send(err).catch(() =>  console.log("Błąd wysłania wiadomości"));
-        return;
+        return sendErrorMsg(err, msg);
     }
+
 
     let embed = new MessageEmbed()
         .setColor('#ffa500')
@@ -97,14 +86,12 @@ export default async (msg, summoner) => {
         .addFields(embedDisplay(player, championsData))
 
     try {
-        msg.channel.send({ embeds: [embed] });
-    }
-    catch {
+        msg.channel.send({embeds: [embed]});
+    } catch {
         console.log("Lol Api AccountMastery, Błąd wysłania wiadomości embed");
     }
 
 }
-
 
 
 function embedDisplay(player, championsData) {
@@ -130,14 +117,13 @@ function embedDisplay(player, championsData) {
 
     for (let i = 1; i < championsData.length; i++) {
         let em = {};
-        if (i % 3 == 0) {
+        if (i % 3 === 0) {
             em = {
                 name: '\u200B',
                 value: '\u200B',
                 inline: false
             }
-        }
-        else {
+        } else {
             em = {
                 name: (number) + '.' + embedDisplayName(championsData[number - 1]),
                 value: embedDisplayValue(championsData[number - 1]),

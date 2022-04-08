@@ -1,56 +1,40 @@
 import {MessageEmbed} from "discord.js";
 import fetch from "node-fetch";
 import * as lolFunctions from './lolCommonFunctions.js'
-import apiLolToken from './lolToken.js'
-
-
-
+import fetchHeaders from "./fetchHeaders.js";
+import {checkResponseStatusMsg, defaultErrorMsg, LolError, sendErrorMsg} from "./lolCommonFunctions.js";
 
 export default async (msg, summoner) => {
     const summonerPlayerName = encodeURI(summoner);
-    const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName + "?api_key=" + apiLolToken;
+    const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName;
     let responseSummoner;
     try {
-        responseSummoner = await fetch(urlSummoner);
+        responseSummoner = await fetch(urlSummoner, fetchHeaders);
     } catch (err) {
-        msg.channel.send("Wystąpił błąd połączenia z serwerem").catch(() => console.log("Błąd wysłania wiadomości"));
-        return;
+        return msg.channel.send(lolFunctions.defaultErrorMsg).catch(() => console.log("Błąd wysłania wiadomości"));
     }
-
-    try {
-        lolFunctions.checkResponseStatus(responseSummoner.status);
-    } catch (err) {
-        msg.channel.send(err.message).catch(() => console.log("Błąd wysłania wiadomości"));
+    if (!checkResponseStatusMsg(responseSummoner.status, msg))
         return;
-    }
 
     const jsonSummoner = await responseSummoner.json();
     const summonerIdPlayer = jsonSummoner.id;
-
-    const urlMatchData = "https://eun1.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/" + summonerIdPlayer + "/?api_key=" + apiLolToken;
+    const urlMatchData = "https://eun1.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/" + summonerIdPlayer;
     let responseMatchData;
     try {
-        responseMatchData = await fetch(urlMatchData);
-    }catch(err){
-        msg.channel.send("Błąd łączenia z serwerem").catch(() => console.log("Błąd wysłania wiadomości"));
-        return;
+        responseMatchData = await fetch(urlMatchData, fetchHeaders);
+    } catch (err) {
+        return msg.channel.send(lolFunctions.defaultErrorMsg).catch(() => console.log("Błąd wysłania wiadomości"));
     }
 
-    if (responseMatchData.status == 404) {
-        msg.channel.send("```diff\n-Obecnie nie znajdujesz się w grze```").catch(() => console.log("Błąd wysłania wiadomości"));
-        return;
+    if (responseMatchData.status === 404) {
+        return msg.channel.send("```diff\n-Obecnie nie znajdujesz się w grze```").catch(() => console.log("Błąd wysłania wiadomości"));
     }
-    try {
-        lolFunctions.checkResponseStatus(responseSummoner.status);
-    } catch (err) {
-        msg.channel.send(err.message).catch(() => console.log("Błąd wysłania wiadomości"));
+    if (!checkResponseStatusMsg(responseMatchData.status, msg))
         return;
-    }
 
     const jsonMatchData = await responseMatchData.json();
-    if (jsonMatchData.gameMode != "CLASSIC" && jsonMatchData.gameMode != "ARAM") {
-        msg.channel.send("Przykro mi ale ten tryb gry nie jest obsługiwany").catch(() => console.log("Błąd wysłania wiadomości"));
-        return;
+    if (jsonMatchData.gameMode !== "CLASSIC" && jsonMatchData.gameMode !== "ARAM") {
+        return msg.channel.send("Przykro mi ale ten tryb gry nie jest obsługiwany").catch(() => console.log("Błąd wysłania wiadomości"));
     }
 
     let gameMode, playersData;
@@ -60,8 +44,7 @@ export default async (msg, summoner) => {
         await lolFunctions.readSpellsName(playersData);
         await lolFunctions.readChampionsName(playersData); // do obiektu dodawane są nazwy postaci
     } catch (err) {
-        msg.channel.send(err.message).catch(() => console.log("Błąd wysłania wiadomości"));
-        return;
+        return sendErrorMsg(err, msg);
     }
 
     let playerIndex = playersData.findIndex(p => p.summonerId === summonerIdPlayer);
@@ -70,7 +53,6 @@ export default async (msg, summoner) => {
         for (let i = 0; i < playersData.length / 2; i++) {
             [playersData[i], playersData[i + playersData.length / 2]] = [playersData[i + playersData.length / 2], playersData[i]];
         }
-        playerIndex -= playersData.length / 2;
     }
 
     let embed = new MessageEmbed()
@@ -85,13 +67,14 @@ export default async (msg, summoner) => {
         )
 
     try {
-        msg.channel.send({ embeds: [embed] });
+        msg.channel.send({embeds: [embed]});
     } catch {
         console.log("Błąd wysłania wiadomości").catch(() => console.log("Błąd wysłania wiadomości"));
     }
-};
+}
 
-async function fetchPlayers(jsonMatchData) {
+
+async function fetchPlayers(jsonMatchData, msg) {
     let playersData = [];
     for (const playerNumber in jsonMatchData.participants) {
         let playerData = {};
@@ -111,12 +94,13 @@ async function fetchPlayers(jsonMatchData) {
                 soloqRank: "",
                 flexRank: "",
             }
+
             const ranks = await lolFunctions.readPlayerRankAndStats(jsonMatchData.participants[playerNumber].summonerId); //zwraca tablice 2-elementową gdzie element 0 to ranga na soloq a 1 na flexach
             playerData.soloqRank = ranks[0];
             playerData.flexRank = ranks[1];
         } catch (err) {
             console.log(err);
-            throw "Błąd pobierania danych z serwera"
+            throw defaultErrorMsg;
         }
         playersData.push(playerData);
     }
@@ -157,7 +141,6 @@ function embedFields(playersData) {
     }
     return result;
 }
-
 
 
 function embedDisplayPlayerStats(playerData) {

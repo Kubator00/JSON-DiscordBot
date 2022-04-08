@@ -1,80 +1,60 @@
 import {MessageEmbed} from "discord.js";
 import fetch from "node-fetch";
 import * as lolFunctions from './lolCommonFunctions.js'
-import apiLolToken from './lolToken.js'
-
+import fetchHeaders from "./fetchHeaders.js";
+import {checkResponseStatusMsg, defaultErrorMsg, sendErrorMsg} from "./lolCommonFunctions.js";
 
 
 export default async (msg, summoner, matchNumber) => {
     matchNumber -= 1;
     if (matchNumber < 0 || matchNumber > 19) { //gry możliwe do wyszukania są z tego przedziału
-        msg.channel.send("W poleceniu wpisano błędą liczbę").catch(() => console.log("Błąd wysłania wiadomości"));
-        return;
+        return msg.channel.send("W poleceniu wpisano błędą liczbę").catch(() => console.log("Błąd wysłania wiadomości"));
     }
 
     let summonerPlayerName = encodeURI(summoner);
-    const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName + "?api_key=" + apiLolToken;
+    const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName;
     let responseSummoner;
     try {
-        responseSummoner = await fetch(urlSummoner);
+        responseSummoner = await fetch(urlSummoner, fetchHeaders);
     } catch (err) {
-        msg.channel.send("Wystąpił błąd połączenia z serwerem").catch(() => console.log("Błąd wysłania wiadomości"));
-        return;
+        return msg.channel.send(lolFunctions.defaultErrorMsg).catch(() => console.log("Błąd wysłania wiadomości"));
     }
 
-    try {
-        lolFunctions.checkResponseStatus(responseSummoner.status);
-    } catch (err) {
-        msg.channel.send(err.message).catch(() => console.log("Błąd wysłania wiadomości"));
+    if (!checkResponseStatusMsg(responseSummoner.status, msg))
         return;
-    }
 
     const jsonSummoner = await responseSummoner.json();
     const puuIdPlayer = jsonSummoner["puuid"];
-
-
-    const urlMatchList = "https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/" + puuIdPlayer + "/ids?start=0&count=20&api_key=" + apiLolToken;
+    const urlMatchList = "https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/" + puuIdPlayer + "/ids?start=0&count=20";
     let responseMatchList;
     try {
-        responseMatchList = await fetch(urlMatchList);
+        responseMatchList = await fetch(urlMatchList, fetchHeaders);
     } catch (err) {
-        msg.channel.send("Wystąpił błąd połączenia z serwerem").catch(() => console.log("Błąd wysłania wiadomości"));
+        msg.channel.send(lolFunctions.defaultErrorMsg).catch(() => console.log("Błąd wysłania wiadomości"));
         return;
     }
-
-    try {
-        lolFunctions.checkResponseStatus(responseMatchList.status);
-    } catch (err) {
-        msg.channel.send(err.message).catch(() => console.log("Błąd wysłania wiadomości"));
+    if (!checkResponseStatusMsg(responseMatchList.status, msg))
         return;
-    }
-
     const jsonMatchList = await responseMatchList.json();
     const matchId = jsonMatchList[matchNumber];
-
-
-    const urlMatchData = "https://europe.api.riotgames.com/lol/match/v5/matches/" + matchId + "?api_key=" + apiLolToken;
+    const urlMatchData = "https://europe.api.riotgames.com/lol/match/v5/matches/" + matchId;
     let responseMatchData;
     try {
-        responseMatchData = await fetch(urlMatchData);
+        responseMatchData = await fetch(urlMatchData, fetchHeaders);
     } catch (err) {
-        msg.channel.send("Wystąpił błąd połączenia z serwerem").catch(() => console.log("Błąd wysłania wiadomości"));
+        msg.channel.send(defaultErrorMsg).catch(() => console.log("Błąd wysłania wiadomości"));
         return;
     }
-    try {
-        lolFunctions.checkResponseStatus(responseMatchData.status);
-    } catch (err) {
-        msg.channel.send(err.message).catch(() => console.log("Błąd wysłania wiadomości"));
+
+    if (!checkResponseStatusMsg(responseMatchData.status, msg))
         return;
-    }
+
     const jsonMatchData = await responseMatchData.json();
-    if (jsonMatchData.info.gameMode != "CLASSIC" && jsonMatchData.info.gameMode != "ARAM") {
-        msg.channel.send("Przykro mi ale ten tryb gry nie jest obsługiwany").catch(() => console.log("Błąd wysłania wiadomości"));
-        return;
+    if (jsonMatchData.info.gameMode !== "CLASSIC" && jsonMatchData.info.gameMode !== "ARAM") {
+        return msg.channel.send("Przykro mi ale ten tryb gry nie jest obsługiwany").catch(() => console.log("Błąd wysłania wiadomości"));
     }
     if ((jsonMatchData.info.gameDuration) < 300) { //sprawdzanie czy nie było remake
-        msg.channel.send("Gra była za krótka").catch(() => console.log("Błąd wysłania wiadomości"));
-        return;
+        return msg.channel.send("Gra była za krótka").catch(() => console.log("Błąd wysłania wiadomości"));
     }
 
     let gameDuration = Math.ceil(jsonMatchData.info.gameDuration / 60) + " min";
@@ -82,18 +62,16 @@ export default async (msg, summoner, matchNumber) => {
     try {
         gameMode = await lolFunctions.readGameMode(jsonMatchData.info.queueId)
     } catch (err) {
-        msg.channel.send(err.message).catch(() => console.log("Błąd wysłania wiadomości"));
-        return;
+        return sendErrorMsg(err, msg);
     }
 
     let playersData;
     try {
         playersData = await fetchPlayers(jsonMatchData);
     } catch (err) {
-        msg.channel.send(err.message).catch(() => console.log("Błąd wysłania wiadomości"));
-        return;
+        return sendErrorMsg(err, msg);
     }
-    if (jsonMatchData.info.gameMode != "ARAM")
+    if (jsonMatchData.info.gameMode !== "ARAM")
         sortPlayers(playersData);
 
     let playerIndex = playersData.findIndex(p => p.puuId === puuIdPlayer);
@@ -101,8 +79,9 @@ export default async (msg, summoner, matchNumber) => {
 
     let teamsData = fetchTeams(jsonMatchData, playersData);
 
-    let matchResult = "PORAŻKA ❌";; //sprawdzanie czy gracz który szuka gry ją wygrał czy przegrał
-    if ((playerIndex < 5 && teamsData[0].win == true) || (playerIndex > 4 && teamsData[1].win == true))
+    let matchResult = "PORAŻKA ❌";
+    //sprawdzanie czy gracz który szuka gry ją wygrał czy przegrał
+    if ((playerIndex < 5 && teamsData[0].win === true) || (playerIndex > 4 && teamsData[1].win === true))
         matchResult = "ZWYCIĘSTWO ✅";
 
 
@@ -127,9 +106,8 @@ export default async (msg, summoner, matchNumber) => {
             embedPlayersField(playersData),
         )
     try {
-        msg.channel.send({ embeds: [embed] });
-    }
-    catch {
+        msg.channel.send({embeds: [embed]});
+    } catch {
         console.log("Lol Api History, Błąd wysłania wiadomości embed");
     }
 
@@ -164,8 +142,7 @@ async function fetchPlayers(jsonMatchData) {
             let playerRanks = await lolFunctions.readPlayerRank(jsonMatchData.info.participants[playerNumber].summonerId);
             playerData.soloqRank = playerRanks[0];
             playerData.flexRank = playerRanks[1];
-        }
-        catch (err) {
+        } catch (err) {
             console.log(err);
             throw "Błąd pobierania danych z serwera"
         }
@@ -178,20 +155,19 @@ function sortPlayers(playersData) {
     //sortowanie według pozycji
     // nazwe każdej pozycji zamieniam na jej wartość liczbową aby móc to posortować
     for (const playerNumber in playersData) {
-        if (playersData[playerNumber].individualPosition == "TOP")
+        if (playersData[playerNumber].individualPosition === "TOP")
             playersData[playerNumber].individualPosition = 1;
-        else if (playersData[playerNumber].individualPosition == "JUNGLE")
+        else if (playersData[playerNumber].individualPosition === "JUNGLE")
             playersData[playerNumber].individualPosition = 2;
-        else if (playersData[playerNumber].individualPosition == "MIDDLE")
+        else if (playersData[playerNumber].individualPosition === "MIDDLE")
             playersData[playerNumber].individualPosition = 3;
-        else if (playersData[playerNumber].individualPosition == "BOTTOM")
+        else if (playersData[playerNumber].individualPosition === "BOTTOM")
             playersData[playerNumber].individualPosition = 4;
-        else if (playersData[playerNumber].individualPosition == "UTILITY")
+        else if (playersData[playerNumber].individualPosition === "UTILITY")
             playersData[playerNumber].individualPosition = 5;
         else
             playersData[playerNumber].individualPosition = 6;
     }
-
 
 
     // sortuje rosnąco pozycje piewszej drużyny
@@ -290,7 +266,7 @@ function embedTeamsField(teamsData) {
         result.push({
             name: '\u200B',
             value:
-                /// ```fix zmienia kolor tekstu
+            /// ```fix zmienia kolor tekstu
                 "```fix\nTwoja drużyna```\n" +
                 "KDA: " + teamsData[i].kills + " / " + teamsData[i].deaths + " / " + teamsData[i].assists +
                 "\nIlość złota: " + teamsData[i].goldEarned +
@@ -343,12 +319,21 @@ function embedPlayersField(playersData) {
 
 function embedDisplayPlayerStats(playerData) {
     let mastery, goldEarned, totalDamageDealtToChampions;
-    try { mastery = playerData.championMastery.toLocaleString('en') + "pkt"; }
-    catch { mastery = "BLAD"; }
-    try { goldEarned = playerData.goldEarned.toLocaleString('en') + " g"; }
-    catch { goldEarned = "BLAD"; }
-    try { totalDamageDealtToChampions = playerData.totalDamageDealtToChampions.toLocaleString('en'); }
-    catch { totalDamageDealtToChampions = "BLAD"; }
+    try {
+        mastery = playerData.championMastery.toLocaleString('en') + "pkt";
+    } catch {
+        mastery = "BLAD";
+    }
+    try {
+        goldEarned = playerData.goldEarned.toLocaleString('en') + " g";
+    } catch {
+        goldEarned = "BLAD";
+    }
+    try {
+        totalDamageDealtToChampions = playerData.totalDamageDealtToChampions.toLocaleString('en');
+    } catch {
+        totalDamageDealtToChampions = "BLAD";
+    }
 
     return ("KDA: " + playerData.kills + " / " + playerData.deaths + " / " + playerData.assists +
         "\nMastery: " + mastery +
