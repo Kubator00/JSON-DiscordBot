@@ -18,11 +18,12 @@ JSON is Discord Bot for Polish servers using PostgresSQL database.
  
  <h2>🎵Music Bot🎵</h2> 
  
-![screen22](https://user-images.githubusercontent.com/71319403/162089746-ea1efa09-e92b-4d4e-bbef-f92bfc7dc764.jpg)
+![s2](https://user-images.githubusercontent.com/71319403/162446809-90bf3eb5-d84c-4137-810b-0bcfcf166455.jpg)
 
 <h2>🏆VoiceTime Ranking </h2>
 
-![screen11](https://user-images.githubusercontent.com/71319403/162089648-f3ea229b-7753-4753-835a-1f388bffbe28.jpg)
+![s1](https://user-images.githubusercontent.com/71319403/162446801-dc0c8215-9a56-4bbb-8df5-de06d95b7f1f.jpg)
+
 
 <h2>🎮 LeagueofLegends Functions<h2> 
   
@@ -67,9 +68,9 @@ You need create some environmental variable:
   <li><b>guild_members_update</b> - text channel, sending welcome messages  </li>
   <li><b>music_bot</b> - text channel, interaction with music functions  </li>  
   <li><b>hour</b> - text channel, bot sends notification on the full hour  </li>  
-  <li><b>guild_members_number</b> - voice channel, display total members of guild  </li>  
-  <li><b>online_members_number</b> - voice channel, display online members of guild  </li>
-  <li><b>date</b> - voice channel, display day of the week and current date </li>
+  <li><b>guild_members_number</b> - voice channel, display total members of guild as channel name </li>  
+  <li><b>online_members_number</b> - voice channel, display online members of guild as channel name </li>
+  <li><b>date</b> - voice channel, display day of the week as channel name </li>
   </ul>
     
   Add to database rows with the following pattern: 
