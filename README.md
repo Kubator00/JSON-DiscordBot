@@ -1,11 +1,10 @@
-# DiscordBot-Wiewiorka
+# DiscordBot-JSON
 
-Wiewiorka is Discord Bot for Polish servers used on PostgresSQL database.
-
+JSON is Discord Bot for Polish servers using PostgresSQL database.
 
 <h1>❗Features</h1>
 <ul>
-  <li> Time Counter - counting time which user spent on voice time channels </li>
+  <li> Time Counter - count time spent by user on voice channels </li>
   <li> MusicBot - listen music from YT </li>
   <li> Gifs - get gifs from Tenor API in particular text channel (Tenor Token required) </li>
   <li> LeagueOfLegends - search live matches, history game and champions mastery  (Riot Token required) </li>
@@ -13,7 +12,7 @@ Wiewiorka is Discord Bot for Polish servers used on PostgresSQL database.
   <li> Blackjack game - play a card game against bot and friend </li>
   <li> Statistics - display number of online/total members and current date as voice channel names  </li>
   <li> Draw Number - draw number from range </li>
-
+  <li> and more... </li>
 
 </ul>  
  
