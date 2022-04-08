@@ -148,7 +148,7 @@ export async function readAccountLevel(summonerName) {
 
 
 export async function readGameMode(queueID) {
-    let url = "http://static.developer.riotgames.com/docs/lol/queues.json";
+    let url = "https://static.developer.riotgames.com/docs/lol/queues.json";
 
     let response;
     try {
@@ -212,7 +212,7 @@ export async function readPlayerRank(playerId) {
 }
 
 
-export async function readPlayerRankAndStats(playerId, msg) {
+export async function readPlayerRankAndStats(playerId) {
     let url = "https://eun1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + playerId;
     let response;
     try {
