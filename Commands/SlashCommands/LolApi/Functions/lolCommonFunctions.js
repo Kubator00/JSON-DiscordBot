@@ -12,9 +12,9 @@ export class LolError extends Error {
 
 export function sendErrorMsg(error, msg) {
     if (!(error instanceof (LolError)) || !error.message) {
-        console.log('a');
         return msg.channel.send("Wystąpił błąd").catch(err => console.log(err));
     }
+
     return msg.channel.send(error.message).catch(err => console.log(err));
 }
 

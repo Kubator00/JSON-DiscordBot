@@ -46,7 +46,7 @@ export default {
 
         let result = `Lista członków na kanale "${channel.name}":\n`;
         let i = 1;
-        for (user of channelAllMembers) {
+        for (let user of channelAllMembers) {
             result += `${i}. ${user.name}  ${user.present}\n`;
             if (result.length > 1500) {
                 try {
