@@ -7,7 +7,7 @@ export default {
     async execute(msg) {
         //sprawdza czy uzytkownik wywolujacy komende posiada role administratora 
         if (msg.member.permissions.has('ADMINISTRATOR') !== true) {
-            msg.followUp(`Aby użyć tej komendy musisz posiadać rolę Administratora.`)
+           await msg.followUp(`Aby użyć tej komendy musisz posiadać rolę Administratora.`)
             return;
         }
         await msg.followUp('.');

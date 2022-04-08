@@ -6,8 +6,6 @@ export default {
     description: "Wyświetla informacje o użytkowniku",
 
     async execute(msg) {
-
-
         let userInfo;
         try {
             userInfo = await read_database(msg.guild.id, msg.user.id);
@@ -39,7 +37,7 @@ export default {
             Czas spędzony na kanałach głosowych: ${hour} godz. ${minute}min.`)
                 .setTimestamp()
 
-           await msg.followUp({embeds: [embed]});
+            await msg.followUp({embeds: [embed]});
         } catch (err) {
             console.log("Wystąpił błąd polecenia moje_dane")
             console.log(err);
@@ -54,11 +52,10 @@ async function read_database(guildId, userId) {
     try {
         let result = await clientConn.query(`SELECT id_discord, time_on_voice  from public."VOICE_COUNTER_USERS" where id_guild='${guildId}' AND id_discord='${userId}'`);
         return result.rows[0];
-    }catch (err){
+    } catch (err) {
         console.log(err);
         throw err;
-    }
-    finally {
+    } finally {
         clientConn?.release();
     }
 }

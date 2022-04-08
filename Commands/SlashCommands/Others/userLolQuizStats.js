@@ -12,7 +12,7 @@ export default {
             await msg.followUp(err.message);
             return;
         }
-        if (userInfo.length < 1)
+        if (!userInfo)
             return await msg.followUp("Brak danych o użytkowniku");
 
         const guildMembers = msg.guild.members.cache;
@@ -42,8 +42,7 @@ async function readStatsFromDatabase(guildId, userId) {
     try {
         clientConn = await poolDB.connect();
         let result = await clientConn.query(`SELECT id_discord, correct_answers, wrong_answers  from public."LOL_QUOTES_STATS" where id_guild='${guildId}' AND id_discord='${userId}'`);
-        if (result.rows.length > 0)
-            return result.rows[0];
+        return result.rows[0];
     } catch (err) {
         console.log(err)
         throw new Error('Błąd pobierania z bazy');
