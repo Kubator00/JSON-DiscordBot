@@ -71,7 +71,7 @@ You need create some environmental variable:
   <li><b>gifs</b> - text channel, bot sends gif every 15 min </li>
   <li><b>advertisment</b> - text channel, channel to send messages on behalf of the bot </li>
   <li><b>guild_members_update</b> - text channel, sending welcome messages  </li>
-  <li><b>music_bot</b> - text channel, interaction with music functions  </li>  
+  <li><b>music_bot</b> - text channel, interaction with music functions <b>WARNING BOT WILL DELETE ALL PREVIOUS MESSAGES AT THIS CHANNEL </b>  </li>  
   <li><b>hour</b> - text channel, bot sends notification on the full hour  </li>  
   <li><b>guild_members_number</b> - voice channel, display total members of guild as channel name </li>  
   <li><b>online_members_number</b> - voice channel, display online members of guild as channel name </li>
