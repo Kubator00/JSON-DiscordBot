@@ -1,5 +1,5 @@
 {
-  "name": "wiewiorka",
+  "name": "patrick",
   "version": "1.0.0",
   "type": "module",
   "description": "Discord Bot",
@@ -9,17 +9,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Kubator00/DiscordBot-Wiewiorka.git"
+    "url": "git+https://github.com/Kubator00/Patrick-DiscordBot"
   },
   "author": "Kubator",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Kubator00/DiscordBot-Wiewiorka/issues"
+    "url": "https://github.com/Kubator00/Patrick-DiscordBot/issues"
   },
   "engines": {
     "node": "16.x"
   },
-  "homepage": "https://github.com/Kubator00/DiscordBot-Wiewiorka#readme",
+  "homepage": "https://github.com/Kubator00/Patrick-DiscordBot#readme",
   "dependencies": {
     "@discordjs/opus": "^0.5.3",
     "@discordjs/voice": "^0.6.0",
