@@ -16,8 +16,6 @@ import discordToken from'./discordToken.js';
 client.login(discordToken.login);
 export {client};
 
-import process from 'process'
-
 import eventHandler from "./Handlers/eventHandler.js";
 import messageHandler from "./Handlers/messageHandler.js";
 import slashCommandHandler from "./Handlers/slashCommandHandler.js";
@@ -33,37 +31,22 @@ messageHandler(client);
 slashCommandHandler(client);
 buttonHandler(client);
 
-
-
-
-import autoMessages from './autoMessages.js'
+import intervalMessages from './IntervalMessages/IntervalMessages.js'
 import guildJoinMember from './guildJoinMember.js'
 import saveOnlineVoiceTime from './VoiceStats/saveOnlineVoiceTime.js'
 import changeBotStatus from "./BotStatus/changeBotStatus.js";
-import * as  channelNameGuildStats from './channelNamesGuildStats.js';
 import advertisement from "./advertisement.js";
+import guildStatsAsVoiceChannelsInInterval from './StatisticsAsVoiceChannelNames/setStatisticsInInterval.js'
 
-autoMessages(client);
+intervalMessages(client);
 guildJoinMember(client);
 saveOnlineVoiceTime(client);
 changeBotStatus(client);
 advertisement(client);
-
-setInterval(() => {
-  channelNameGuildStats.countTotalMembers(client);
-  channelNameGuildStats.countOnlineMembers(client);
-}, 600000);
-setInterval(() => {
-    channelNameGuildStats.countOnlineMembers(client);
-    console.log(`Memory usage rss, ${process.memoryUsage().rss / 1000000}MB `)
-}, 400000);
-
+guildStatsAsVoiceChannelsInInterval();
 
 client.once('ready', () => {
     console.log(`Logged as ${client.user.tag}!`);
-    channelNameGuildStats.currentDate(client);
-    channelNameGuildStats.countTotalMembers(client);
-    channelNameGuildStats.countOnlineMembers(client);
     console.log("Logged on servers:");
     for (let guild of client.guilds.cache) {
         console.log(`-${guild[1].name}`);

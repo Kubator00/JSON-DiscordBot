@@ -1,12 +1,12 @@
 import {findChannel} from "./Database/readChannelName.js";
 import {checkPermissions} from "./ErrorHandlers/errorHandlers.js";
+//type "<channelName>:<message>" to send a message on behalf of the bot
+//type "/nazwy_kanałów" to display all channel names in the guild
 export default  (client) => {
     client.on('messageCreate', msg => {
         if (msg.author.bot) 
             return;
-        
         const msgToLower = msg.content.toLowerCase();
-        //wysylanie ogloszen
         (async () => {
             const channel = await findChannel(client,'advertisment', msg.guild.id);
             if (!checkPermissions(channel))

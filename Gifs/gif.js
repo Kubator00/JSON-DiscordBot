@@ -1,6 +1,4 @@
-import randomMessageFromDatabase from '../Database/databaseRandomMsg.js'
 import fetch from 'node-fetch';
-
 
 export async function getGif(keywords) {
   let url = `https://g.tenor.com/v1/search?q=${keywords}&key=${process.env.TENOR_TOKEN}&ContentFilter=high`;
@@ -16,12 +14,6 @@ export async function getGif(keywords) {
     return `Błąd łączenia z serwerem`;
   }
 }
-
-
-export async function randomGifCategory() {
-  return (await randomMessageFromDatabase("GIF_CATEGORY"));
-}
-
 
 
 

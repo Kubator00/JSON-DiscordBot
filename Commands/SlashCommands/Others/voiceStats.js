@@ -1,4 +1,4 @@
-import displayVoiceStats from "../../../VoiceStats/displayVoiceStats.js"
+import displayVoiceStats from "../../../VoiceStats/sendVoiceTimeRanking.js"
 
 export default {
     name: 'statystyki',
