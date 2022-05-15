@@ -6,7 +6,8 @@ import randomMessageFromDatabase from "../Database/databaseRandomMsg.js";
 export default (client, guildId) => {
     (async () => {
         const channel = await findChannel(client, 'gifs', guildId);
-        if (checkPermissions(channel))
-            channel.send(await getGif(randomMessageFromDatabase("GIF_CATEGORY")));
+        if (checkPermissions(channel)) {
+            channel.send(await getGif(await randomMessageFromDatabase("GIF_CATEGORY")));
+        }
     })();
 }
