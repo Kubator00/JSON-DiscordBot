@@ -15,7 +15,7 @@ export async function sendVoiceTimeRankingLast7Days(channel) {
     if (!usersTimeLast7Days || usersTimeLast7Days.length < 1)
         return;
 
-    let dateFrom = new Date(new Date().setDate(new Date().getDate() - 6)).toLocaleDateString();
+    let dateFrom = new Date(new Date().setDate(new Date().getDate() - 6)).toLocaleDateString("pl-PL");
     await sendEmbed(channel, usersTimeLast7Days, guildMembers, `Czas spędzony na kanałach głosowych w ostatnich 7 dniach\nOd ${dateFrom}`, " ")
 }
 
