@@ -1,4 +1,4 @@
-import displayVoiceStats from "../../../VoiceStats/sendVoiceTimeRanking.js"
+import {sendVoiceTimeRanking, sendVoiceTimeRankingLast7Days} from "../../../VoiceStats/sendVoiceTimeRanking.js"
 
 export default {
     name: 'statystyki',
@@ -10,7 +10,8 @@ export default {
            await msg.followUp(`Aby użyć tej komendy musisz posiadać rolę Administratora.`)
             return;
         }
-        await msg.followUp('.');
-        await displayVoiceStats(msg.channel);
+        await msg.followUp('Statystyki:');
+        await sendVoiceTimeRanking(msg.channel);
+        await sendVoiceTimeRankingLast7Days(msg.channel);
     }
 }

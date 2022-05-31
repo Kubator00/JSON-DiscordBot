@@ -17,6 +17,7 @@ export default async (client) => {
                             try {
                                 clientConn = await poolDB.connect();
                                 await clientConn.query(saveDatabaseQuery(element, timeOnVoiceChannel));
+                                await clientConn.query(saveDatabaseQueryLast7Days(element, timeOnVoiceChannel));
                                 console.log(`Uzytkownik  ${element.id} opuscil kanal czas: ${timeOnVoiceChannel}, zapis do bazy VOICE_COUNTER_USERS `);
                             } catch (err) {
                                 console.log(err);
@@ -51,6 +52,18 @@ export default async (client) => {
     });
 }
 
+const saveDatabaseQueryLast7Days = (element, timeOnVoiceChannel) => {
+    const today = new Date().toISOString().slice(0,10);
+    return (
+        `DO $$
+    BEGIN
+    IF EXISTS (SELECT * FROM public."VOICE_COUNTER_USERS_LAST_7_DAYS" WHERE id_discord = '${element.id}' AND id_guild = '${element.id_guild}' AND date='${today}') THEN
+    UPDATE public."VOICE_COUNTER_USERS_LAST_7_DAYS" SET time_on_voice=time_on_voice+${timeOnVoiceChannel} WHERE (id_discord='${element.id}' AND id_guild='${element.id_guild}' AND date='${today}');
+    ELSE
+    INSERT INTO public."VOICE_COUNTER_USERS_LAST_7_DAYS"(id_guild, id_discord, time_on_voice) VALUES ('${element.id_guild}','${element.id}',${timeOnVoiceChannel});
+    END IF;
+    END $$;`)
+}
 
 const saveDatabaseQuery = (element, timeOnVoiceChannel) => {
     return (

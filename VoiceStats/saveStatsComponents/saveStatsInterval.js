@@ -34,11 +34,27 @@ export default async () => {
                         console.log(err);
                         continue;
                     }
+                    const today = new Date().toISOString().slice(0,10);
+                    console.log(`SELECT * FROM public."VOICE_COUNTER_USERS_LAST_7_DAYS" WHERE id_discord = '${member.id}' AND id_guild = '${member.id_guild}' AND date='${today}'`);
+                    try {
+                        await clientConn.query(`
+                    DO $$
+                    BEGIN
+                        IF EXISTS (SELECT * FROM public."VOICE_COUNTER_USERS_LAST_7_DAYS" WHERE id_discord = '${member.id}' AND id_guild = '${member.id_guild}' AND date='${today}') THEN
+                            UPDATE public."VOICE_COUNTER_USERS_LAST_7_DAYS" SET time_on_voice=time_on_voice+${member.timeOnVoiceChannel} WHERE (id_discord='${member.id}' AND id_guild='${member.id_guild}' AND date='${today}');
+                        ELSE
+                            INSERT INTO public."VOICE_COUNTER_USERS_LAST_7_DAYS"(id_guild, id_discord, time_on_voice) VALUES ('${member.id_guild}','${member.id}',${member.timeOnVoiceChannel});
+                    END IF;
+                    END $$;`)
+                    } catch (err) {
+                        console.log(err);
+                        continue;
+                    }
                     console.log(`Zapis do bazy VOICE_COUNTER_USERS  ${member.id}, czas: ${member.timeOnVoiceChannel}s`);
                 }
                 clientConn?.release();
             }
 
         })();
-    }, 60000 * 10);
+    }, 60000*10 );
 }

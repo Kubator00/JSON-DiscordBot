@@ -1,6 +1,6 @@
 import {findChannel} from "../Database/readChannelName.js";
 import checkPermissions from "../ErrorHandlers/checkPermissions.js";
-import sendVoiceTimeRanking from "../VoiceStats/sendVoiceTimeRanking.js";
+import {sendVoiceTimeRanking,sendVoiceTimeRankingLast7Days} from "../VoiceStats/sendVoiceTimeRanking.js";
 
 
 export default (client, guildId) => {
@@ -19,5 +19,6 @@ export default (client, guildId) => {
             }
         }
         await sendVoiceTimeRanking(channel);
+        await sendVoiceTimeRankingLast7Days(channel);
     })();
 }

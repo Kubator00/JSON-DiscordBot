@@ -1,26 +1,40 @@
 import {MessageEmbed} from "discord.js";
-import poolDB from "../Database/databaseConn.js";
+import {readVoiceStatsFromDatabase, readVoiceStatsFromDatabaseLast7Days} from "./readStatsComponents/readVoiceStats.js";
 
-export default async function sendVoiceTimeRanking(channel) {
-    let result = await readVoiceStatsFromDatabase(channel.guild.id);
-    if (!result || result.length < 1)
+export async function sendVoiceTimeRanking(channel) {
+    let usersTime = await readVoiceStatsFromDatabase(channel.guild.id);
+    if (!usersTime || usersTime.length < 1)
         return;
     const guildMembers = channel.guild.members.cache;
+    await sendEmbed(channel, usersTime, guildMembers, "Czas spędzony na kanałach głosowych", "Jeśli nie ma cie na liście możesz wpisać komendę /moje_dane");
+}
+
+export async function sendVoiceTimeRankingLast7Days(channel) {
+    const guildMembers = channel.guild.members.cache;
+    let usersTimeLast7Days = await readVoiceStatsFromDatabaseLast7Days(channel.guild.id);
+    if (!usersTimeLast7Days || usersTimeLast7Days.length < 1)
+        return;
+
+    let dateFrom = new Date(new Date().setDate(new Date().getDate() - 6)).toLocaleDateString();
+    await sendEmbed(channel, usersTimeLast7Days, guildMembers, `Czas spędzony na kanałach głosowych w ostatnich 7 dniach\nOd ${dateFrom}`, " ")
+}
+
+async function sendEmbed(channel, usersTime, guildMembers, title, description) {
     try {
         let embed = new MessageEmbed()
             .setColor('#ffa500')
-            .setTitle("Czas spędzony przez użytkowników na kanałach głosowych\n")
-            .setDescription("Jeśli nie ma cie na liście możesz wpisać komendę /moje_dane")
+            .setTitle(title)
+            .setDescription(description)
             .setTimestamp()
             .addFields(
-                generateEmbedFields(result, guildMembers)
+                generateEmbedFields(usersTime, guildMembers)
             )
-        channel.send({ embeds: [embed] });
+        await channel.send({embeds: [embed]});
+    } catch (err) {
+        console.error(err);
     }
-
-    catch (err) { console.log(`Błąd łączenia się z bazą ${err}`) }
-
 }
+
 
 function generateEmbedFields(usersInfo, guildMembers) {
     let result = [];
@@ -51,16 +65,6 @@ function generateEmbedFields(usersInfo, guildMembers) {
 }
 
 
-async function readVoiceStatsFromDatabase(guildId) {
-    let clientConn;
-    try {
-        clientConn = await poolDB.connect();
-        const result = await clientConn.query(`SELECT id_discord, time_on_voice  from public."VOICE_COUNTER_USERS" where id_guild='${guildId}' ORDER BY time_on_voice DESC LIMIT 30;`)
-        return result.rows;
-    } catch (err) {
-        console.log(err);
-        return null;
-    } finally{
-        clientConn?.release();
-    }
-}
+
+
+
