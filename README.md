@@ -22,7 +22,8 @@ Patrick is Discord Bot for Polish servers using PostgresSQL database.
      </ul>
  riot token not required:
    <ul>
-      <li> knowledge quiz (Riot Token not required) </li>
+      <li> knowledge quiz </li>
+      <li> random team generator </li>
    </ul>
  </ul>
 
