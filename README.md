@@ -81,7 +81,7 @@ Create environmental variables:
   <ul>
   <b>text channels:</b>
     <ul>
-      <li><b>voice_time_users</b> - display users who have the most time on voice channels </li>
+      <li><b>voice_time_users</b> - display users who have the most time on voice channels <b> ONLY ADMINISTRATORS SHOULD HAVE ACCESS </b></li>
       <li><b>gifs</b> - sends gif every 15 min </li>
       <li><b>guild_members_update</b> - sends welcome messages </li>
       <li><b>music_bot</b> - display audio player <b>BOT WILL DELETE ALL PREVIOUS MESSAGES AT THIS CHANNEL </b>  </li>  
