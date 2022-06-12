@@ -14,8 +14,6 @@ export default {
         },
     ],
     async execute(msg) {
-        if (!await checkIfChannelIsCorrect(client, 'lol_statistics', msg))
-            return;
         let summoner = msg.options.getString('nazwa');
         await lolMessage(msg, summoner, true);
     }
