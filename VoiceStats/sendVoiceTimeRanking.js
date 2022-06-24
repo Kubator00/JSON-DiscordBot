@@ -9,7 +9,7 @@ export async function sendVoiceTimeRanking(channel) {
         console.error(err);
         return;
     }
-    if (usersTime.length < 1)
+    if (!usersTime || usersTime.length < 1)
         return;
     const guildMembers = channel.guild.members.cache;
     await sendEmbed(channel, usersTime, guildMembers, "Czas spędzony na kanałach głosowych", "Jeśli nie ma cie na liście możesz wpisać komendę /moje_dane");
@@ -22,7 +22,7 @@ export async function sendVoiceTimeRankingLast7Days(channel) {
     } catch (err) {
         console.error(err);
     }
-    if (!usersTimeLast7Days.length < 1)
+    if (!usersTimeLast7Days || usersTimeLast7Days.length < 1)
         return;
     const guildMembers = channel.guild.members.cache;
     const dateFrom = new Date(new Date().setDate(new Date().getDate() - 6)).toLocaleDateString("pl-PL");
