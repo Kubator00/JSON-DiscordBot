@@ -2,29 +2,41 @@ import ytdl from "ytdl-core";
 import ytsr from "ytsr";
 
 export default async function findMusicYT(msg, url) {
-    const voiceChannel = msg.member.voice.channel;
-    if (!voiceChannel) {
-        await msg.followUp("Musisz być na kanale głosowym aby dodać piosenkę!");
-        return;
-    }
     try {
-        if (ytdl.validateURL(url)) {
-            const musicInfo = await ytdl.getInfo(url);
-            return { title: musicInfo.videoDetails.title, url: musicInfo.videoDetails.video_url, img: musicInfo.videoDetails?.thumbnails[musicInfo.videoDetails?.thumbnails.length - 1].url };
-            //thumbnails.length-1 ma najwyzsza rozdzielczoscś
-        }
+        if (ytdl.validateURL(url))
+            return await getMusicByUrl(url);
 
-        else {
-            const musicList = await ytsr(url, { limit: 1 });
-            if (musicList.items.length >= 1) {
-                if (musicList.items[0].type === 'video') {
-                    return { title: musicList.items[0].title, url: musicList.items[0].url, img: musicList.items[0]?.thumbnails[0].url };
-                }
-            }
-        }
+        return await getMusicByKeyword(url);
     } catch (err) {
-        console.log(`Blad odtawrzacza ${err}`);
+        throw err;
     }
-    await msg.followUp("Nie znaleziono piosenki");
+}
 
+const getMusicByUrl = async (url) => {
+    try {
+        const musicInfo = await ytdl.getInfo(url);
+        return {
+            title: musicInfo.videoDetails.title,
+            url: musicInfo.videoDetails.video_url,
+            img: musicInfo.videoDetails?.thumbnails[musicInfo.videoDetails?.thumbnails.length - 1].url
+            //thumbnails.length-1 have the best quality
+        };
+    } catch (err) {
+        throw new Error('Music not found')
+    }
+}
+
+const getMusicByKeyword = async (keyword) => {
+    try {
+        const musicList = await ytsr(keyword, {limit: 1});
+        if (musicList.items.length < 1 || musicList.items[0].type !== 'video')
+            throw new Error('Music not found')
+        return {
+            title: musicList.items[0].title,
+            url: musicList.items[0].url,
+            img: musicList.items[0]?.thumbnails[0].url
+        };
+    } catch (err) {
+        throw err;
+    }
 }

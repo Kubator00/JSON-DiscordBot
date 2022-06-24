@@ -1,9 +1,10 @@
 import {client} from "../../../index.js";
+import {SlashCommandBuilder} from "@discordjs/builders";
 
 export default {
-    name: 'lista1',
-    description: "Wyświetla listę znajdujących się na kanale głosowych",
-
+    data: new SlashCommandBuilder()
+        .setName('lista1')
+        .setDescription("Wyświetla listę znajdujących się na kanale głosowych"),
     async execute(msg) {
         const voiceChannel = msg.member.voice.channel;
         if (!voiceChannel)

@@ -1,4 +1,4 @@
-import {findChannel} from "../Database/readChannelName.js";
+import {findChannel} from "../Database/getChannel.js";
 import checkPermissions from "../ErrorHandlers/checkPermissions.js";
 import {sendVoiceTimeRanking,sendVoiceTimeRankingLast7Days} from "../VoiceStats/sendVoiceTimeRanking.js";
 

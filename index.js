@@ -12,6 +12,7 @@ const client = new Client({
         Intents.FLAGS.GUILD_PRESENCES
     ]
 });
+
 import discordToken from'./discordToken.js';
 client.login(discordToken.login);
 export {client};
@@ -37,6 +38,7 @@ import saveOnlineVoiceTime from './VoiceStats/saveOnlineVoiceTime.js'
 import changeBotStatus from "./BotStatus/changeBotStatus.js";
 import advertisement from "./advertisement.js";
 import guildStatsAsVoiceChannelsInInterval from './StatisticsAsVoiceChannelNames/setStatisticsInInterval.js'
+import {dayOfTheWeek} from "./Utilities/date.js";
 
 intervalMessages(client);
 guildJoinMember(client);

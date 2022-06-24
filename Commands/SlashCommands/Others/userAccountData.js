@@ -1,10 +1,11 @@
-import poolDB from '../../../Database/databaseConn.js'
+import poolDB from '../../../Database/conn.js'
 import {MessageEmbed} from "discord.js";
+import {SlashCommandBuilder} from "@discordjs/builders";
 
 export default {
-    name: 'moje_dane',
-    description: "Wyświetla informacje o użytkowniku",
-
+    data: new SlashCommandBuilder()
+        .setName('moje_dane')
+        .setDescription('Wyświetla informacje o użytkowniku'),
     async execute(msg) {
         let userInfo;
         try {

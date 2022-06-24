@@ -1,30 +1,57 @@
 import {client} from "../../../index.js";
-import {checkIfChannelIsCorrect} from "../../../Database/readChannelName.js";
+import {checkIfChannelIsCorrect} from "../../../Database/getChannel.js";
 import findMusicYT from "./components/findYtMusic.js";
 import addSongToQueue from "./components/addToQueue.js";
+import {SlashCommandBuilder} from "@discordjs/builders";
+import checkIfUserIsOnVoiceChannel from "../../../Utilities/checkIfUserIsOnVoiceChannel.js";
+import autoLeaveChannel from "./components/autoLeave.js";
+import sendPlayerEmbed from "./components/sendPlayerEmbed.js";
+import playMusic from "./components/playMusic.js";
+import isPlayingf from "./components/isPlaying.js";
+import getVoiceConnection from "./components/getVoiceChannel.js";
+import queue from "./components/queueMap.js";
 
 
 export default {
-    name: 'graj',
-    description: "Odtwarzaj muzyke",
-    options: [
-        {
-            name: "nazwa",
-            description: "Nazwa lub URL piosenki",
-            type: "STRING",
-            required: true
-        },
-    ],
+    data: new SlashCommandBuilder()
+        .setName('graj')
+        .setDescription('Odtwarzaj muzyke z YT')
+        .addStringOption(option =>
+            option
+                .setName('nazwa')
+                .setDescription('Nazwa lub URL piosenki')
+                .setRequired(true)
+        ),
     async execute(msg) {
-        if (!await checkIfChannelIsCorrect(client, 'music_bot', msg))
+        if (!await checkIfChannelIsCorrect(client, 'music_bot', msg) || !checkIfUserIsOnVoiceChannel(msg))
             return;
-
+        let song, voiceChannel;
         const url = msg.options.getString('nazwa');
+        const isPlaying = isPlayingf(msg);
+        try {
+            song = await findMusicYT(msg, url);
+        } catch (err) {
+            msg.followUp('Nie znaleziono piosenki');
+            return;
+        }
 
-        let song = await findMusicYT(msg, url);
-        if (song)
-            await addSongToQueue(msg, song, false);
+        if (!queue.get(msg.guild.id)) {
+            try {
+                voiceChannel = await getVoiceConnection(msg)
+            } catch (err) {
+                msg.followUp('Błąd połączenia z kanałem').catch(err => console.log(err));
+                return;
+            }
+            setTimeout(() => autoLeaveChannel(msg.guild.id), 5000);
+        }
 
+        await addSongToQueue(msg, song, voiceChannel);
+
+
+
+        if (!isPlaying)
+            playMusic(msg.guild.id);
+        await sendPlayerEmbed(msg.guild.id);
     },
 }
 

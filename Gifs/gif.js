@@ -10,8 +10,7 @@ export async function getGif(keywords) {
     return json.results[i].url;
   }
   catch (err) {
-    console.log(`Błąd łączenia z tenor, ${err}`);
-    return `Błąd łączenia z serwerem`;
+    throw new Error(`Błąd łączenia z serwerem`);
   }
 }
 

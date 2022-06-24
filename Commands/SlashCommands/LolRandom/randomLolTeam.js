@@ -1,12 +1,14 @@
 import randomInt from "../../../Utilities/getRandomInt.js"
 import {MessageEmbed} from "discord.js";
 import loadJSON from "../../../Utilities/loadJSON.js";
-import  {dirname} from "path";
+import {dirname} from "path";
 import {fileURLToPath} from "url";
+import {SlashCommandBuilder} from "@discordjs/builders";
 
 export default {
-    name: 'losuj_drużyne',
-    description: "Losowanie drużyny w League of Legends",
+    data: new SlashCommandBuilder()
+        .setName('losuj_drużyne')
+        .setDescription('Losowanie drużyny w League of Legends'),
     async execute(msg) {
         const json = loadJSON(dirname(fileURLToPath(import.meta.url)), 'championsLanes.json');
         let embed = new MessageEmbed()

@@ -1,4 +1,4 @@
-import {findChannel} from "../Database/readChannelName.js";
+import {findChannel} from "../Database/getChannel.js";
 import {client} from "../index.js";
 
 export function changeVoiceChannelName(channelRole, guild, newChannelName) {

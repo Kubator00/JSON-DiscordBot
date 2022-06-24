@@ -1,8 +1,6 @@
 import {readdirSync} from 'fs';
 
 export default async (client) => {
-
-
     const messageFolder = readdirSync('./Commands/Buttons');
     for (const folder of messageFolder) {
         const messageFiles = readdirSync(`./Commands/Buttons/${folder}`).filter(file => file.endsWith('.js'));

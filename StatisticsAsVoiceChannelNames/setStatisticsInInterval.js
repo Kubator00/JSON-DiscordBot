@@ -1,7 +1,7 @@
 import process from "process";
 import {client} from "../index.js";
 import {changeVoiceChannelName} from "./changeVoiceChannelName.js";
-import {day_of_the_week} from "../Utilities/date.js";
+import {dayOfTheWeek} from "../Utilities/date.js";
 
 
 export default () => {
@@ -31,5 +31,5 @@ function getNumberOfGuildMembers(guild) {
 }
 
 function getDayOfTheWeek() {
-    return "┃ 📅 ┃ " + day_of_the_week();
+    return "┃ 📅 ┃ " + dayOfTheWeek();
 }

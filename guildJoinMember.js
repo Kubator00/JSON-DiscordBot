@@ -1,5 +1,5 @@
 import {checkPermissions} from  './ErrorHandlers/errorHandlers.js'
-import {findChannel} from "./Database/readChannelName.js";
+import {findChannel} from "./Database/getChannel.js";
 
 export default (client) => {
     client.on("guildMemberAdd", member => {

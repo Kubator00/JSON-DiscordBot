@@ -8,19 +8,16 @@ import getRandomInt from "../../../Utilities/getRandomInt.js";
 import {dirname} from 'path';
 import {fileURLToPath} from 'url';
 import * as path from 'path';
+import {SlashCommandBuilder} from "@discordjs/builders";
 
 export default {
-    name: 'quiz_lol',
-    description: "Zagraj w gre zgadując cytaty wypowiedziane przez postacie w League of Legends",
-    options: [
-        {
-            name: "ilosc_rund",
-            description: "Liczba pytań od 1 do 20",
-            type: "NUMBER",
-            required: true
-        },
-    ],
-
+    data: new SlashCommandBuilder()
+        .setName('lol_quiz')
+        .setDescription('Zagraj w gre zgadując cytaty wypowiedziane przez postacie z LeagueOfLegends')
+        .addNumberOption(option =>
+            option.setName('ilosc_rund')
+                .setDescription('Liczba pytań od 1 do 20')
+                .setRequired(true)),
     async execute(msg) {
         const numberOfRounds = msg.options.getNumber('ilosc_rund');
         if (numberOfRounds < 1 || numberOfRounds > 20)

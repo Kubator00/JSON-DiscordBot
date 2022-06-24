@@ -1,4 +1,4 @@
-import poolDB from '../../../../Database/databaseConn.js';
+import poolDB from '../../../../Database/conn.js';
 
 
 export default async function readLolQuizStats(guildId) {

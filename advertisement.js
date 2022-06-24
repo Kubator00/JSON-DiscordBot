@@ -1,4 +1,4 @@
-import {findChannel} from "./Database/readChannelName.js";
+import {findChannel} from "./Database/getChannel.js";
 import {checkPermissions} from "./ErrorHandlers/errorHandlers.js";
 //type "<channelName>:<message>" to send a message on behalf of the bot
 //type "/nazwy_kanałów" to display all channel names in the guild

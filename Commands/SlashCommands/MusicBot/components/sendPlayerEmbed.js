@@ -1,61 +1,96 @@
-import { MessageActionRow, MessageButton, MessageSelectMenu, MessageEmbed } from 'discord.js';
-import { client } from "../../../../index.js";
+import {MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu} from 'discord.js';
 import queue from "./queueMap.js";
-import { findChannel } from "../../../../Database/readChannelName.js";
+import {findChannel} from "../../../../Database/getChannel.js";
+import {client} from "../../../../index.js";
+
+
 export default async (guildId) => {
-    const channel = await findChannel(client, 'music_bot', guildId);
-    if (!channel)
-        return;
-
-    let messages = await channel.messages.fetch();
-    if (channel.permissionsFor(channel.client.user).has('MANAGE_MESSAGES')) {
-        messages.forEach(oldMsg => {
-            (async () => {
-                try {
-                    if (channel.messages.fetch(oldMsg.id)) //sprawdzam czy istnieje bo inaczej przy wpiasniu
-                        await oldMsg.delete();             //wiekszej ilosci polecen na raz usuwa ta sama wiadomosc
-                } catch (err) {                            //po kilka razy i apilkacja sie crashuje
-                    console.log('Błąd usuwania wiadomości');
-                }
-            })();
-        })
-    }
-
-    let songs, embeds;
-    try {
-        songs = queue.get(guildId).songs;
-        if (songs.length < 1)
-            embeds = { ephemeral: false, embeds: [await createEmbed(null)] };
-    } catch (err) {
-        await channel.send({ ephemeral: false, embeds: [await createEmbed(null)] }).catch((err) => console.log(err));
+    let songs;
+    const channel = await getMusicChannel(guildId);
+    await deletePreviousMsgFromChannel(channel);
+    songs = queue.get(guildId)?.songs;
+    if (!songs || songs?.length < 1) {
+        await channel.send(createIdleEmbed()).catch((err) => console.log(err));
         return;
     }
-
-    if (songs && songs.length > 0)
-        embeds = { ephemeral: false, embeds: [await createEmbed(songs)], components: [buttonsCreator(songs), selectMenuCreator(guildId, songs)] };
-
-    await channel.send(embeds).catch((err) => console.log(err));
+    await channel.send(createEmbed(guildId, songs)).catch((err) => console.log(err));
 }
 
-const createEmbed = async (songs) => {
-    return (
-        new MessageEmbed()
-            .setColor('#0099ff')
-            .setTitle("🎵 │ Odtwarzacz muzyki │ 🎵")
-            .addFields(
-                fieldsCreator(songs)
-            )
-            .setImage(getImg(songs))
-    );
+const getMusicChannel = async (guildId) => {
+    let channel = queue.get(guildId)?.textChannel;
+    if (channel)
+        return channel;
+    channel = await findChannel(client, 'music_bot', guildId);
+    return channel;
+}
 
+
+const deletePreviousMsgFromChannel = async (channel) => {
+    let messages;
+    try {
+        messages = await channel.messages.fetch();
+    } catch (err) {
+        console.log(err);
+        return;
+    }
+    if (!channel.permissionsFor(channel.client.user).has('MANAGE_MESSAGES'))
+        return;
+    messages.forEach(oldMsg => {
+        (async () => {
+            try {
+                if (channel.messages.fetch(oldMsg.id))
+                    await oldMsg.delete();
+            } catch (err) {
+                console.log('Delete msg error');
+            }
+        })();
+    })
+}
+
+
+const createIdleEmbed = () => {
+    return {
+        ephemeral: false,
+        embeds: [
+            new MessageEmbed()
+                .setColor('#0099ff')
+                .setTitle("🎵 │ Odtwarzacz muzyki │ 🎵")
+                .addFields(
+                    [{
+                        name: '\u200B',
+                        value: "Brak piosenek w kolejce",
+                    },
+                        {
+                            name: '\u200B',
+                            value: "Użyj polecenia /graj lub /grajliste aby słuchać muzyki na kanale głosowym",
+                        }]
+                )
+        ]
+    };
+}
+
+
+const createEmbed = (guildId, songs) => {
+    return (
+        {
+            ephemeral: false,
+            embeds: [
+                new MessageEmbed()
+                    .setColor('#0099ff')
+                    .setTitle("🎵 │ Odtwarzacz muzyki │ 🎵")
+                    .addFields(
+                        fieldsCreator(songs)
+                    )
+                    .setImage(getImg(songs))
+            ],
+            components: [buttonsCreator(songs), selectMenuCreator(guildId, songs)]
+        }
+    );
 }
 
 const getImg = (songs) => {
-    if (!songs || !songs[0].img)
-        return "";
-    return songs[0].img;
+    return songs[0].img ? songs[0].img : '';
 }
-
 
 const buttonsCreator = (songs) => {
     return (
@@ -98,15 +133,6 @@ const getURL = (songs) => {
 }
 
 const fieldsCreator = (songs) => {
-    if (!songs || songs.length < 1)
-        return [{
-            name: '\u200B',
-            value: "Brak piosenek w kolejce",
-        }, {
-            name: '\u200B',
-            value: "Użyj polecenia /graj lub /grajliste aby słuchać muzyki na kanale głosowym",
-        }]
-
     let queueLengthToDisplay = songs.length; //embed max fields is 25
     if (songs.length > 10)
         queueLengthToDisplay = 10;
@@ -137,9 +163,7 @@ const fieldsCreator = (songs) => {
 }
 
 
-
 const selectMenuCreator = (guildId, songs) => {
-
     return (
         new MessageActionRow()
             .addComponents(

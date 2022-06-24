@@ -1,20 +1,20 @@
 CREATE TABLE CHANNEL_NAMES(
 id INT PRIMARY KEY,
-guild_id VARCHAR(30),
-role VARCHAR(30),
-channel_id VARCHAR(30)
+guild_id TEXT,
+role TEXT,
+channel_id TEXT
 );
 
 CREATE TABLE GIF_CATEGORY(
 id INT PRIMARY KEY,
-value VARCHAR(30)
+value TEXT
 );
 
 
 CREATE TABLE LOL_QUOTES_STATS(
 id INT PRIMARY KEY,
-id_guild VARCHAR(30),
-id_discord VARCHAR(30),
+id_guild TEXT,
+id_discord TEXT,
 correct_answers INT,
 wrong_answers INT
 );
@@ -22,7 +22,15 @@ wrong_answers INT
 
 CREATE TABLE VOICE_COUNTER_USERS(
 id INT PRIMARY KEY,
-id_guild VARCHAR(30),
-id_discord VARCHAR(30),
+id_guild TEXT,
+id_discord TEXT,
 time_on_voice BIGINT
+);
+
+CREATE TABLE VOICE_COUNTER_USERS_LAST_7_DAYS(
+id INT PRIMARY KEY,
+id_guild TEXT,
+id_discord TEXT,
+time_on_voice BIGINT,
+date DATE
 );

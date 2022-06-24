@@ -8,11 +8,12 @@ import {dirname} from 'path';
 import { fileURLToPath } from 'url';
 import loadJSON from "../../../Utilities/loadJSON.js";
 import * as path from 'path';
+import {SlashCommandBuilder} from "@discordjs/builders";
 
 export default {
-    name: 'oczko',
-    description: "Zagraj w oczko",
-
+    data: new SlashCommandBuilder()
+        .setName('oczko')
+        .setDescription('Zagraj w grę karcianą - oczko'),
     async execute(msg) {
         const playToNumber = 21;
         const timeToReaction = 7000;

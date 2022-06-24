@@ -1,5 +1,5 @@
 import queue from "./queueMap.js";
-import embedPlayer from "./embedPlayer.js";
+import embedPlayer from "./sendPlayerEmbed.js";
 
 export default async function autoLeaveChannel(guildId) {
     try {

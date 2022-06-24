@@ -1,9 +1,11 @@
-import poolDB from '../../../Database/databaseConn.js'
+import poolDB from '../../../Database/conn.js'
 import {MessageEmbed} from "discord.js";
+import {SlashCommandBuilder} from "@discordjs/builders";
 
 export default {
-    name: 'quiz_lol_moje_statystyki',
-    description: "Wyświetla twoje statystyki",
+    data: new SlashCommandBuilder()
+        .setName('lol_quiz_moje_statystyki')
+        .setDescription('Wyświetla twoje statystyki quizu z LeagueOfLegends'),
     async execute(msg) {
         let userInfo;
         try {

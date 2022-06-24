@@ -7,16 +7,17 @@ export default {
             return;
         if (!checkPermissions(interaction.channel))
             return;
-        await interaction.deferReply({ephemeral: false}).catch(() => {
-        });
-
-        const command = client.slashCommands.get(interaction.commandName);
-        if (!command) return await interaction.followUp({content: "Polecenie nie istnieje"}) && client.slashCommands.delete(interaction.commandName);
+        await interaction.deferReply({ephemeral: false}).catch((err) => {console.log(err)});
+        const command = client.commands.get(interaction.commandName);
+        if (!command) {
+            console.error("Command doesn't exist");
+            return;
+        }
         try {
             command.execute(interaction);
         } catch (err) {
-            console.log(err);
-            console.log("Odnotowano błąd wysłania wiadomości");
+            console.error(err);
+            await interaction.reply({ content: 'Wystąpił błąd przy wykonywaniu polecenia', ephemeral: true });
         }
     }
 }
