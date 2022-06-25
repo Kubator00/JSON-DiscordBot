@@ -134,8 +134,8 @@ const getURL = (songs) => {
 
 const fieldsCreator = (songs) => {
     let queueLengthToDisplay = songs.length; //embed max fields is 25
-    if (songs.length > 10)
-        queueLengthToDisplay = 10;
+    if (songs.length > 20)
+        queueLengthToDisplay = 20;
     let result = [];
 
     result.push({
@@ -154,7 +154,7 @@ const fieldsCreator = (songs) => {
             value: `${i}.  ${songs[i].title}`,
         })
     }
-    if (queueLengthToDisplay === 10)
+    if (queueLengthToDisplay === 20)
         result.push({
             name: `I więcej...`,
             value: `\u200B`,

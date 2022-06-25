@@ -27,30 +27,31 @@ export default {
             return;
         let song, voiceChannel;
         const url = msg.options.getString('nazwa');
-        const isPlaying = isPlayingf(msg);
+        const isPlaying = isPlayingf(msg.guild.id);
         try {
-            song = await findMusicYT(msg, url);
+            song = await findMusicYT(url);
         } catch (err) {
-            msg.followUp('Nie znaleziono piosenki');
+            msg.followUp(err.message).catch(err => console.error(err));
             return;
         }
-
         if (!queue.get(msg.guild.id)) {
             try {
                 voiceChannel = await getVoiceConnection(msg)
             } catch (err) {
-                msg.followUp('Błąd połączenia z kanałem').catch(err => console.log(err));
+                msg.followUp(err.message).catch(err => console.error(err));
                 return;
             }
             setTimeout(() => autoLeaveChannel(msg.guild.id), 5000);
         }
-
-        await addSongToQueue(msg, song, voiceChannel);
-
-
-
+        try {
+            await addSongToQueue(msg, song, voiceChannel);
+        } catch (err) {
+            msg.followUp(err.message).catch(err => console.error(err));
+            return;
+        }
         if (!isPlaying)
             playMusic(msg.guild.id);
+
         await sendPlayerEmbed(msg.guild.id);
     },
 }

@@ -1,6 +1,6 @@
 import queue from "./queueMap.js";
 
-export default  (msg) => {
-    const songs = queue.get(msg.guild.id)?.songs;
+export default  (guildId) => {
+    const songs = queue.get(guildId)?.songs;
     return songs?.length > 0;
 }

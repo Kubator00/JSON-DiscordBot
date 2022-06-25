@@ -8,10 +8,14 @@ import {joinVoiceChannel} from "@discordjs/voice";
 
 export default async function addSongToQueue(msg, music, voiceChannel) {
     const songQueue = queue.get(msg.guild.id);
-    if (songQueue?.songs?.length > 40) {
-        msg.channel.send('Kolejka zawiera zbyt dużą liczbę piosenek\nSpróbuj ponownie później').catch(err => console.log(err));
-        return;
+    try {
+        if (songQueue?.songs?.length > 40)
+            throw new Error('Kolejka zawiera zbyt dużą liczbę piosenek\nSpróbuj ponownie później');
+
+    } catch (err) {
+        throw err;
     }
+
     let serverQueue = queue.get(msg.guild.id);
     if (!serverQueue) {
         createNewQueue(msg, voiceChannel);

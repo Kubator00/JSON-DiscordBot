@@ -25,13 +25,13 @@ export default {
         if (!await checkIfChannelIsCorrect(client, 'music_bot', msg) || !checkIfUserIsOnVoiceChannel(msg))
             return;
         const url = msg.options.getString('url');
-        const isPlaying = isPlayingf(msg);
+        const isPlaying = isPlayingf(msg.guild.id);
         let musicList, voiceChannel;
 
         try {
             musicList = await findPlaylistYT(msg, url);
         } catch (err) {
-            msg.followUp('Nieprawidłowy adres');
+            msg.followUp('Nieprawidłowy adres').catch(err => console.error(err))
             return;
         }
 
@@ -39,14 +39,22 @@ export default {
             try {
                 voiceChannel = await getVoiceConnection(msg)
             } catch (err) {
-                msg.followUp('Błąd połączenia z kanałem').catch(err => console.log(err));
+                msg.followUp('Błąd połączenia z kanałem').catch(err => console.error(err));
                 return;
             }
             setTimeout(() => autoLeaveChannel(msg.guild.id), 5000);
         }
 
         for (let music of musicList)
-            await addSongToQueue(msg, music, voiceChannel)
+            try {
+                await addSongToQueue(msg, music, voiceChannel)
+            } catch (err) {
+                if (!isPlaying)
+                    playMusic(msg.guild.id);
+                await embedPlayer(msg.guild.id);
+                msg.channel.send(err.message).catch(err => console.error(err));
+                return;
+            }
 
         if (!isPlaying)
             playMusic(msg.guild.id);

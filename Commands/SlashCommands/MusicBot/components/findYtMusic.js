@@ -1,11 +1,10 @@
 import ytdl from "ytdl-core";
 import ytsr from "ytsr";
 
-export default async function findMusicYT(msg, url) {
+export default async function findMusicYT(url) {
     try {
         if (ytdl.validateURL(url))
             return await getMusicByUrl(url);
-
         return await getMusicByKeyword(url);
     } catch (err) {
         throw err;
@@ -22,7 +21,7 @@ const getMusicByUrl = async (url) => {
             //thumbnails.length-1 have the best quality
         };
     } catch (err) {
-        throw new Error('Music not found')
+        throw new Error('Nie znaleziono piosenki')
     }
 }
 
@@ -30,13 +29,13 @@ const getMusicByKeyword = async (keyword) => {
     try {
         const musicList = await ytsr(keyword, {limit: 1});
         if (musicList.items.length < 1 || musicList.items[0].type !== 'video')
-            throw new Error('Music not found')
+            throw Error;
         return {
             title: musicList.items[0].title,
             url: musicList.items[0].url,
             img: musicList.items[0]?.thumbnails[0].url
         };
     } catch (err) {
-        throw err;
+        throw new Error('Nie znaleziono piosenki');
     }
 }
