@@ -1,9 +1,9 @@
-import {checkPermissions} from "../ErrorHandlers/errorHandlers.js";
+import checkChannelPermissions from "../checkChannelPermissions.js";
 
 export default {
     name: "messageCreate",
     async execute(client, msg) {
-        if (!checkPermissions(msg.channel))
+        if (!checkChannelPermissions(msg.channel))
             return;
         if (msg.author.bot)
             return;

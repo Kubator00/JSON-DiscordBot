@@ -1,6 +1,6 @@
-import * as date from '../Utilities/date.js'
+import * as date from "./Utilities/date.js";
 
-export default  (channel) => {
+export default (channel) => {
     if (!channel)
         return false;
 

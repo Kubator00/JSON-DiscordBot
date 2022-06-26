@@ -1,5 +1,5 @@
 import {findChannel} from "./Database/getChannel.js";
-import {checkPermissions} from "./ErrorHandlers/errorHandlers.js";
+import checkChannelPermissions from "./checkChannelPermissions.js";
 //type "<channelName>:<message>" to send a message on behalf of the bot
 //type "/nazwy_kanałów" to display all channel names in the guild
 export default  (client) => {
@@ -9,7 +9,7 @@ export default  (client) => {
         const msgToLower = msg.content.toLowerCase();
         (async () => {
             const channel = await findChannel(client,'advertisment', msg.guild.id);
-            if (!checkPermissions(channel))
+            if (!checkChannelPermissions(channel))
                 return;
             if (msg.channel.id === channel.id) {
                 if (msgToLower === '/nazwy_kanałów' || msgToLower === '/nazwy_kanalow') {
@@ -23,7 +23,7 @@ export default  (client) => {
                 }
                 const splitMsg = msgToLower.split(":");
                 const channelToSend = msg.guild.channels.cache.find(element => (element.name === splitMsg[0] && element.type === "GUILD_TEXT"));
-                if (!checkPermissions(channelToSend)) {
+                if (!checkChannelPermissions(channelToSend)) {
                     msg.channel.send("Kanał nie istnieje");
                     return;
                 }

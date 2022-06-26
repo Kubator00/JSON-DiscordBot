@@ -1,11 +1,11 @@
-import {checkPermissions} from "../ErrorHandlers/errorHandlers.js";
+import checkChannelPermissions from "../checkChannelPermissions.js";
 
 export default {
     name: "interactionCreate",
     async execute(client, interaction) {
         if (!interaction.isCommand())
             return;
-        if (!checkPermissions(interaction.channel))
+        if (!checkChannelPermissions(interaction.channel))
             return;
         await interaction.deferReply({ephemeral: false}).catch((err) => {console.log(err)});
         const command = client.commands.get(interaction.commandName);

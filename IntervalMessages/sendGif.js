@@ -1,5 +1,5 @@
 import {findChannel} from "../Database/getChannel.js";
-import checkPermissions from "../ErrorHandlers/checkPermissions.js";
+import checkChannelPermissions from "../checkChannelPermissions.js";
 import {getGif} from "../Gifs/gif.js";
 import getTableFromDb from "../Database/getTable.js";
 
@@ -7,7 +7,7 @@ export default (client, guildId) => {
     let keyword, url;
     (async () => {
         const channel = await findChannel(client, 'gifs', guildId);
-        if (checkPermissions(channel)) {
+        if (checkChannelPermissions(channel)) {
             try {
                 keyword = await getRandomGifKeyword('GIF_CATEGORY');
             } catch (err) {
