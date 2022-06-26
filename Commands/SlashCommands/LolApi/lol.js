@@ -1,7 +1,6 @@
-import {checkIfChannelIsCorrect} from "../../../Database/getChannel.js";
-import lolMessage from './Functions/message.js';
-import {client} from "../../../index.js";
+import lolMessage from './components/basicAccountInfo.js';
 import {SlashCommandBuilder} from "@discordjs/builders";
+import {sendErrorMsg} from "./components/lolCommonFunctions.js";
 
 export default {
     data: new SlashCommandBuilder()
@@ -13,6 +12,10 @@ export default {
                 .setRequired(true)),
     async execute(msg) {
         let summoner = msg.options.getString('nazwa');
-        await lolMessage(msg, summoner, true);
+        try {
+            await msg.followUp(await lolMessage(summoner));
+        } catch (err) {
+            sendErrorMsg(err, msg);
+        }
     }
 }

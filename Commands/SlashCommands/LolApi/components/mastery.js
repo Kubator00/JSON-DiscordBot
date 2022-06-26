@@ -1,59 +1,58 @@
 import {MessageEmbed} from "discord.js";
-import fetch from "node-fetch";
 import * as lolFunctions from './lolCommonFunctions.js'
 import fetchHeaders from "./fetchHeaders.js";
-import {checkResponseStatusMsg, defaultErrorMsg, sendErrorMsg} from "./lolCommonFunctions.js";
+import fetchData from "./fetchData.js";
 
 
-export default async (msg, summoner) => {
+export default async (summoner) => {
     const summonerPlayerName = encodeURI(summoner);
     const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName;
-
     let responseSummoner;
     try {
-        responseSummoner = await fetch(urlSummoner, fetchHeaders);
+        responseSummoner = await fetchData(urlSummoner, fetchHeaders);
     } catch (err) {
-        msg.channel.send(lolFunctions.defaultErrorMsg).catch(() => console.log("Błąd wysłania wiadomości"));
-        return;
+        throw err;
     }
-    if (!checkResponseStatusMsg(responseSummoner.status, msg))
-        return;
-
-
     const jsonSummoner = await responseSummoner.json();
     const summonerIdPlayer = jsonSummoner.id;
-
     let ranks;
     try {
         ranks = await lolFunctions.readPlayerRankAndStats(summonerIdPlayer);
     } catch (err) {
-        return sendErrorMsg(err, msg);
+        throw err;
     }
-
-    let player =
-        {
-            summonerName: jsonSummoner.name,
-            summonerLevel: jsonSummoner.summonerLevel,
-            profileIconId: jsonSummoner.profileIconId,
-            soloqRank: ranks[0],
-            flexRank: ranks[1]
-        }
-
+    const player = setPlayer(jsonSummoner, ranks);
     const urlChampionMastery = "https://eun1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summonerIdPlayer;
     let responseChampionMastery;
     try {
-        responseChampionMastery = await fetch(urlChampionMastery, fetchHeaders);
+        responseChampionMastery = await fetchData(urlChampionMastery, fetchHeaders);
     } catch (err) {
-        return msg.channel.send(defaultErrorMsg).catch(() => console.log("Błąd wysłania wiadomości"));
+        throw err;
     }
-    if (!checkResponseStatusMsg(responseChampionMastery.status, msg))
-        return;
-
     const jsonChampionMastery = await responseChampionMastery.json();
+    let championsData = setChampions(jsonChampionMastery);
+    try {
+        await lolFunctions.readChampionsName(championsData)
+    } catch (err) {
+        throw err;
+    }
+    return createEmbed(player, championsData);
+}
+
+function setPlayer(jsonSummoner, ranks) {
+    return {
+        summonerName: jsonSummoner.name,
+        summonerLevel: jsonSummoner.summonerLevel,
+        profileIconId: jsonSummoner.profileIconId,
+        soloqRank: ranks[0],
+        flexRank: ranks[1]
+    }
+}
+
+function setChampions(jsonChampionMastery) {
     let numberOfChamp = 20;
     if (jsonChampionMastery.length < numberOfChamp)
         numberOfChamp = jsonChampionMastery.length - 1;
-
     let championsData = [];
     for (let i = 0; i <= numberOfChamp; i++) {
         let championData = {
@@ -65,34 +64,21 @@ export default async (msg, summoner) => {
         }
         championsData.push(championData);
     }
-
-    try {
-        await lolFunctions.readChampionsName(championsData)
-    } catch (err) {
-        return sendErrorMsg(err, msg);
-    }
-
-
-    let embed = new MessageEmbed()
-        .setColor('#ffa500')
-        .setAuthor("Informacje o koncie\n"
-            + "●════════════════════════════════════════●",
-            'http://ddragon.leagueoflegends.com/cdn/' + await lolFunctions.getDragonVersion() + '/img/profileicon/' + player.profileIconId + '.png')
-
-        .setTitle(player.summonerName)
-        .setDescription('Poziom: ' + player.summonerLevel)
-        .setFooter('🧔 Autor: Kubator')
-        .setTimestamp()
-        .addFields(embedDisplay(player, championsData))
-
-    try {
-        msg.channel.send({embeds: [embed]});
-    } catch {
-        console.log("Lol Api AccountMastery, Błąd wysłania wiadomości embed");
-    }
-
+    return championsData;
 }
 
+async function createEmbed(player, championsData) {
+    return new MessageEmbed()
+        .setColor('#ffa500')
+        .setAuthor({
+            name: `Informacje o koncie\n ●════════════════════════════════════════●`,
+            iconURL: 'http://ddragon.leagueoflegends.com/cdn/' + await lolFunctions.getDragonVersion() + '/img/profileicon/' + player.profileIconId + '.png'
+        })
+        .setTitle(player.summonerName)
+        .setDescription('Poziom: ' + player.summonerLevel)
+        .setTimestamp()
+        .addFields(embedDisplay(player, championsData))
+}
 
 function embedDisplay(player, championsData) {
     let result = [

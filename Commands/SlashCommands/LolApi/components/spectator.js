@@ -1,80 +1,62 @@
 import {MessageEmbed} from "discord.js";
-import fetch from "node-fetch";
 import * as lolFunctions from './lolCommonFunctions.js'
 import fetchHeaders from "./fetchHeaders.js";
-import {checkResponseStatusMsg, defaultErrorMsg, LolError, sendErrorMsg} from "./lolCommonFunctions.js";
+import {defaultErrorMsg, LolError} from "./lolCommonFunctions.js";
+import fetchData from "./fetchData.js";
 
-export default async (msg, summoner) => {
+export default async (summoner) => {
     const summonerPlayerName = encodeURI(summoner);
     const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName;
     let responseSummoner;
     try {
-        responseSummoner = await fetch(urlSummoner, fetchHeaders);
+        responseSummoner = await fetchData(urlSummoner, fetchHeaders);
     } catch (err) {
-        return msg.channel.send(lolFunctions.defaultErrorMsg).catch(() => console.log("Błąd wysłania wiadomości"));
+        throw err;
     }
-    if (!checkResponseStatusMsg(responseSummoner.status, msg))
-        return;
-
     const jsonSummoner = await responseSummoner.json();
     const summonerIdPlayer = jsonSummoner.id;
     const urlMatchData = "https://eun1.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/" + summonerIdPlayer;
     let responseMatchData;
     try {
-        responseMatchData = await fetch(urlMatchData, fetchHeaders);
+        responseMatchData = await fetchData(urlMatchData, fetchHeaders);
     } catch (err) {
-        return msg.channel.send(lolFunctions.defaultErrorMsg).catch(() => console.log("Błąd wysłania wiadomości"));
+        throw new LolError("```diff\n-Obecnie nie znajdujesz się w grze```");
     }
-
-    if (responseMatchData.status === 404) {
-        return msg.channel.send("```diff\n-Obecnie nie znajdujesz się w grze```").catch(() => console.log("Błąd wysłania wiadomości"));
-    }
-    if (!checkResponseStatusMsg(responseMatchData.status, msg))
-        return;
-
     const jsonMatchData = await responseMatchData.json();
-    if (jsonMatchData.gameMode !== "CLASSIC" && jsonMatchData.gameMode !== "ARAM") {
-        return msg.channel.send("Przykro mi ale ten tryb gry nie jest obsługiwany").catch(() => console.log("Błąd wysłania wiadomości"));
+    try {
+        if (jsonMatchData.gameMode !== "CLASSIC" && jsonMatchData.gameMode !== "ARAM")
+            throw new LolError('Tryb gry nie jest obsługiwany');
+    } catch (err) {
+        console.error(err);
+        throw err;
     }
-
     let gameMode, playersData;
     try {
         playersData = await fetchPlayers(jsonMatchData);
         gameMode = await lolFunctions.readGameMode(jsonMatchData.gameQueueConfigId);
         await lolFunctions.readSpellsName(playersData);
-        await lolFunctions.readChampionsName(playersData); // do obiektu dodawane są nazwy postaci
+        await lolFunctions.readChampionsName(playersData);
     } catch (err) {
-        return sendErrorMsg(err, msg);
+        console.error(err);
+        throw err;
     }
+    shiftTeamsPosition(playersData, summonerIdPlayer);
+    return createEmbed(gameMode, playersData);
+}
 
-    let playerIndex = playersData.findIndex(p => p.summonerId === summonerIdPlayer);
-    if (playerIndex >= playersData.length / 2) //jeśli drużyna gracza jest po prawej stronie to przesuwamy ją na lewo a przeciwników na prawo
-    {
-        for (let i = 0; i < playersData.length / 2; i++) {
-            [playersData[i], playersData[i + playersData.length / 2]] = [playersData[i + playersData.length / 2], playersData[i]];
-        }
-    }
 
-    let embed = new MessageEmbed()
+const createEmbed = (gameMode, playersData) => {
+    return new MessageEmbed()
         .setColor('#ffa500')
-        .setAuthor(gameMode + "\n" +
-            "●═══════════════════════════════════════════════●")
+        .setAuthor({name: `${gameMode}\n ●═══════════════════════════════════════════════●`})
         .setDescription('⏳ Gra na żywo')
-        .setFooter('🧔 Autor: Kubator')
         .setTimestamp()
         .addFields(
             embedFields(playersData)
         )
-
-    try {
-        msg.channel.send({embeds: [embed]});
-    } catch {
-        console.log("Błąd wysłania wiadomości").catch(() => console.log("Błąd wysłania wiadomości"));
-    }
 }
 
-
-async function fetchPlayers(jsonMatchData, msg) {
+async function fetchPlayers(jsonMatchData) {
     let playersData = [];
     for (const playerNumber in jsonMatchData.participants) {
         let playerData = {};
@@ -100,7 +82,7 @@ async function fetchPlayers(jsonMatchData, msg) {
             playerData.flexRank = ranks[1];
         } catch (err) {
             console.log(err);
-            throw defaultErrorMsg;
+            throw new LolError(defaultErrorMsg);
         }
         playersData.push(playerData);
     }
@@ -151,3 +133,12 @@ function embedDisplayPlayerStats(playerData) {
         "\nFlexQ: " + playerData.flexRank);
 }
 
+const shiftTeamsPosition = (playersData, summonerIdPlayer) => {
+    let playerIndex = playersData.findIndex(p => p.summonerId === summonerIdPlayer);
+    if (playerIndex >= playersData.length / 2) //jeśli drużyna gracza jest po prawej stronie to przesuwamy ją na lewo a przeciwników na prawo
+    {
+        for (let i = 0; i < playersData.length / 2; i++) {
+            [playersData[i], playersData[i + playersData.length / 2]] = [playersData[i + playersData.length / 2], playersData[i]];
+        }
+    }
+}

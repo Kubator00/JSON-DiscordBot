@@ -1,14 +1,18 @@
-import mastery from "../../SlashCommands/LolApi/Functions/mastery.js";
-import message from "../../SlashCommands/LolApi/Functions/message.js";
+import mastery from "../../SlashCommands/LolApi/components/mastery.js";
+import basicAccountInfo from "../../SlashCommands/LolApi/components/basicAccountInfo.js";
 import blockButton from "../../../Utilities/blockButton.js";
+import {sendErrorMsg} from "../../SlashCommands/LolApi/components/lolCommonFunctions.js";
 
 export default {
     name: 'lolmastery',
-
     async execute(msg) {
         await blockButton(msg);
         const summoner = msg.customId.split(':');
-        await mastery(msg, summoner[1])
-        await message(msg, summoner[1], false);
+        try {
+            msg.channel.send({embeds: [await mastery( summoner[1])]});
+            msg.channel.send(await basicAccountInfo( summoner[1], false));
+        } catch (err) {
+            sendErrorMsg(err, msg);
+        }
     }
 }

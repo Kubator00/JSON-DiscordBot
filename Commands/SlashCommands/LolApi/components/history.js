@@ -1,100 +1,94 @@
 import {MessageEmbed} from "discord.js";
-import fetch from "node-fetch";
 import * as lolFunctions from './lolCommonFunctions.js'
 import fetchHeaders from "./fetchHeaders.js";
-import {checkResponseStatusMsg, defaultErrorMsg, sendErrorMsg} from "./lolCommonFunctions.js";
+import {  LolError} from "./lolCommonFunctions.js";
+import fetchData from "./fetchData.js";
 
 
-export default async (msg, summoner, matchNumber) => {
+export default async (summoner, matchNumber) => {
     matchNumber -= 1;
-    if (matchNumber < 0 || matchNumber > 19) { //gry możliwe do wyszukania są z tego przedziału
-        return msg.channel.send("W poleceniu wpisano błędą liczbę").catch(() => console.log("Błąd wysłania wiadomości"));
+    try {
+        if (matchNumber < 0 || matchNumber > 19) //gry możliwe do wyszukania są z tego przedziału
+            throw new LolError('W poleceniu wpisano błędą liczbę');
+    } catch (err) {
+        throw err;
     }
 
     let summonerPlayerName = encodeURI(summoner);
     const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName;
     let responseSummoner;
     try {
-        responseSummoner = await fetch(urlSummoner, fetchHeaders);
+        responseSummoner = await fetchData(urlSummoner, fetchHeaders);
     } catch (err) {
-        return msg.channel.send(lolFunctions.defaultErrorMsg).catch(() => console.log("Błąd wysłania wiadomości"));
+        throw err;
     }
-
-    if (!checkResponseStatusMsg(responseSummoner.status, msg))
-        return;
 
     const jsonSummoner = await responseSummoner.json();
     const puuIdPlayer = jsonSummoner["puuid"];
     const urlMatchList = "https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/" + puuIdPlayer + "/ids?start=0&count=20";
     let responseMatchList;
     try {
-        responseMatchList = await fetch(urlMatchList, fetchHeaders);
+        responseMatchList = await fetchData(urlMatchList, fetchHeaders);
     } catch (err) {
-        msg.channel.send(lolFunctions.defaultErrorMsg).catch(() => console.log("Błąd wysłania wiadomości"));
-        return;
+        throw err;
     }
-    if (!checkResponseStatusMsg(responseMatchList.status, msg))
-        return;
+
     const jsonMatchList = await responseMatchList.json();
     const matchId = jsonMatchList[matchNumber];
     const urlMatchData = "https://europe.api.riotgames.com/lol/match/v5/matches/" + matchId;
     let responseMatchData;
     try {
-        responseMatchData = await fetch(urlMatchData, fetchHeaders);
+        responseMatchData = await fetchData(urlMatchData, fetchHeaders);
     } catch (err) {
-        msg.channel.send(defaultErrorMsg).catch(() => console.log("Błąd wysłania wiadomości"));
-        return;
+        throw err;
     }
-
-    if (!checkResponseStatusMsg(responseMatchData.status, msg))
-        return;
 
     const jsonMatchData = await responseMatchData.json();
-    if (jsonMatchData.info.gameMode !== "CLASSIC" && jsonMatchData.info.gameMode !== "ARAM") {
-        return msg.channel.send("Przykro mi ale ten tryb gry nie jest obsługiwany").catch(() => console.log("Błąd wysłania wiadomości"));
-    }
-    if ((jsonMatchData.info.gameDuration) < 300) { //sprawdzanie czy nie było remake
-        return msg.channel.send("Gra była za krótka").catch(() => console.log("Błąd wysłania wiadomości"));
+    try {
+        if (jsonMatchData.info.gameMode !== "CLASSIC" && jsonMatchData.info.gameMode !== "ARAM")
+            throw new LolError('Tryb gry nie jest obsługiwany');
+        if ((jsonMatchData.info.gameDuration) < 300)  //sprawdzanie czy nie było remake
+            throw new LolError('Gra była za krótka');
+    } catch (err) {
+        throw err;
     }
 
-    let gameDuration = Math.ceil(jsonMatchData.info.gameDuration / 60) + " min";
+    const gameDuration = Math.ceil(jsonMatchData.info.gameDuration / 60) + " min";
     let gameMode;
     try {
         gameMode = await lolFunctions.readGameMode(jsonMatchData.info.queueId)
     } catch (err) {
-        return sendErrorMsg(err, msg);
+        throw err;
     }
-
     let playersData;
     try {
         playersData = await fetchPlayers(jsonMatchData);
     } catch (err) {
-        return sendErrorMsg(err, msg);
+        throw err;
     }
     if (jsonMatchData.info.gameMode !== "ARAM")
         sortPlayers(playersData);
 
-    let playerIndex = playersData.findIndex(p => p.puuId === puuIdPlayer);
-    //zmienna przechowująca pozycje gracza który szuka gry w celu ustalenia w której jest drużynie oraz wyniku meczu
-
-    let teamsData = fetchTeams(jsonMatchData, playersData);
-
-    let matchResult = "PORAŻKA ❌";
-    //sprawdzanie czy gracz który szuka gry ją wygrał czy przegrał
-    if ((playerIndex < 5 && teamsData[0].win === true) || (playerIndex > 4 && teamsData[1].win === true))
-        matchResult = "ZWYCIĘSTWO ✅";
-
-
+    const playerIndex = playersData.findIndex(p => p.puuId === puuIdPlayer);
+    const teamsData = fetchTeams(jsonMatchData, playersData);
+    const matchResult = setMatchResult(playerIndex, teamsData);
     shiftPlayerTeamToLeftSide(playersData, teamsData, playerIndex);
 
+    return createEmbed(matchResult, gameMode, gameDuration, teamsData, playersData);
+}
+const setMatchResult = (playerIndex, teamsData) => {
+    let matchResult = "PORAŻKA ❌";
+    if ((playerIndex < 5 && teamsData[0].win === true) || (playerIndex > 4 && teamsData[1].win === true))
+        matchResult = "ZWYCIĘSTWO ✅";
+    return matchResult;
+}
 
-    let embed = new MessageEmbed()
+const createEmbed = (matchResult, gameMode, gameDuration, teamsData, playersData) => {
+    return new MessageEmbed()
         .setColor('#ffa500')
         .setTitle(matchResult)
-        .setAuthor(gameMode + "\n" +
-            "●═══════════════════════════════════════════════●")
+        .setAuthor({name: `${gameMode}\n●═══════════════════════════════════════════════●`})
         .setDescription('🕧 Długość gry: ' + gameDuration)
-        .setFooter('🧔 Autor: Kubator')
         .setTimestamp()
         .addFields(
             embedTeamsField(teamsData),
@@ -105,13 +99,9 @@ export default async (msg, summoner, matchNumber) => {
             },
             embedPlayersField(playersData),
         )
-    try {
-        msg.channel.send({embeds: [embed]});
-    } catch {
-        console.log("Lol Api History, Błąd wysłania wiadomości embed");
-    }
 
 }
+
 
 async function fetchPlayers(jsonMatchData) {
     let playersData = [];
@@ -143,8 +133,8 @@ async function fetchPlayers(jsonMatchData) {
             playerData.soloqRank = playerRanks[0];
             playerData.flexRank = playerRanks[1];
         } catch (err) {
-            console.log(err);
-            throw "Błąd pobierania danych z serwera"
+            console.error(err);
+            throw new LolError("Błąd pobierania danych z serwera");
         }
         playersData.push(playerData);
     }

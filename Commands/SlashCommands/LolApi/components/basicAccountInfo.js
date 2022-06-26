@@ -1,32 +1,27 @@
 import {MessageActionRow, MessageButton, MessageSelectMenu, MessageEmbed} from "discord.js";
-import fetch from "node-fetch";
 import * as lolFunctions from './lolCommonFunctions.js'
 import fetchHeaders from "./fetchHeaders.js";
-import {checkResponseStatusMsg, sendErrorMsg} from "./lolCommonFunctions.js";
+import fetchData from "./fetchData.js";
 
-export default async (msg, summoner, isFollowUp) => {
+export default async (summoner) => {
     const summonerPlayerName = encodeURI(summoner);
     const urlSummoner = "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerPlayerName;
     let responseSummoner;
     try {
-        responseSummoner = await fetch(urlSummoner, fetchHeaders);
+        responseSummoner = await fetchData(urlSummoner, fetchHeaders);
     } catch (err) {
-        msg.channel.send("Błąd łączenia z serwerem").catch(() => console.log("Błąd wysłania wiadomości"));
-        console.log(err);
-        return;
+        throw err;
     }
-    if (!checkResponseStatusMsg(responseSummoner.status, msg))
-        return;
 
     const data = await responseSummoner.json();
     let ranks;
     try {
-        ranks = await lolFunctions.readPlayerRankAndStats(data.id, msg);
+        ranks = await lolFunctions.readPlayerRankAndStats(data.id);
     } catch (err) {
-        return sendErrorMsg(err, msg);
+        throw err;
     }
 
-    let player =
+    const player =
         {
             summonerName: data.name,
             summonerLevel: data.summonerLevel,
@@ -35,29 +30,17 @@ export default async (msg, summoner, isFollowUp) => {
             flexRank: ranks[1]
         }
 
-    try {
-        if (isFollowUp)
-            await msg.followUp({
-                ephemeral: false,
-                embeds: [await createEmbed(player)],
-                components: [buttons(summoner), selMenu(summoner)]
-            });
-        else
-            msg.channel.send({
-                ephemeral: false,
-                embeds: [await createEmbed(player)],
-                components: [buttons(summoner), selMenu(summoner)]
-            });
-    } catch (err) {
-        console.log("Błąd wysłania wiadomości");
-    }
+    return ({
+        ephemeral: false,
+        embeds: [await createEmbed(player)],
+        components: [buttons(summoner), selMenu(summoner)]
+    });
 }
 
 const createEmbed = async (player) => {
     return (
         new MessageEmbed()
             .setColor('#0099ff')
-            .setAuthor("League of Legends - informacje o koncie")
             .setTitle(player.summonerName)
             .setDescription('Poziom: ' + player.summonerLevel)
             .setThumbnail('http://ddragon.leagueoflegends.com/cdn/' + await lolFunctions.getDragonVersion() + '/img/profileicon/' + player.profileIconId + '.png')
