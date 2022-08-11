@@ -22,7 +22,7 @@
   "homepage": "https://github.com/Kubator00/Patrick-DiscordBot#readme",
   "dependencies": {
     "@discordjs/builders": "^0.15.0",
-    "@discordjs/opus": "^0.5.3",
+    "@discordjs/opus": "^0.8.0",
     "@discordjs/rest": "^0.5.0",
     "@discordjs/voice": "^0.6.0",
     "avconv": "^3.1.0",
