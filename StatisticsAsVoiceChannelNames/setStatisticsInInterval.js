@@ -1,7 +1,7 @@
 import process from "process";
-import {client} from "../index.js";
-import {changeVoiceChannelName} from "./changeVoiceChannelName.js";
-import {dayOfTheWeek} from "../Utilities/date.js";
+import { client } from "../index.js";
+import { changeVoiceChannelName } from "./changeVoiceChannelName.js";
+import { dayOfTheWeek } from "../Utilities/date.js";
 
 
 export default () => {
@@ -14,7 +14,7 @@ export default () => {
 
     setInterval(() => {
         for (let guild of client.guilds.cache) {
-            changeVoiceChannelName('guild_members_number ', guild, getNumberOfGuildMembers(guild))
+            changeVoiceChannelName('guild_members_number', guild, getNumberOfGuildMembers(guild))
             changeVoiceChannelName('date', guild, getDayOfTheWeek())
         }
     }, 600000);
